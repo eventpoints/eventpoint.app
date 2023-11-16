@@ -1,4 +1,4 @@
-FROM ghcr.io/eventpoint/php:main AS composer
+FROM ghcr.io/eventpoints/php:main AS composer
 
 ENV APP_ENV="prod" \
     APP_DEBUG=0 \
@@ -47,6 +47,6 @@ RUN chmod -R 777 var
 
 
 
-FROM ghcr.io/eventpoint/caddy:main AS caddy
+FROM ghcr.io/eventpoints/caddy:main AS caddy
 
 COPY --from=php /app/public public/
