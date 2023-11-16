@@ -9,7 +9,7 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 
-final readonly class EmailService
+final class EmailService
 {
     private const SENDER_EMAIL_ADDRESS = 'no-reply@example.com';
 
