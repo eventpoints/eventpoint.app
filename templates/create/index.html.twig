@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3 g-3">
+            <div class="col-12 col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="mdi mdi-calendar fs-3"></div>
+                        <div>
+                            {{ 'create-event'|trans }}
+                        </div>
+                    </div>
+                    <a class="stretched-link" href="{{ path('create_event') }}"></a>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="mdi mdi-account-group fs-3"></div>
+                        <div> {{ 'create-group'|trans }}</div>
+                    </div>
+                    <a class="stretched-link" href="{{ path('create_event_group') }}"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

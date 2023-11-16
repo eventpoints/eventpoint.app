@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Login{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center g-0 mt-3">
+            <div class="col-md-4">
+                <div class="card h-100 shadow">
+                    <div class="card-body">
+                        <div class="">
+                            <h1 class="h3 mb-3 font-weight-normal">{{ 'login'|trans|capitalize }}</h1>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% if error %}
+                                <div
+                                        class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                            {% endif %}
+                            <div class="form-floating mb-3">
+                                <input type="email" value="{{ last_username }}" name="email" id="inputEmail"
+                                       class="form-control" autocomplete="email"
+                                       placeholder="{{ 'email-placeholder'|trans }}" required autofocus>
+                                <label for="inputEmail">{{ 'email-address'|trans }}</label>
+                            </div>
+                            <div class="form-floating">
+                                <input type="password" name="password" id="inputPassword" class="form-control"
+                                       autocomplete="current-password" required
+                                       placeholder="{{ 'password-placeholder'|trans }}">
+                                <label for="inputPassword">{{ 'password'|trans }}</label>
+                            </div>
+
+                            <input type="hidden" name="_csrf_token"
+                                   value="{{ csrf_token('authenticate') }}"
+                            >
+
+
+                            <button class="btn btn-lg mt-5 w-100 btn-primary" type="submit">
+                                {{ 'sign-in'|trans }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,47 @@
+<div class="card mb-3">
+    <div class="card-header">
+        <div class="fs-5 fw-bold">{{ eventGroup.title }}</div>
+        <div>{{ eventGroup.createdAt|format_datetime(pattern=date_pattern,timezone=regional.regionalSettingValueObject.timezone) }}</div>
+    </div>
+    <div class="list-group list-group-flush">
+        <a href="{{ path('event_group_members', {id: eventGroup.id}) }}"
+           class="{{ app.request.get('_route') == 'event_group_members' ? 'active' }} list-group-item d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="me-2">{{ 'memebers'|trans|capitalize }}</div>
+                <div class="badge badge-pill text-bg-dark">{{ eventGroup.eventGroupMembers.count|compact_notation }}</div>
+            </div>
+            <div class="bi bi-people fs-4"></div>
+        </a>
+        <a href="{{ path('event_group_events', {id: eventGroup.id}) }}"
+           class="{{ app.request.get('_route') == 'event_group_events' ? 'active' }} list-group-item d-flex justify-content-between align-items-center">
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="me-2">{{ 'events'|trans|capitalize }}</div>
+                <div class="badge badge-pill text-bg-dark">{{ eventGroup.events.count|compact_notation }}</div>
+            </div>
+            <div class="bi bi-calendar fs-4"></div>
+        </a>
+        <a href="{{ path('event_group_discussion', {id: eventGroup.id}) }}"
+           class="{{ app.request.get('_route') == 'event_group_discussion' ? 'active' }} list-group-item d-flex justify-content-between align-items-center">
+            <div>{{ 'discussions'|trans|capitalize }}</div>
+            <i class="bi bi-chat fs-4"></i>
+        </a>
+        <div class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="d-flex justify-content-start">
+                <div>
+                    <img src="{{ eventGroup.owner.avatar }}" height="50"
+                         class="rounded-circle border me-2"/>
+                </div>
+                <div>
+                    <div class="fw-bold">{{ eventGroup.owner.fullName }}</div>
+                    <div>{{ 'creator'|trans }}</div>
+                </div>
+            </div>
+            <div>
+                <i class="bi bi-person-badge fs-3"></i>
+            </div>
+        </div>
+        <div class="list-group-item">
+            <a href="#" class="btn btn-secondary w-100">{{ 'join-group'|trans }}</a>
+        </div>
+    </div>
+</div>

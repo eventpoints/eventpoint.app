@@ -1,0 +1,29 @@
+{% block selection_group_widget %}
+    <div class="list-group list-group-flush" {{ stimulus_controller('list-group-search') }}>
+        {% if form.vars.searchable|default(false) %}
+            <div class="list-group-item bg-white justify-content-between align-items-center sticky-top">
+                <div class="input-group">
+                    <input type="text"
+                           class="form-control" placeholder="{{ 'search'|trans }}"
+                           aria-label="{{ 'search'|trans }}"
+                           aria-describedby="basic-addon1" {{ stimulus_target('list-group-search', 'input') }} {{ stimulus_action('list-group-search', 'type', 'keyup') }}>
+                </div>
+            </div>
+        {% endif %}
+        {% for child in form %}
+            <div
+                    class="custom-checkbox list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                    {{ stimulus_target('list-group-search', 'item') }} >
+                <input style="-ms-transform: scale(2);-webkit-transform: scale(2);transform: scale(2);accent-color: #e65100;"
+                       type="{{ form.vars.multiple == true  ? 'checkbox' : 'radio' }}" id="{{ child.vars.id }}" name="{{ child.vars.full_name }}"
+                       value="{{ child.vars.value }}"
+                       {% if child.vars.checked %}checked{% endif %}
+                        {{ stimulus_target('list-group-search', 'checkbox') }}
+                />
+                <label for="{{ child.vars.id }}" class="custom-checkbox-label fw-bold w-75 text-end">
+                    {{ child.vars.label|default(null)|trans({}, translation_domain) }}
+                </label>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

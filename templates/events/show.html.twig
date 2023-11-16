@@ -1,0 +1,289 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3">
+
+            {% if event.unansweredInvitation(app.user) %}
+                {% set invitation = event.unansweredInvitation(app.user) %}
+                <div class="col-12">
+                    <div class="card mb-3">
+                        <div class="card-body d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-bold fs-3">{{ 'you-are-invited'|trans|capitalize }}</div>
+                                <div>
+                                    {{ 'invitation-banner-text'|trans|capitalize }}
+                                </div>
+                            </div>
+
+                            <turbo-frame id="event-invitation-response-form-{{ invitation.id }}"
+                                         src="{{ path('invitation_response', {id: invitation.id }) }}">
+                                <div class="d-flex justify-content-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </turbo-frame>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="col-12 col-md-4">
+
+                <div class="card mb-3">
+                    {% if event.isComplete %}
+                        <div class="alert alert-success rounded-0 rounded-top border-0 text-center mb-0" role="alert">
+                            {{ 'event-complete'|trans }}
+                        </div>
+                    {% endif %}
+                    {% if event.eventGroup %}
+                        <a href="{{ path('show_event_group', {id: event.eventGroup.id }) }}">
+                            <div class="position-absolute top-0 mt-2 ms-2 badge rounded-pill bg-warning">
+                                {{ event.eventGroup.title }}
+                            </div>
+                        </a>
+                    {% endif %}
+                    {% if event.base64Image %}
+                        <img src="{{ event.base64Image }}" class="card-img-top object-fit-cover" height="150px"
+                             alt="{{ event.title }}">
+                    {% endif %}
+                    {% if event.isInProgress('Europe/Prague') %}
+                        <div {{ stimulus_controller('progress', {
+                            elapsed: event.elapsedTimeInMinutes,
+                            duration: event.durationInMinutes
+                        }) }}>
+                            <div class="progress rounded-0" style="height:5px" data-bs-toggle="tooltip"
+                                 data-bs-placement="top"
+                                 data-bs-title="{{ event.timeRemainingAsInterval }} {{ 'remaining'|trans }}">
+                                <div {{ stimulus_target('progress', 'progressBar') }}
+                                        class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    {% elseif event.isComplete('Europe/Prague') %}
+                        <div class="progress rounded-0" style="height:3px" role="progressbar"
+                             aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                        </div>
+                    {% else %}
+                        <div class="progress rounded-0" style="height:3px" role="progressbar"
+                             aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar" style="width: 0"></div>
+                        </div>
+                    {% endif %}
+                    <div class="card-body rounded-top">
+                        <div class="fw-bold h5 {{ event.isComplete('Europe/Prague') ? 'text-decoration-line-through' : '' }}">{{ event.title }}</div>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <div>{{ event.startAt|format_date(pattern='d.M') }}  {{ '@' ~ event.startAt|format_time(timeFormat='short',pattern='H:mm',timezone='Europe/Prague') }}</div>
+                            <div>-</div>
+                            <div>{{ event.endAt|format_date(pattern='d.M') }}  {{ '@' ~ event.endAt|format_time(timeFormat='short',pattern='H:mm',timezone='Europe/Prague') }}</div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {{ event.description|nl2br }}
+                    </div>
+
+                    <div {{ stimulus_controller('address-from-coordinates', {
+                        token: mapbox_token,
+                        longitude: event.longitude,
+                        latitude: event.latitude
+                    }) }}>
+                        <div class="min-vh-50 w-100" {{ stimulus_target('address-from-coordinates', 'map') }}></div>
+                        <div {{ stimulus_target('address-from-coordinates', 'address') }}></div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-body bg-white p-0" {{ stimulus_controller('static-map', {
+                        token: mapbox_token,
+                        longitude: event.longitude,
+                        latitude: event.latitude
+                    }) }}>
+                        <div class="static-map w-100"
+                             style="height: 200px" {{ stimulus_target('static-map', 'map') }}></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-12 col-md-8">
+
+
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <div class="nav nav-pills card-header-pills nav-justified" id="pills-tab" role="tablist">
+                            <div class="nav-item" role="presentation">
+                                <button class="nav-link active d-flex justify-content-between align-items-center"
+                                        id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#going"
+                                        type="button" role="tab" aria-controls="pills-home"
+                                        aria-selected="true">
+                                    <span class="fw-bold">{{ 'going'|trans|capitalize }}</span>
+                                    <span class="fw-bold badge badge-pill text-bg-dark">{{ event.eventOrganisers.count + event.eventParticipants.count|compact_notation }}</span>
+                                </button>
+                            </div>
+                            <div class="nav-item" role="presentation">
+                                <button class="nav-link d-flex justify-content-between align-items-center"
+                                        id="invited-tab"
+                                        data-bs-toggle="pill" data-bs-target="#invited"
+                                        type="button" role="tab" aria-controls="pills-invited"
+                                        aria-selected="true">
+                                    <span class="fw-bold">{{ 'invited'|trans|capitalize }}</span>
+                                    <span class="fw-bold badge badge-pill text-bg-dark">{{ event.eventEmailInvitations.count + event.eventInvitations.count|compact_notation }}</span>
+                                </button>
+                            </div>
+                            <div class="nav-item" role="presentation">
+                                <button class="nav-link d-flex justify-content-between align-items-center"
+                                        id="requested-tab" data-bs-toggle="pill"
+                                        data-bs-target="#requested"
+                                        type="button" role="tab" aria-controls="pills-requested"
+                                        aria-selected="true">
+                                    <span class="fw-bold">{{ 'requested'|trans|capitalize }}</span>
+                                    <span class="fw-bold badge badge-pill text-bg-dark">{{ event.eventRequests.count|compact_notation }}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="going" role="tabpanel"
+                             aria-labelledby="pills-home-tab"
+                             tabindex="0">
+                            <div class="list-group list-group-flush">
+                                {% for organiser in event.eventOrganisers %}
+                                    <div class="list-group-item d-flex justify-content-start">
+                                        <div class="me-2">
+                                            <img height="50" class="rounded-circle" src="{{ organiser.owner.avatar }}"/>
+                                        </div>
+                                        <div>
+                                            <div>{{ organiser.owner.fullName }}</div>
+                                            {% for role in organiser.roles %}
+                                                <span class="badge text-bg-primary">{{ role.name|trans }}</span>
+                                                <span class="badge text-bg-primary">{{ role.name|trans }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                {% for participant in event.eventParticipants %}
+                                    <div class="list-group-item d-flex justify-content-start">
+                                        <div class="me-2">
+                                            <img height="50" class="rounded-circle"
+                                                 src="{{ participant.owner.avatar }}"/>
+                                        </div>
+                                        <div>
+                                            <div>{{ participant.owner.fullName }}</div>
+                                            <div>{{ participant.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                                {% if app.user and app.user|has_event_permission(event, 'ROLE_EVENT_MANAGER') %}
+                                    <div class="list-group-item text-center">
+                                        <a class="btn btn-outline-primary"
+                                           href="{{ path('event_organisers', {id: event.id}) }}">
+                                            {{ 'manage-event-organisers'|trans }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="invited" role="tabpanel"
+                             aria-labelledby="pills-home-tab"
+                             tabindex="0">
+                            <div class="list-group list-group-flush">
+                                {% for invitation in event.eventInvitations %}
+                                    <div class="list-group-item">{{ invitation.owner.firstName }}</div>
+                                {% endfor %}
+                                <div class="list-group-item text-center">
+                                    <span class="me-2">{{ event.eventEmailInvitations.count|compact_notation }}</span>
+                                    {{ 'invited-by-email'|trans() }}
+                                </div>
+                                {% if app.user and app.user|has_event_permission(event, 'ROLE_EVENT_MANAGER') or app.user|has_event_permission(event, 'ROLE_EVENT_MANAGER') %}
+                                    <div class="list-group-item text-end">
+                                        <a class="btn btn-outline-primary" href="#send-invite"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#send-invite">
+                                            {{ 'send-inviation'|trans }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="requested" role="tabpanel" aria-labelledby="pills-home-tab"
+                             tabindex="0">
+                            <div class="list-group list-group-flush">
+                                {% for participant in event.eventRequests %}
+                                    <div class="list-group-item">{{ participant.owner.firstName }}</div>
+                                {% else %}
+                                    <div class="list-group-item">{{ 'no-requests'|trans }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                {% if event.isAfterStart %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        {{ form_start(imageForm) }}
+                        <div class="input-group">
+                            {{ form_widget(imageForm.images) }}
+                            <button type="submit" class="btn btn-primary">{{ 'upload'|trans }}</button>
+                        </div>
+                        {{ form_end(imageForm) }}
+                    </div>
+                </div>
+                <div>
+
+                    <div class="position-relative">
+                        {% for imageCollection in event.imageCollections %}
+                            <div class="card mb-3">
+                                <div class="card-header bg-white sticky-top">
+                                    <div class="d-flex justify-content-start align-items-start">
+                                        <img class="rounded-circle me-2 border" src="{{ imageCollection.owner.avatar }}"
+                                             width="40"
+                                             height="40"/>
+                                        <div>
+                                            <div class="fw-bold lh-1">{{ imageCollection.owner.fullName }}</div>
+                                            <div>{{ imageCollection.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class='position-relative' {{ stimulus_controller('lightbox image-grid') }}
+                                         data-lightbox-options-value='{"thumbnails": true}'
+                                    >
+                                        {% for image in imageCollection.images %}
+                                            <img class="object-fit-cover" src="{{ image.dataUrl }}" alt="event image"/>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="modal fade" id="send-invite" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">{{ 'send-invitation'|trans|capitalize }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <turbo-frame id="invitation-form-frame" src="{{ path('create_event_invitation', {event: event.id}) }}"
+                             loading="lazy" target="_top">
+                    <div class="d-flex justify-content-center my-5">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </turbo-frame>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,167 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-4">
+
+                <div class="card">
+                    {% if event.isComplete %}
+                        <div class="alert alert-success rounded-0 rounded-top border-0 text-center mb-0" role="alert">
+                            {{ 'event-complete'|trans }}
+                        </div>
+                    {% endif %}
+                    {% if event.base64Image %}
+                        <img src="{{ event.base64Image }}" class="img-fluid object-fit-cover" height="150px"
+                             alt="{{ event.title }}">
+                    {% endif %}
+                    <div class="card-body rounded-top">
+                        <div class="fw-bold h5 {{ event.isComplete('Europe/Prague') ? 'text-decoration-line-through' : '' }}">{{ event.title }}</div>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <div>{{ event.startAt|format_date(pattern='d.M') }}  {{ '@' ~ event.startAt|format_time(timeFormat='short',pattern='H:mm',timezone='Europe/Prague') }}</div>
+                            <div>-</div>
+                            <div>{{ event.endAt|format_date(pattern='d.M') }}  {{ '@' ~ event.endAt|format_time(timeFormat='short',pattern='H:mm',timezone='Europe/Prague') }}</div>
+                        </div>
+                    </div>
+                    {% if event.isInProgress('Europe/Prague') %}
+                        <div {{ stimulus_controller('progress', {
+                            elapsed: event.elapsedTimeInMinutes,
+                            duration: event.durationInMinutes
+                        }) }}>
+                            <div class="progress rounded-0" style="height:5px" data-bs-toggle="tooltip"
+                                 data-bs-placement="top"
+                                 data-bs-title="{{ event.timeRemainingAsInterval }} {{ 'remaining'|trans }}">
+                                <div {{ stimulus_target('progress', 'progressBar') }}
+                                        class="progress-bar bg-success" role="progressbar" aria-valuenow="0"
+                                        aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    {% elseif event.isComplete('Europe/Prague') %}
+                        <div class="progress rounded-0" style="height:3px" role="progressbar"
+                             aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                        </div>
+                    {% else %}
+                        <div class="progress rounded-0" style="height:3px" role="progressbar"
+                             aria-label="Basic example" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar" style="width: 0"></div>
+                        </div>
+                    {% endif %}
+                    <div class="card-header nav-justified nav nav-pills" id="pills-tab" role="tablist">
+                        <div class="nav-item" role="presentation">
+                            <button class="nav-link active" id="pills-contact-tab" data-bs-toggle="pill"
+                                    data-bs-target="#information" type="button" role="tab" aria-controls="pills-contact"
+                                    aria-selected="false">
+                                <i class="mdi mdi-information fs-4"></i>
+                            </button>
+                        </div>
+                        <div class="nav-item" role="presentation">
+                            <button class="nav-link" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#going"
+                                    type="button" role="tab" aria-controls="pills-home"
+                                    aria-selected="true">
+                                <i class="mdi mdi-account-check fs-4"></i>
+                            </button>
+                        </div>
+                        <div class="nav-item" role="presentation">
+                            <button class="nav-link" id="invited-tab" data-bs-toggle="pill" data-bs-target="#invited"
+                                    type="button" role="tab" aria-controls="pills-invited"
+                                    aria-selected="true">
+                                <i class="mdi mdi-account-clock fs-4"></i>
+                            </button>
+                        </div>
+                        <div class="nav-item" role="presentation">
+                            <button class="nav-link" id="requested-tab" data-bs-toggle="pill"
+                                    data-bs-target="#requested"
+                                    type="button" role="tab" aria-controls="pills-requested"
+                                    aria-selected="true">
+                                <i class="mdi mdi-account-question fs-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="information" role="tabpanel"
+                             aria-labelledby="pills-profile-tab" tabindex="0">
+                            <div class="card-body">
+                                <div class="fs-5 fw-bold">{{ 'information'|trans|capitalize }}</div>
+                                {{ event.description }}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="invited" role="tabpanel" aria-labelledby="pills-home-tab"
+                             tabindex="0">
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item fs-5 fw-bold">
+                                    <div class="d-flex justify-content-between">
+                                        <div>{{ 'invited'|trans|capitalize }}
+                                            <span class="badge text-bg-secondary">{{ event.eventEmailInvitations.count + event.eventInvites.count }}</span>
+                                        </div>
+                                        <a href="#" data-bs-toggle="modal" data-bs-target="#send-invite">
+                                            <i class="bi bi-plus-circle fs-4"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                {% for participant in event.eventInvites %}
+                                    <div class="list-group-item">{{ participant.owner.firstName }}</div>
+                                {% else %}
+                                    <div class="list-group-item">{{ 'no-invites-pending'|trans }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="requested" role="tabpanel" aria-labelledby="pills-home-tab"
+                             tabindex="0">
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item fs-5 fw-bold">{{ 'requested'|trans|capitalize }}</div>
+                                {% for participant in event.eventRequests %}
+                                    <div class="list-group-item">{{ participant.owner.firstName }}</div>
+                                {% else %}
+                                    <div class="list-group-item">{{ 'no-requests-pending'|trans }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="going" role="tabpanel" aria-labelledby="pills-home-tab"
+                             tabindex="0">
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between">
+                                    <div class="fs-5 fw-bold">{{ 'event-orgnisers'|trans|capitalize }}</div>
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#add-crew-member">
+                                        <i class="bi bi-plus-circle fs-4"></i>
+                                    </a>
+                                </div>
+                                {% for crewMember in event.eventCrewMembers %}
+                                    <a href="#" class="list-group-item list-group-item-action">
+                                        <div class="d-flex justify-content-between">
+                                            <div>{{ crewMember.owner.fullName }}</div>
+                                            <div>
+                                                {% for role in crewMember.roles %}
+                                                    <span class="badge rounded-pill text-bg-primary">{{ role.name|trans }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <div class="list-group-item d-flex justify-content-between">
+                                    <div class="fs-5 fw-bold">{{ 'going'|trans|capitalize }}</div>
+                                </div>
+
+                                {% for participant in event.eventParticipants %}
+                                    <div class="list-group-item">{{ participant.owner.firstName }}</div>
+                                {% else %}
+                                    <div class="list-group-item">{{ 'none-going'|trans }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-12 col-md-8">
+
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+
+
+{% endblock %}

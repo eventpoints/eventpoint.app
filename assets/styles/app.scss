@@ -1,0 +1,52 @@
+@import "bootstrap-icons";
+@import "~@mdi/font";
+@import "~material-datetime-picker/dist/material-datetime-picker.css";
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+@import '~lightgallery/scss/lightgallery';
+@import "_variables.scss";
+@import "bootstrap/scss/bootstrap";
+@import 'https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,700;1,300&display=swap';
+@import 'mapbox-gl/src/css/mapbox-gl.css';
+
+* {
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.dark_theme body{
+  background-color: rgba(0,0,0,0.75) !important;
+}
+
+.fixed-map-wrapper{
+  position: fixed;
+  height: 100%;
+  width: 50vh;
+  z-index: 9000;
+}
+.fixed-map{
+  width: 100%;
+  height: 100%;
+}
+
+.hidden {
+  display: none;
+}
+
+.c-scrim {
+  z-index: 10;
+}
+
+.c-datepicker {
+  z-index: 90000;
+}
+
+.map{
+  width: 100%;
+  min-height: 350px;
+}
+
+.map-big {
+  min-width: 100vh;
+  min-height: 50vh;
+}
+
+

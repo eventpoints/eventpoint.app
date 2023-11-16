@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-8">
+                <div class="card">
+                    <div class="card-header">{{ 'create-event-group'|trans }}</div>
+                    <div class="card-body">
+                        {{ form_start(eventGroupForm) }}
+                        {{ form_row(eventGroupForm.title) }}
+                        {{ form_row(eventGroupForm.events) }}
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">{{ 'save'|trans }}</button>
+                        </div>
+                        {{ form_end(eventGroupForm) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

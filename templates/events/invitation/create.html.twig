@@ -1,0 +1,21 @@
+<div>
+    <turbo-frame id="invitation-form-frame" target="_top">
+        {% for message in app.session.flashbag.get('message') %}
+            {{ include('partials/_toast.html.twig', {
+                message: message,
+                type: 'modal'
+            }) }}
+        {% endfor %}
+        {{ form_start(eventInvitationForm, {
+            action: path('create_event_invitation', {event: event.id})
+        }) }}
+        <div class="modal-body">
+            {{ form_row(eventInvitationForm.email) }}
+        </div>
+        <div class="modal-footer">
+            <a href="{{ path('show_event', {id: event.id }) }}" class="btn btn-secondary w-25">{{ 'close'|trans }}</a>
+            <button class="btn btn-primary w-25" type="submit">{{ 'save'|trans }}</button>
+        </div>
+        {{ form_end(eventInvitationForm) }}
+    </turbo-frame>
+</div>

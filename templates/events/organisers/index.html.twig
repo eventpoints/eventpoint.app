@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">{{ 'event-organisers'|trans }}</div>
+                        {% for organiser in event.eventOrganisers %}
+                            <div class="list-group-item d-flex justify-content-start">
+                                <div class="me-2">
+                                    <img height="50" class="rounded-circle" src="{{ organiser.owner.avatar }}"/>
+                                </div>
+                                <div>
+                                    <div>{{ organiser.owner.fullName }}</div>
+                                    {% for role in organiser.roles %}
+                                        <span class="badge text-bg-primary">{{ role.name|trans }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

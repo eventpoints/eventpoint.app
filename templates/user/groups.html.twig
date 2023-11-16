@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-4">
+                <div class="card">
+                    {{ include('partials/_account-navbar.html.twig') }}
+                </div>
+            </div>
+            <div class="col-12 col-md-8">
+                    <div class="fs-3 fw-bold text-end">{{ 'groups'|trans|upper }}</div>
+                    <hr class="mt-0"/>
+                <div class="card">
+                    <div class="list-group list-group-flush">
+                        <a href="{{ path('create_event_group') }}"
+                           class="list-group-item list-group-item-action text-muted d-flex justify-content-between align-items-center">
+                            <div>{{ 'create-group'|trans|capitalize }}</div>
+                            <div class="bi bi-plus-circle fs-4"></div>
+                        </a>
+                        {% for group in groups %}
+                            <a href="{{ path('event_group_show', {id: group.id }) }}"
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="fw-bold">{{ group.title }}</div>
+                                    <div>{{ group.createdAt|format_date }}</div>
+                                </div>
+                                <div>
+                                    <div class="badge rounded-pill text-bg-primary">
+                                        <span class="bi bi-people me-2"></span>
+                                        <span>{{ group.eventGroupMembers.count }}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div {{ stimulus_controller('dynamic-map',{
+        token: mapbox_token,
+        events: eventPagination.items|serialize(format = 'json'),
+    }) }}>
+
+        <div class="offcanvas offcanvas-bottom" data-bs-scroll="true" tabindex="-1" id="map" aria-labelledby="map">
+            <div class="map-big" id="map" {{ stimulus_target('dynamic-map', 'map') }}></div>
+        </div>
+
+        <div class="container">
+            <div class="row g-3 mt-3">
+                <div class="col-12 col-md-4">
+                    {{ form_start(eventFilter) }}
+                    <div class="card mb-3">
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item">{{ form_row(eventFilter.title) }}</div>
+                            <div class="list-group-item">{{ form_row(eventFilter.category) }}</div>
+                            {{ form_row(eventFilter.period) }}
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <a href="{{ path('events') }}" class="btn btn-secondary w-25">{{ 'clear'|trans }}</a>
+                            <button type="submit" class="btn btn-outline-primary w-25">{{ 'search'|trans }}</button>
+                        </div>
+                        {{ form_end(eventFilter) }}
+                    </div>
+                </div>
+                <div class="col-12 col-md-8">
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between mb-2 fs-4">
+                                {% set period = app.request.get('event_filter').period|default("today") %}
+                                <div class="text-danger text-center">
+                                    {% if period == 'last-week' %}
+                                        <div class="fw-bold">{{ 'last-week'|trans|upper }}</div>
+                                    {% elseif period == 'today' %}
+                                        <div class="fw-bold">{{ 'today'|trans|upper }}</div>
+                                    {% elseif period == 'tomorrow' %}
+                                        <div class="fw-bold">{{ 'tomorrow'|trans|upper }}</div>
+                                    {% elseif period == 'this-weekend' %}
+                                        <div class="fw-bold">{{ 'this-weekend'|trans|upper }}</div>
+                                    {% elseif period == 'this-week' %}
+                                        <div class="fw-bold">{{ 'this-week'|trans|upper }}</div>
+                                    {% elseif period == 'next-week' %}
+                                        <div class="fw-bold">{{ 'next-week'|trans|upper }}</div>
+                                    {% else %}
+                                    {% endif %}
+                                </div>
+                                <div class="text-end">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            {% if period == 'last-week' %}
+                                                <div class="fw-bold">
+                                                    {{ app_time.now.subWeek.startOfWeek.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.startOfWeek.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    -
+                                                    {{ app_time.now.subWeek.endOfWeek.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.endOfWeek.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                </div>
+                                            {% elseif period == 'today' %}
+                                                <div class="fw-bold">
+                                                    <div class="fw-bold">
+                                                        {{ app_time.now.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                        {{ app_time.now.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                        {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                        {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    </div>
+                                                </div>
+                                            {% elseif period == 'tomorrow' %}
+                                                <div class="fw-bold">
+                                                    {{ app_time.now.addDay.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.addDay.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                </div>
+                                            {% elseif period == 'this-weekend' %}
+                                                <div class="fw-bold">
+                                                    {{ app_time.now.next('SATURDAY').dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.next('SATURDAY').day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    -
+                                                    {{ app_time.now.next('SUNDAY').dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.next('SUNDAY').day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                </div>
+                                            {% elseif period == 'this-week' %}
+                                                <div class="fw-bold">
+                                                    {{ app_time.now.previous('MONDAY').dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.previous('MONDAY').day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    -
+                                                    {{ app_time.now.next('FRIDAY').dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.next('FRIDAY').day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                </div>
+                                            {% elseif period == 'next-week' %}
+                                                <div class="fw-bold">
+                                                    {{ app_time.now.addWeek.startOfWeek.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.addWeek.startOfWeek.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    -
+                                                    {{ app_time.now.addWeek.endOfWeek.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.addWeek.endOfWeek.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                </div>
+                                            {% else %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% for event in eventPagination %}
+                            <div class="col-12 col-md-6">
+                                <div class="card position-relative" {{ stimulus_target('dynamic-map', 'event-card') }}>
+                                    {% if event.eventGroup %}
+                                        <a href="{{ path('event_group_show', {id: event.eventGroup.id }) }}">
+                                            <div class="position-absolute top-0 mt-2 ms-2 badge rounded-pill bg-warning">
+                                                {{ event.eventGroup.title }}
+                                            </div>
+                                        </a>
+                                    {% endif %}
+                                    {% if event.base64Image %}
+                                        <img src="{{ event.base64Image }}" class="card-img-top object-fit-cover"
+                                             height="150px"
+                                             alt="{{ event.title }}">
+                                    {% endif %}
+                                    <div class="card-body rounded-top">
+                                        <div class="fw-bold h5 {{ event.isComplete(regional.regionalSettingValueObject.timezone) ? 'text-decoration-line-through' : '' }}">{{ event.title }}</div>
+                                        <div class="d-flex justify-content-between">
+                                            <div class="me-1">{{ event.startAt|format_datetime(pattern=date_pattern,timezone=regional.regionalSettingValueObject.timezone) }}</div>
+                                            <div>{{ event.durationInHour }} {{ 'hours'|trans }}</div>
+                                        </div>
+                                        <div>
+                                            {{ event.address }}
+                                        </div>
+                                    </div>
+                                    {% if event.isInProgress(regional.regionalSettingValueObject.timezone) %}
+                                        <div {{ stimulus_controller('progress', {
+                                            elapsed: event.elapsedTimeInMinutes,
+                                            duration: event.durationInMinutes
+                                        }) }}>
+                                            <div class="progress rounded-0" style="height:5px" data-bs-toggle="tooltip"
+                                                 data-bs-placement="top"
+                                                 data-bs-title="{{ event.timeRemainingAsInterval }} {{ 'remaining'|trans }}">
+                                                <div {{ stimulus_target('progress', 'progressBar') }}
+                                                        class="progress-bar bg-success" role="progressbar"
+                                                        aria-valuenow="0"
+                                                        aria-valuemin="0" aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                    {% elseif event.isComplete(regional.regionalSettingValueObject.timezone) %}
+                                        <div class="progress rounded-0" style="height:3px" role="progressbar"
+                                             aria-label="Basic example" aria-valuenow="0" aria-valuemin="0"
+                                             aria-valuemax="100">
+                                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                                        </div>
+                                    {% else %}
+                                        <div class="progress rounded-0" style="height:3px" role="progressbar"
+                                             aria-label="Basic example" aria-valuenow="0" aria-valuemin="0"
+                                             aria-valuemax="100">
+                                            <div class="progress-bar" style="width: 0"></div>
+                                        </div>
+                                    {% endif %}
+                                    <div class="card-body d-flex justify-content-start flex-wrap">
+                                        {% for category in event.categories %}
+                                            <span class="badge rounded-pill text-bg-light fs-6 me-1 mb-1">{{ category.title|trans }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="card-footer d-flex justify-content-between">
+                                        <a class="btn btn-secondary" data-bs-toggle="offcanvas" data-bs-target="#map"
+                                           aria-controls="#map" {{ stimulus_action('dynamic-map', 'flyToAssetOnMap', 'click', {
+                                            id:  event.id,
+                                            longitude: event.longitude,
+                                            latitude: event.latitude
+                                        }) }}>
+                                            <span class="bi bi-crosshair"></span>
+                                        </a>
+                                        <a class="btn btn-outline-primary"
+                                           href="{{ path('show_event', {id: event.id}) }}">{{ 'view-event'|trans }}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="text-center text-muted fw-bold mt-5">{{ 'no-events-found'|trans|upper }}</div>
+                        {% endfor %}
+
+                        <div class="my-5">
+                            {{ knp_pagination_render(eventPagination, viewParams={align: 'center', size: 'large'}) }}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

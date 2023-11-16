@@ -1,0 +1,12 @@
+<turbo-frame id="event-invitation-response-form-{{ invitation.id }}" target="_self">
+    {{ form_start(eventInvitationForm, {
+        attr: {
+            action: path('invitation_response', {id: invitation.id })
+        }
+    }) }}
+    <div class="d-flex justify-content-between">
+        {{ form_row(eventInvitationForm.decline) }}
+        {{ form_row(eventInvitationForm.accept) }}
+    </div>
+    {{ form_end(eventInvitationForm) }}
+</turbo-frame>

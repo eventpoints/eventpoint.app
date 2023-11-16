@@ -1,0 +1,76 @@
+{% import "macro/component.macro.twig" as component %}
+
+<nav class="navbar navbar-expand text-bg-primary navbar-dark" data-bs-theme="light">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{{ path('events') }}">
+            <img class="me-3" src="{{ asset('images/logo-90-white-01.png') }}" height="50">
+            <div class="fw-bold">Event Point</div>
+        </a>
+        <ul class="navbar-nav justify-content-start align-items-center">
+            <li class="nav-item">
+                <a class="btn btn-primary py-1" aria-current="page" data-bs-toggle="modal"
+                   data-bs-target="#regional_settings">
+                    <span class="fs-4">
+                        {{ regional.regionalSettingValueObject.locale|upper }} |
+                        {{ regional.regionalSettingValueObject.currency|upper }}
+                    </span>
+                </a>
+            </li>
+            {% if app.user %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('user_invitations') }}">
+                        <i class="bi bi-person-circle fs-2"></i>
+                    </a>
+                </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="offcanvas" data-bs-target="#menu"
+                   aria-controls="menu">
+                    <i class="bi bi-list fs-2"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<div class="offcanvas offcanvas-end" data-bs-backdrop="menu" tabindex="-1" id="menu" aria-labelledby="menu">
+    <div class="offcanvas-header d-flex justify-content-between align-items-start">
+        {% if app.user %}
+            <div class="d-flex justify-content-start">
+                <div class="me-2">
+                    <img src="{{ app.user.avatar }}" height="50" class="rounded-circle"/>
+                </div>
+                <div>
+                    <div class="fw-bold"> {{ app.user.fullName }}</div>
+                    <div> {{ app.user.email }}</div>
+                </div>
+            </div>
+        {% endif %}
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="list-group list-group-flush">
+        {% if app.user %}
+            <a href="{{ path('create_event') }}"
+               class="list-group-item list-group-item-action">{{ 'create-event'|trans }}</a>
+            <a href="{{ path('create_event_group') }}"
+               class="list-group-item list-group-item-action">{{ 'create-group'|trans }}</a>
+            <a href="{{ path('user_events') }}"
+               class="list-group-item list-group-item-action">{{ 'dashboard'|trans }}</a>
+            <a href="{{ path('app_logout') }}"
+               class="list-group-item list-group-item-action text-danger">{{ 'logout'|trans }}</a>
+        {% else %}
+            <a href="{{ path('app_register') }}"
+               class="list-group-item list-group-item-action">{{ 'register'|trans }}</a>
+            <a href="{{ path('app_login') }}" class="list-group-item list-group-item-action">{{ 'login'|trans }}</a>
+        {% endif %}
+    </div>
+</div>
+
+{{ component.modal(
+    'regional_settings',
+    'regional_settings',
+    path('_app_regional_settings'),
+    'regional-settings'|trans,
+    '_top'
+) }}

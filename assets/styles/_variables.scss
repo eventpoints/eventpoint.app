@@ -1,0 +1,180 @@
+// Zephyr 5.2.2
+// Bootswatch
+
+$theme: "zephyr" !default;
+
+//
+// Color system
+//
+
+$white: #fff !default;
+$gray-100: #f8f9fa !default;
+$gray-200: #e9ecef !default;
+$gray-300: #dee2e6 !default;
+$gray-400: #ced4da !default;
+$gray-500: #adb5bd !default;
+$gray-600: #6c757d !default;
+$gray-700: #495057 !default;
+$gray-800: #343a40 !default;
+$gray-900: #212529 !default;
+$black: #000 !default;
+
+$blue: #1269C7 !default;
+$indigo: #86148c !default;
+$purple: #8c1456 !default;
+$pink: #d63384 !default;
+$red: #C71612 !default;
+$orange: #f8765f !default;
+$yellow: #f4bd61 !default;
+$green: #2fb380 !default;
+$teal: #20c997 !default;
+$cyan: #287bb5 !default;
+
+$primary: #00695c !default;
+$secondary: #eee !default;
+$thirdly: $white !default;
+$success: #66bb6a !default;
+$info: $cyan !default;
+$warning: $yellow !default;
+$danger: #c62828 !default;
+$light: $gray-100 !default;
+$dark: $gray-900 !default;
+
+$min-contrast-ratio: 1.65 !default;
+
+$enable-shadows: true !default;
+
+// Body
+
+$body-color: $gray-700 !default;
+
+$headings-color: $gray-900 !default;
+
+// Fonts
+
+// stylelint-disable-next-line value-keyword-case
+$font-family-sans-serif: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+$font-size-base: 1rem !default; // Assumes the browser default, typically `16px`
+$font-size-sm: $font-size-base * .875 !default;
+
+// Components
+
+$box-shadow: 0 1px 2px rgba($black, .05) !default;
+$box-shadow-lg: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06) !default;
+
+// Tables
+
+$table-cell-padding-y: 1rem !default;
+$table-cell-padding-x: 1rem !default;
+$table-cell-padding-y-sm: .5rem !default;
+$table-cell-padding-x-sm: .5rem !default;
+
+$table-th-font-weight: 500 !default;
+
+// Buttons + Forms
+
+$input-btn-padding-y: .75rem !default;
+$btn-border-radius: 0.25rem !default;
+$input-btn-padding-x: 1rem !default;
+$input-btn-font-size: $font-size-sm !default;
+
+// Buttons
+
+$btn-font-weight: 500 !default;
+$btn-box-shadow: $box-shadow !default;
+$btn-focus-box-shadow: $box-shadow !default;
+$btn-active-box-shadow: $box-shadow !default;
+
+// Forms
+
+$form-label-font-weight: 500 !default;
+
+$input-box-shadow: $box-shadow !default;
+
+$input-group-addon-bg: $gray-100 !default;
+
+$border-width: 1px !default;
+
+// Navs
+$nav-link-hover-color: $secondary;
+$nav-link-color: $body-color !default;
+
+$nav-tabs-border-radius: 1rem !default;
+$nav-tabs-link-active-color: $primary !default;
+
+$nav-link-padding-x: 1rem !default;
+$nav-link-padding-y: 0.75rem !default;;
+$nav-tab: 0.75rem !default;
+$nav-pills-border-radius: 0.25rem !default;
+
+  // Navbar
+
+$navbar-padding-y: .85rem !default;
+
+$navbar-nav-link-padding-x: .75rem !default;
+
+$navbar-dark-color: $white !default;
+$navbar-dark-hover-color: $white !default;
+$navbar-dark-active-color: $white !default;
+
+$navbar-light-color: $black !default;
+$navbar-light-hover-color: $black !default;
+$navbar-light-active-color: $black !default;
+
+
+// Badge
+
+$badge-border-radius: 0.25rem !default;
+$badge-padding-x: 0.75rem !default;
+$badge-padding-y: 0.5rem !default;
+$border-radius: 0.25rem !default;
+
+// Dropdowns
+$dropdown-font-size: $font-size-sm !default;
+$dropdown-border-color: $gray-300 !default;
+$dropdown-divider-bg: $gray-200 !default;
+
+$dropdown-link-hover-color: $white !default;
+$dropdown-link-hover-bg: $primary !default;
+
+$dropdown-item-padding-y: .5rem !default;
+$dropdown-item-padding-x: 1rem !default;
+
+// Pagination
+
+$pagination-padding-y: .5rem !default;
+$pagination-padding-x: 1rem !default;
+
+$pagination-color: $gray-700 !default;
+
+$pagination-focus-color: $pagination-color !default;
+
+$pagination-hover-color: $pagination-color !default;
+$pagination-hover-bg: $gray-100 !default;
+
+// Cards
+$card-spacer-x: 1.5rem !default;
+$card-cap-padding-y: 1rem !default;
+$card-cap-padding-x: 1.5rem !default;
+$card-border-width: $border-width !default;
+
+// Toasts
+
+$toast-header-color: $headings-color !default;
+
+// Modals
+
+$modal-content-border-color: $gray-300 !default;
+$modal-header-border-width: 0 !default;
+
+// List group
+$list-group-item-padding-y: 0.75rem !default;
+$list-group-item-padding-x: 1rem !default;
+
+// Breadcrumbs
+
+$breadcrumb-padding-x: 1rem !default;
+
+$breadcrumb-divider: quote(">") !default;
+
+$border-radius: 0rem !default;

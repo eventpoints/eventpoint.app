@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-4">
+                <div class="card">
+                    {{ include('partials/_account-navbar.html.twig') }}
+                </div>
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="fs-3 fw-bold text-end">{{ 'account'|trans|upper }}</div>
+                <hr class="mt-0"/>
+
+                {{ form_start(userAccountForm) }}
+                <div class="card mb-5">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            <div class="input-group">
+                                {{ form_row(userAccountForm.firstName) }}
+                                {{ form_row(userAccountForm.lastName) }}
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            {{ form_row(userAccountForm.email) }}
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-start">
+                            {{ form_row(userAccountForm.avatar) }}
+                            <img height="100" class="rounded-circle border" src="{{ app.user.avatar }}"/>
+                        </div>
+                        <div class="list-group-item">
+                            {{ form_row(userAccountForm.locale) }}
+                        </div>
+                        <div class="list-group-item">
+                            {{ form_row(userAccountForm.timezone) }}
+                        </div>
+                        <div class="list-group-item">
+                            {{ form_row(userAccountForm.currency) }}
+                        </div>
+                        <div class="list-group-item">
+                            {{ form_row(userAccountForm.country) }}
+                        </div>
+                        <div class="list-group-item">
+                            {{ form_row(userAccountForm.password) }}
+                        </div>
+                    </div>
+                    <div class="card-footer d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary w-100">{{ 'save'|trans }}</button>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(userAccountForm) }}
+        </div>
+    </div>
+    </div>
+{% endblock %}

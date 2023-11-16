@@ -1,0 +1,23 @@
+<turbo-frame id="regional_settings" target="_top">
+    {{ form_start(regionForm, { action: path('_app_regional_settings')}) }}
+    <div class="list-group list-group-flush">
+        <div class="list-group-item"> {{ form_row(regionForm.locale) }}</div>
+        <div class="list-group-item">
+            {{ form_row(regionForm.region) }}
+        </div>
+        <div class="list-group-item">
+            <div {{ stimulus_controller('timezone') }}>
+                {{ form_row(regionForm.timezone) }}
+            </div>
+        </div>
+        <div class="list-group-item">
+            {{ form_row(regionForm.currency) }}
+        </div>
+    </div>
+    <div class="card-footer">
+        <button type="submit" class="btn btn-primary w-100">
+            {{ 'save'|trans }}
+        </button>
+    </div>
+    {{ form_end(regionForm) }}
+</turbo-frame>
