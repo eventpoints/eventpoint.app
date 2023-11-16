@@ -88,7 +88,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $eventInvitations;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
     public function __construct()
