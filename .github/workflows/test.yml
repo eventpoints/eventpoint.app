@@ -21,7 +21,7 @@ jobs:
               - 5432:5432
 
     steps:
-      -   uses: actions/checkout@v2
+      -   uses: actions/checkout@v4
       -   uses: shivammathur/setup-php@v2
           with:
             php-version: 8.2
@@ -37,7 +37,7 @@ jobs:
   ecs:
       runs-on: ubuntu-latest
       steps:
-        -   uses: actions/checkout@v2
+        -   uses: actions/checkout@v4
         -   uses: shivammathur/setup-php@v2
             with:
               php-version: 8.2
@@ -50,7 +50,7 @@ jobs:
   rector:
       runs-on: ubuntu-latest
       steps:
-        -   uses: actions/checkout@v2
+        -   uses: actions/checkout@v4
         -   uses: shivammathur/setup-php@v2
             with:
               php-version: 8.2
@@ -62,7 +62,7 @@ jobs:
   phpstan:
       runs-on: ubuntu-latest
       steps:
-        -   uses: actions/checkout@v2
+        -   uses: actions/checkout@v4
         -   uses: shivammathur/setup-php@v2
             with:
               php-version: 8.2

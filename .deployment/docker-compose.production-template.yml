@@ -1,0 +1,96 @@
+version: "3.4"
+
+networks:
+  traefik:
+    external: true
+  internal:
+    external: false
+
+volumes:
+  php_socket:
+  caddy_data:
+  caddy_config:
+
+services:
+  php:
+    image: ghcr.io/eventpoints/eventpoint-php:main
+    volumes:
+      - php_socket:/var/run/php
+      - ./php/php.ini:/usr/local/etc/php/php.ini
+    healthcheck:
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    depends_on:
+      - database
+    restart: unless-stopped
+    environment:
+      MERCURE_PUBLIC_URL: "https://eventpoint.app/.well-known/mercure"
+      DATABASE_URL: "postgresql://__EVENTPOINT_POSTGRES_USER__:__EVENTPOINT_POSTGRES_PASSWORD__@database:5432/__EVENTPOINT_POSTGRES_DBNAME__?serverVersion=13&charset=utf8"
+      MERCURE_JWT_SECRET: "__EVENTPOINT_MERCURE_JWT_SECRET__"
+      APP_SECRET: "__EVENTPOINT_APP_SECRET__"
+      MAILER_DSN: "__EVENTPOINT_MAILER_DSN__"
+      MAP_BOX_PUBLIC_KEY: "__EVENTPOINT_MAP_BOX_PUBLIC_KEY__"
+      OAUTH_FACEBOOK_ID: "__EVENTPOINT_OAUTH_FACEBOOK_ID__"
+      OAUTH_FACEBOOK_SECRET: "__EVENTPOINT_OAUTH_FACEBOOK_SECRET__"
+      OAUTH_GOOGLE_ID: "__EVENTPOINT_OAUTH_GOOGLE_ID__"
+      OAUTH_GOOGLE_SECRET: "__EVENTPOINT_OAUTH_GOOGLE_SECRET__"
+      XE_ID: "__EVENTPOINT_XE_ID__"
+      XE_KEY: "__EVENTPOINT_XE_KEY__"
+      MAPBOX_TOKEN: "__EVENTPOINT_MAPBOX_KEY__"
+    networks:
+      - internal
+
+  caddy:
+    image: ghcr.io/eventpoints/eventpoint-caddy:main
+    depends_on:
+      - php
+    restart: unless-stopped
+    environment:
+      SERVER_NAME: ":80"
+      MERCURE_PUBLISHER_JWT_KEY: "__EVENTPOINT_MERCURE_JWT_SECRET__"
+      MERCURE_SUBSCRIBER_JWT_KEY: "__EVENTPOINT_MERCURE_JWT_SECRET__"
+    volumes:
+      - php_socket:/var/run/php
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    expose:
+      - "80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.eventpoint.rule=Host(`eventpoint.app`, `www.eventpoint.app`)"
+      - "traefik.http.routers.eventpoint.tls=true"
+      - "traefik.http.routers.eventpoint.tls.certresolver=le"
+    networks:
+      - traefik
+      - internal
+
+  database:
+    image: postgres:13
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: "__EVENTPOINT_POSTGRES_DBNAME__"
+      POSTGRES_PASSWORD: "__EVENTPOINT_POSTGRES_PASSWORD__"
+      POSTGRES_USER: "__EVENTPOINT_POSTGRES_USER__"
+    volumes:
+      - ./db-data:/var/lib/postgresql/data:rw
+    networks:
+      - internal
+
+  adminer:
+    image: adminer:4.8.0
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: database
+    expose:
+      - "8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.eventpoint-adminer.rule=Host(`adminer.eventpoint.app`)"
+      - "traefik.http.routers.eventpoint-adminer.tls=true"
+      - "traefik.http.routers.eventpoint-adminer.tls.certresolver=le"
+    networks:
+      - internal
+      - traefik
