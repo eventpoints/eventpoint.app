@@ -14,12 +14,10 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class RegionalSettingsSubscriber implements EventSubscriberInterface
 {
-
     public function __construct(
         private readonly RegionalSettingsService $regionalSettingsService,
         private readonly Security                $security,
-    )
-    {
+    ) {
     }
 
     public static function getSubscribedEvents(): array
@@ -31,7 +29,6 @@ class RegionalSettingsSubscriber implements EventSubscriberInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
-
         $user = $this->security->getUser();
         if ($user instanceof User) {
             $regionalSettingValueObject = new RegionalSettingValueObject(
@@ -40,7 +37,7 @@ class RegionalSettingsSubscriber implements EventSubscriberInterface
                 region: $user->getCountry() ?? RegionalEnum::REGIONAL_REGION->value,
                 timezone: $user->getTimezone() ?? RegionalEnum::REGIONAL_TIMEZONE->value
             );
-        }else{
+        } else {
             $regionalSettingValueObject = new RegionalSettingValueObject(
                 locale: $event->getRequest()->getSession()->get('_locale') ?? RegionalEnum::REGIONAL_LOCALE->value,
                 currency: $event->getRequest()->getSession()->get('_currency') ?? RegionalEnum::REGIONAL_CURRECNY->value,

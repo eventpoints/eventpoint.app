@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
@@ -24,12 +26,12 @@ class DashboardController extends AbstractDashboardController
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-//        return parent::index();
+        //        return parent::index();
 
         // Option 1. You can make your dashboard redirect to some common page of your backend
         //
-         $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
-         return $this->redirect($adminUrlGenerator->setController(CategoryCrudController::class)->generateUrl());
+        $adminUrlGenerator = $this->container->get(AdminUrlGenerator::class);
+        return $this->redirect($adminUrlGenerator->setController(CategoryCrudController::class)->generateUrl());
 
         // Option 2. You can make your dashboard redirect to different pages depending on the user
         //
@@ -52,15 +54,15 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-         yield MenuItem::linkToCrud('Category', 'fas fa-list', Category::class);
-         yield MenuItem::linkToCrud('Events', 'fas fa-list', Event::class);
-         yield MenuItem::linkToCrud('Event Participants', 'fas fa-list', EventParticipant::class);
-         yield MenuItem::linkToCrud('Event Organisers', 'fas fa-list', EventOrganiser::class);
-         yield MenuItem::linkToCrud('Event Roles', 'fas fa-list', EventRole::class);
-         yield MenuItem::linkToCrud('Event Invites', 'fas fa-list', EventInvitation::class);
-         yield MenuItem::linkToCrud('Event Email Invites', 'fas fa-list', EventEmailInvitation::class);
-         yield MenuItem::linkToCrud('Image Collections', 'fas fa-list', ImageCollection::class);
-         yield MenuItem::linkToCrud('Group Members', 'fas fa-list', EventGroupMember::class);
-         yield MenuItem::linkToCrud('Group Roles', 'fas fa-list', EventGroupRole::class);
+        yield MenuItem::linkToCrud('Category', 'fas fa-list', Category::class);
+        yield MenuItem::linkToCrud('Events', 'fas fa-list', Event::class);
+        yield MenuItem::linkToCrud('Event Participants', 'fas fa-list', EventParticipant::class);
+        yield MenuItem::linkToCrud('Event Organisers', 'fas fa-list', EventOrganiser::class);
+        yield MenuItem::linkToCrud('Event Roles', 'fas fa-list', EventRole::class);
+        yield MenuItem::linkToCrud('Event Invites', 'fas fa-list', EventInvitation::class);
+        yield MenuItem::linkToCrud('Event Email Invites', 'fas fa-list', EventEmailInvitation::class);
+        yield MenuItem::linkToCrud('Image Collections', 'fas fa-list', ImageCollection::class);
+        yield MenuItem::linkToCrud('Group Members', 'fas fa-list', EventGroupMember::class);
+        yield MenuItem::linkToCrud('Group Roles', 'fas fa-list', EventGroupRole::class);
     }
 }

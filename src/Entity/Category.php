@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Entity\Event\Event;
@@ -11,7 +13,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
-class Category
+class Category implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -35,6 +37,11 @@ class Category
     {
         $this->subcategories = new ArrayCollection();
         $this->events = new ArrayCollection();
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->getTitle();
     }
 
     public function getId(): null|Uuid
@@ -76,7 +83,7 @@ class Category
 
     public function addCategory(self $category): static
     {
-        if (!$this->subcategories->contains($category)) {
+        if (! $this->subcategories->contains($category)) {
             $this->subcategories->add($category);
             $category->setCategory($this);
         }
@@ -96,11 +103,6 @@ class Category
         return $this;
     }
 
-    public function __toString(): string
-    {
-        return $this->getTitle();
-    }
-
     /**
      * @return Collection<int, Event>
      */
@@ -111,7 +113,7 @@ class Category
 
     public function addEvent(Event $event): static
     {
-        if (!$this->events->contains($event)) {
+        if (! $this->events->contains($event)) {
             $this->events->add($event);
             $event->addCategory($this);
         }

@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 
-return static function (ContainerConfigurator $configurator): void
-{
+return static function (ContainerConfigurator $configurator): void {
     $configurator->extension('knp_paginator', [
         'page_range' => 5,                        // number of links shown in the pagination menu (e.g: you have 10 pages, a page_range of 3, on the 5th page you'll see links
         'default_options' => [
@@ -14,12 +13,12 @@ return static function (ContainerConfigurator $configurator): void
             'sort_direction_name' => 'direction', // sort direction query parameter name
             'distinct' => true,                   // ensure distinct results, useful when ORM queries are using GROUP BY statements
             'filter_field_name' => 'filterField', // filter field query parameter name
-            'filter_value_name' => 'filterValue'  // filter value query parameter name
+            'filter_value_name' => 'filterValue',  // filter value query parameter name
         ],
         'template' => [
             'pagination' => '/pagination/slider.html.twig',
             'sortable' => '@KnpPaginator/Pagination/bootstrap_v5_bi_sortable_link.html.twig',
-            'filtration' => '@KnpPaginator/Pagination/bootstrap_v5_filtration.html.twig'
-        ]
+            'filtration' => '@KnpPaginator/Pagination/bootstrap_v5_filtration.html.twig',
+        ],
     ]);
 };

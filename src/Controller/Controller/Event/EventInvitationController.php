@@ -1,16 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Controller\Event;
 
 use App\Entity\Event\Event;
 use App\Entity\Event\EventInvitation;
-use App\Entity\User;
 use App\Factory\Event\EventInvitationFactory;
 use App\Form\Form\EmailFormType;
 use App\Form\Form\InvitationResponseFormType;
 use App\Repository\Event\EventInvitationRepository;
 use App\Repository\Event\EventRepository;
-use App\Repository\UserRepository;
 use App\Service\EventService\EventService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,8 +27,7 @@ class EventInvitationController extends AbstractController
         private readonly EventInvitationFactory    $eventInvitationFactory,
         private readonly EventInvitationRepository $eventInvitationRepository,
         private readonly TranslatorInterface       $translator
-    )
-    {
+    ) {
     }
 
     #[Route('/create/{event}', name: 'create_event_invitation', methods: [Request::METHOD_GET, Request::METHOD_POST])]
@@ -43,14 +42,15 @@ class EventInvitationController extends AbstractController
 
             $this->eventRepository->save($event, true);
             $this->addFlash('message', $this->translator->trans('invitation-sent'));
-            return $this->redirectToRoute('show_event', ['id' => $event->getId()]);
+            return $this->redirectToRoute('show_event', [
+                'id' => $event->getId(),
+            ]);
         }
 
         return $this->render('events/invitation/create.html.twig', [
             'event' => $event,
-            'eventInvitationForm' => $eventInvitationForm
+            'eventInvitationForm' => $eventInvitationForm,
         ]);
-
     }
 
     #[Route('/{id}/response', name: 'invitation_response', methods: [Request::METHOD_GET, Request::METHOD_POST])]
@@ -67,7 +67,7 @@ class EventInvitationController extends AbstractController
                 $this->eventRepository->save($eventInvitation->getEvent(), true);
                 $this->eventInvitationRepository->remove($eventInvitation, true);
                 return $this->render('events/invitation/accepted.html.twig', [
-                    'invitation' => $eventInvitation
+                    'invitation' => $eventInvitation,
                 ]);
             }
 
@@ -77,17 +77,14 @@ class EventInvitationController extends AbstractController
                 $this->eventRepository->save($eventInvitation->getEvent(), true);
                 $this->eventInvitationRepository->remove($eventInvitation, true);
                 return $this->render('events/invitation/declined.html.twig', [
-                    'invitation' => $eventInvitation
+                    'invitation' => $eventInvitation,
                 ]);
             }
         }
 
         return $this->render('events/invitation/respond.html.twig', [
             'invitation' => $eventInvitation,
-            'eventInvitationForm' => $eventInvitationForm
+            'eventInvitationForm' => $eventInvitationForm,
         ]);
-
     }
-
-
 }

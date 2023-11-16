@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Controller\User;
 
 use App\Entity\User;
@@ -25,6 +27,7 @@ class AccountController extends AbstractController
         private readonly TranslatorInterface         $translator,
     ) {
     }
+
     #[Route(path: '/account', name: 'user_account', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(Request $request, #[CurrentUser] User $currentUser): Response
     {

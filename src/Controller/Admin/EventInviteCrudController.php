@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Event\EventInvitation;
@@ -19,7 +21,7 @@ class EventInviteCrudController extends AbstractCrudController
         return [
             IdField::new('id')->onlyOnIndex(),
             AssociationField::new('event'),
-            AssociationField::new('owner')
+            AssociationField::new('owner'),
         ];
     }
 }

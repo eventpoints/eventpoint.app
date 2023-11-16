@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\EventGroup;
 
 use App\Entity\Event\Event;
 use App\Entity\User;
 use App\Enum\EventGroupRoleEnum;
 use App\Repository\Event\EventGroupRepository;
-use DateTimeImmutable;
+use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -28,12 +30,14 @@ class EventGroup
     #[ORM\Column(length: 255)]
     private string $title;
 
-    #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: Event::class,cascade: ['persist'])]
-    #[ORM\OrderBy(['startAt' => Criteria::DESC])]
+    #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: Event::class, cascade: ['persist'])]
+    #[ORM\OrderBy([
+        'startAt' => Criteria::DESC,
+    ])]
     private Collection $events;
 
     #[ORM\Column]
-    private DateTimeImmutable $createdAt;
+    private CarbonImmutable $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'eventGroups')]
     private null|User $owner = null;
@@ -44,8 +48,8 @@ class EventGroup
     public function __construct()
     {
         $this->events = new ArrayCollection();
-        $this->createdAt = new DateTimeImmutable();
         $this->eventGroupMembers = new ArrayCollection();
+        $this->createdAt = new CarbonImmutable();
     }
 
     public function getId(): Uuid
@@ -75,7 +79,7 @@ class EventGroup
 
     public function addEvent(Event $event): static
     {
-        if (!$this->events->contains($event)) {
+        if (! $this->events->contains($event)) {
             $this->events->add($event);
             $event->setEventGroup($this);
         }
@@ -95,12 +99,12 @@ class EventGroup
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTimeImmutable
+    public function getCreatedAt(): null|CarbonImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): static
+    public function setCreatedAt(CarbonImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 
@@ -129,7 +133,7 @@ class EventGroup
 
     public function addEventGroupMember(EventGroupMember $eventGroupMember): static
     {
-        if (!$this->eventGroupMembers->contains($eventGroupMember)) {
+        if (! $this->eventGroupMembers->contains($eventGroupMember)) {
             $this->eventGroupMembers->add($eventGroupMember);
             $eventGroupMember->setEventGroup($this);
         }
@@ -149,14 +153,11 @@ class EventGroup
         return $this;
     }
 
-
-    public function getEventGroupMaintainers() : ArrayCollection
+    /**
+     * @return ArrayCollection<int, EventGroupMember>
+     */
+    public function getEventGroupMaintainers(): ArrayCollection
     {
-       return $this->eventGroupMembers->filter(function (EventGroupMember $eventGroupMember){
-           return $eventGroupMember->getRoles()->exists(function (int $key, EventGroupRole $eventGroupRole){
-               return $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER->name;
-           });
-        });
+        return $this->eventGroupMembers->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER->name));
     }
-
 }

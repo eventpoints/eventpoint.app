@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\EventGroup;
 
 use App\Repository\EventGroupRoleRepository;
@@ -8,7 +10,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EventGroupRoleRepository::class)]
-class EventGroupRole
+class EventGroupRole implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -24,6 +26,11 @@ class EventGroupRole
 
     #[ORM\ManyToOne(inversedBy: 'roles')]
     private ?EventGroupMember $eventGroupMember = null;
+
+    public function __toString(): string
+    {
+        return (string) $this->getTitle();
+    }
 
     public function getId(): null|Uuid
     {
@@ -64,10 +71,5 @@ class EventGroupRole
         $this->eventGroupMember = $eventGroupMember;
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getTitle();
     }
 }

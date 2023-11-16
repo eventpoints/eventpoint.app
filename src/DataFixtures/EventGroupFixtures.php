@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\EventGroup\EventGroup;
@@ -10,12 +12,10 @@ use Doctrine\Persistence\ObjectManager;
 
 class EventGroupFixtures extends Fixture implements DependentFixtureInterface
 {
-
     public function __construct(
         private readonly EventGroupFactory $eventGroupFactory,
         private readonly UserFixtures      $userFixtures
-    )
-    {
+    ) {
     }
 
     public function load(ObjectManager $manager): void
@@ -46,7 +46,7 @@ class EventGroupFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
-            UserFixtures::class
+            UserFixtures::class,
         ];
     }
 }

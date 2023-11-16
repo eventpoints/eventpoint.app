@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Twig\Filter;
 
@@ -16,18 +16,14 @@ class HasEventPermission extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('has_event_permission', fn (null|User $user, Event $event, string $role): null|bool => $this->hasPermission($user, $event, $role)),
+            new TwigFilter('has_event_permission', fn (null|User $user, Event $event, string $role): null|bool => $this->hasPermission($event, $role, $user)),
         ];
     }
 
-    public function hasPermission(null|User $user = null, Event $event, string $role): null|bool
+    public function hasPermission(Event $event, string $role, null|User $user = null): null|bool
     {
-        $eventCrewMember = $event->getEventOrganisers()->findFirst(function (int $key, EventOrganiser $eventOrganiser) use ($user) {
-            return $eventOrganiser->getOwner() === $user;
-        });
+        $eventCrewMember = $event->getEventOrganisers()->findFirst(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $user);
 
-        return $eventCrewMember?->getRoles()->exists(function (int $key, EventRole $eventRole) use ($role){
-            return $eventRole->getTitle() === $role;
-        });
+        return $eventCrewMember?->getRoles()->exists(fn (int $key, EventRole $eventRole) => $eventRole->getTitle() === $role);
     }
 }

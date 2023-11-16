@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
-use App\Entity\Image;
 use App\Entity\ImageCollection;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -43,5 +44,4 @@ class ImageCollectionRepository extends ServiceEntityRepository
                 ->flush();
         }
     }
-
 }

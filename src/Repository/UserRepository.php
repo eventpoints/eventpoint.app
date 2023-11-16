@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository;
 
-use App\Entity\Event\Event;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -32,7 +33,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
      */
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', $user::class));
         }
 
@@ -41,14 +42,17 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    public function findByEmail(string $query) : array
+    /**
+     * @return array<int,User>
+     */
+    public function findByEmail(string $query): array
     {
         $qb = $this->createQueryBuilder('user');
         $qb->select('user.email, user.firstName, user.lastName');
 
         $qb->andWhere(
             $qb->expr()->like('user.email', ':query')
-        )->setParameter('query', '%'. $query .'%');
+        )->setParameter('query', '%' . $query . '%');
 
         return $qb->getQuery()->getResult();
     }
@@ -70,5 +74,4 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             $this->getEntityManager()->flush();
         }
     }
-
 }

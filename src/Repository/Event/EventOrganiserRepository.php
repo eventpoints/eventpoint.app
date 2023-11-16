@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Event;
 
 use App\Entity\Event\EventOrganiser;
-use App\Entity\Event\EventInvitation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -43,5 +44,4 @@ class EventOrganiserRepository extends ServiceEntityRepository
                 ->flush();
         }
     }
-
 }

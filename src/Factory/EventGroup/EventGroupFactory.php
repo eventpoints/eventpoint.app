@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Factory\EventGroup;
 
 use App\Entity\EventGroup\EventGroup;
@@ -10,8 +12,7 @@ final class EventGroupFactory
     public function create(
         string $title,
         null|User $owner,
-    ) : EventGroup
-    {
+    ): EventGroup {
         $eventGroup = new EventGroup();
         $eventGroup->setTitle($title);
         $eventGroup->setOwner($owner);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Controller\Event;
 
 use App\DataTransferObject\EventFilterDto;
@@ -36,8 +38,7 @@ class EventController extends AbstractController
         private readonly PaginatorInterface        $paginator,
         private readonly EventOrganiserFactory     $eventCrewMemberFactory,
         private readonly EventRoleRepository       $eventRoleRepository
-    )
-    {
+    ) {
     }
 
     #[Route(path: '/', name: 'events')]
@@ -64,7 +65,7 @@ class EventController extends AbstractController
 
         return $this->render('events/index.html.twig', [
             'eventFilter' => $eventFilter,
-            'eventPagination' => $eventPagination
+            'eventPagination' => $eventPagination,
         ]);
     }
 
@@ -79,10 +80,12 @@ class EventController extends AbstractController
             /** @var Event $event */
             $event = $eventForm->getData();
             $event->setBase64Image(
-                $this->imageUploadService->processPhoto($image)
+                $this->imageUploadService->processPhoto($image)->getEncoded()
             );
 
-            $adminRole = $this->eventRoleRepository->findOneBy(['name' => EventRoleEnum::ROLE_EVENT_MANAGER->value]);
+            $adminRole = $this->eventRoleRepository->findOneBy([
+                'name' => EventRoleEnum::ROLE_EVENT_MANAGER->value,
+            ]);
             $eventOrganiser = $this->eventCrewMemberFactory->create(owner: $currentUser, event: $event, roles: [$adminRole]);
             $event->addEventOrganiser($eventOrganiser);
 
@@ -91,7 +94,7 @@ class EventController extends AbstractController
         }
 
         return $this->render('events/create.html.twig', [
-            'eventForm' => $eventForm->createView()
+            'eventForm' => $eventForm->createView(),
         ]);
     }
 
@@ -106,7 +109,7 @@ class EventController extends AbstractController
 
         return $this->render('events/show.html.twig', [
             'imageForm' => $imageForm,
-            'event' => $event
+            'event' => $event,
         ]);
     }
 
@@ -114,28 +117,27 @@ class EventController extends AbstractController
     public function emailInvitation(EventEmailInvitation $emailInvitation): Response
     {
         return $this->render('events/email-invitation.html.twig', [
-            'emailInvitation' => $emailInvitation
+            'emailInvitation' => $emailInvitation,
         ]);
-
     }
 
     private function handleEventImageUploadForm(
         FormInterface $imageForm,
         User          $currentUser,
         Event         $event
-    )
-    {
+    ): Response {
         $UploadedImageFiles = $imageForm->get('images')->getData();
         $images = [];
         foreach ($UploadedImageFiles as $img) {
             $base64 = $this->imageUploadService->processPhoto($img);
-            $image = $this->imageFactory->create(dataUrl: $base64);
+            $image = $this->imageFactory->create(dataUrl: $base64->getEncoded());
             $images[] = $image;
         }
         $imageCollection = $this->imageCollectionFactory->create(images: $images, owner: $currentUser, event: $event);
         $this->imageCollectionRepository->save($imageCollection, true);
         $this->addFlash('message', 'images uploaded');
-        return $this->redirectToRoute('show_event', ['id' => $event->getId()]);
+        return $this->redirectToRoute('show_event', [
+            'id' => $event->getId(),
+        ]);
     }
-
 }

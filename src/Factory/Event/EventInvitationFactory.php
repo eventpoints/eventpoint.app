@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Factory\Event;
 
 use App\Entity\Event\Event;
@@ -10,12 +12,10 @@ use App\Entity\User;
 
 final class EventInvitationFactory
 {
-
     public function create(
         User  $owner,
         Event $event
-    ): EventInvitation
-    {
+    ): EventInvitation {
         $eventInvite = new EventInvitation();
         $eventInvite->setOwner($owner);
         $eventInvite->setEvent($event);
@@ -23,7 +23,7 @@ final class EventInvitationFactory
         return $eventInvite;
     }
 
-    public function toEventParticipant(EventInvitation $eventInvitation) : EventParticipant
+    public function toEventParticipant(EventInvitation $eventInvitation): EventParticipant
     {
         $eventParticipantFactory = new EventParticpantFactory();
         return $eventParticipantFactory->create(
@@ -32,7 +32,7 @@ final class EventInvitationFactory
         );
     }
 
-    public function toEventRejection(EventInvitation $eventInvitation) : EventRejection
+    public function toEventRejection(EventInvitation $eventInvitation): EventRejection
     {
         $eventRejectionFactory = new EventRejectionFactory();
         return $eventRejectionFactory->create(
@@ -40,5 +40,4 @@ final class EventInvitationFactory
             event: $eventInvitation->getEvent()
         );
     }
-
 }

@@ -1,12 +1,12 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Entity\Event;
 
 use App\Entity\User;
 use App\Repository\Event\EventRequestRepository;
-use DateTimeImmutable;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -27,11 +27,11 @@ class EventRequest
     private User $owner;
 
     #[ORM\Column]
-    private DateTimeImmutable $createdAt;
+    private CarbonImmutable $createdAt;
 
     public function __construct()
     {
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = new CarbonImmutable();
     }
 
     public function getId(): Uuid
@@ -63,12 +63,12 @@ class EventRequest
         return $this;
     }
 
-    public function getCreatedAt(): DateTimeImmutable
+    public function getCreatedAt(): null|CarbonImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): self
+    public function setCreatedAt(CarbonImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
 

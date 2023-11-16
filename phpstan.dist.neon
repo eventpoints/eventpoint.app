@@ -1,0 +1,17 @@
+parameters:
+    level: 6
+    paths:
+        - bin/
+        - config/
+        - public/
+        - src/
+        - tests/
+    ignoreErrors:
+        - '#\$id is never written, only read#'
+        - '#Parameter \#1 \$x of method Doctrine\\ORM\\Query\\Expr::like\(\) expects string, Doctrine\\ORM\\Query\\Expr\\Func given.#'
+        - '#Call to an undefined method Symfony\\Component\\Form\\FormInterface::isClicked\(\).#'
+        - '#Property [a-zA-Z0-9\\_::]+\$eventParticipants is never written, only read.#'
+        - '#Property [a-zA-Z0-9\\_::]+\$eventInvitations is never written, only read.#'
+        - '#Property [a-zA-Z0-9\\_::]+\$eventRejections is never written, only read.#'
+        - '#Property [a-zA-Z0-9\\_::]+\$eventRequests is never written, only read.#'
+    checkGenericClassInNonGenericObjectType: false

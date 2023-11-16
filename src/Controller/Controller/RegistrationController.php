@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Controller;
 
 use App\Entity\User;
@@ -22,14 +24,10 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
-    private EmailVerifier $emailVerifier;
-
     public function __construct(
-         EmailVerifier $emailVerifier,
+        private readonly EmailVerifier $emailVerifier,
         private readonly AvatarService $avatarService
-    )
-    {
-        $this->emailVerifier = $emailVerifier;
+    ) {
     }
 
     #[Route('/register', name: 'app_register')]
@@ -40,7 +38,6 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
@@ -48,14 +45,16 @@ class RegistrationController extends AbstractController
                 )
             );
 
-           $avatar = $this->avatarService->createAvatar($user->getEmail());
-           $user->setAvatar($avatar);
+            $avatar = $this->avatarService->createAvatar($user->getEmail());
+            $user->setAvatar($avatar);
 
             $entityManager->persist($user);
             $entityManager->flush();
 
             // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+            $this->emailVerifier->sendEmailConfirmation(
+                'app_verify_email',
+                $user,
                 (new TemplatedEmail())
                     ->from(new Address('no-reply@eventpoint.app', 'Event Point'))
                     ->to($user->getEmail())
@@ -80,13 +79,13 @@ class RegistrationController extends AbstractController
     {
         $id = $request->query->get('id');
 
-        if (null === $id) {
+        if ($id === null) {
             return $this->redirectToRoute('app_register');
         }
 
         $user = $userRepository->find($id);
 
-        if (null === $user) {
+        if ($user === null) {
             return $this->redirectToRoute('app_register');
         }
 

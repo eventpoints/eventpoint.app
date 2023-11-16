@@ -28,7 +28,7 @@ class CategoryGroupType extends AbstractType
                 $qb = $er->createQueryBuilder('category');
                 return $qb;
             },
-            'choice_translation_domain' => true
+            'choice_translation_domain' => true,
         ]);
         $resolver->setAllowedTypes('searchable', 'bool');
     }

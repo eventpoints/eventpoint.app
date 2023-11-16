@@ -1,31 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\ValueObject;
 
 final class RegionalSettingValueObject
 {
-    private null|string $locale = null;
-    private null|string $currency = null;
-    private null|string $region = null;
-    private null|string $timezone = null;
-
-    /**
-     * @param string|null $locale
-     * @param string|null $currency
-     * @param string|null $region
-     * @param string|null $timezone
-     */
     public function __construct(
-        null|string $locale = null,
-        null|string $currency = null,
-        null|string $region = null,
-        null|string $timezone = null
-    )
-    {
-        $this->locale = $locale;
-        $this->currency = $currency;
-        $this->region = $region;
-        $this->timezone = $timezone;
+        private null|string $locale = null,
+        private null|string $currency = null,
+        private null|string $region = null,
+        private null|string $timezone = null
+    ) {
     }
 
     public function getLocale(): ?string
@@ -67,5 +53,4 @@ final class RegionalSettingValueObject
     {
         $this->timezone = $timezone;
     }
-
 }

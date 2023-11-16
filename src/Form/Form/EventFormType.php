@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Form;
 
 use App\Entity\Category;
@@ -23,12 +25,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EventFormType extends AbstractType
 {
-
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly Security            $security
-    )
-    {
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -37,7 +37,7 @@ class EventFormType extends AbstractType
             ->add('address', TextType::class)
             ->add('title', TextType::class)
             ->add('image', FileType::class, [
-                'mapped' => false
+                'mapped' => false,
             ])
             ->add('description', TextareaType::class)
             ->add('startAt', DateTimeType::class, [
@@ -46,12 +46,12 @@ class EventFormType extends AbstractType
                 'input' => 'datetime_immutable',
                 'row_attr' => [
                     'data-controller' => 'calendar',
-                    'data-calendar-theme-value' => ''
+                    'data-calendar-theme-value' => '',
                 ],
                 'attr' => [
                     'autocomplete' => 'off',
                     'data-calendar-target' => 'dateInput',
-                ]
+                ],
             ])
             ->add('endAt', DateTimeType::class, [
                 'html5' => false,
@@ -59,12 +59,12 @@ class EventFormType extends AbstractType
                 'input' => 'datetime_immutable',
                 'row_attr' => [
                     'data-controller' => 'calendar',
-                    'data-calendar-theme-value' => ''
+                    'data-calendar-theme-value' => '',
                 ],
                 'attr' => [
                     'autocomplete' => 'off',
                     'data-calendar-target' => 'dateInput',
-                ]
+                ],
             ])
             ->add('categories', EntitySelectionGroupType::class, [
                 'expanded' => true,
@@ -77,7 +77,7 @@ class EventFormType extends AbstractType
                     $qb = $er->createQueryBuilder('category');
                     return $qb;
                 },
-                'choice_translation_domain' => true
+                'choice_translation_domain' => true,
             ])
             ->add('isPrivate', CheckboxType::class, [
                 'label' => $this->translator->trans('is-event-private'),

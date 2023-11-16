@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Event;
 
 use App\Repository\Event\EventRoleRepository;
@@ -9,7 +11,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EventRoleRepository::class)]
 
-class EventRole
+class EventRole implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -28,6 +30,11 @@ class EventRole
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
+
+    public function __toString(): string
+    {
+        return (string) $this->getTitle();
+    }
 
     public function getId(): Uuid
     {
@@ -70,11 +77,6 @@ class EventRole
         return $this;
     }
 
-    public function __toString(): string
-    {
-        return $this->getTitle();
-    }
-
     public function getName(): ?string
     {
         return $this->name;
@@ -86,5 +88,4 @@ class EventRole
 
         return $this;
     }
-
 }

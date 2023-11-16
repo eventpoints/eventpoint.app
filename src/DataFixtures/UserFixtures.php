@@ -6,8 +6,6 @@ namespace App\DataFixtures;
 
 use App\Factory\UserFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 class UserFixtures extends Fixture
@@ -22,8 +20,7 @@ class UserFixtures extends Fixture
 
     public function __construct(
         private readonly UserFactory $userFactory,
-    )
-    {
+    ) {
     }
 
     public function load(ObjectManager $manager): void
@@ -44,6 +41,9 @@ class UserFixtures extends Fixture
         $manager->flush();
     }
 
+    /**
+     * @return string[]
+     */
     public function getUserFixtureTypes(): array
     {
         return [
@@ -55,5 +55,4 @@ class UserFixtures extends Fixture
             'event-participant',
         ];
     }
-
 }

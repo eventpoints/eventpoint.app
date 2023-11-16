@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Entity\Event\EventInvitation;
@@ -7,6 +9,7 @@ use App\Entity\Event\EventOrganiser;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventGroup\EventGroupMember;
 use App\Repository\UserRepository;
+use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -20,7 +23,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -31,6 +34,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
+    /**
+     * @var array<string>
+     */
     #[ORM\Column]
     private array $roles = [];
 
@@ -38,10 +44,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private null|string $password = null;
 
     #[ORM\Column(type: 'boolean')]
-    private $isVerified = false;
+    private bool $isVerified = false;
 
     #[ORM\Column(type: 'boolean')]
-    private $isEnabled = false;
+    private bool $isEnabled = false;
 
     #[ORM\Column(length: 255)]
     private string $firstName;
@@ -55,7 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventOrganiser::class)]
     private Collection $eventOrganisers;
 
-    #[ORM\Column(type: Types::TEXT,nullable: true)]
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $avatar = null;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: ImageCollection::class)]
@@ -79,8 +85,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 3, nullable: true)]
     private ?string $country = null;
 
-    #[ORM\OneToMany(mappedBy: "owner", targetEntity: EventInvitation::class)]
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $eventInvitations;
+
+    #[ORM\Column]
+    private CarbonImmutable $createdAt;
 
     public function __construct()
     {
@@ -89,6 +98,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->eventGroups = new ArrayCollection();
         $this->eventGroupMembers = new ArrayCollection();
         $this->eventInvitations = new ArrayCollection();
+        $this->createdAt = new CarbonImmutable();
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->getEmail();
     }
 
     public function getId(): null|Uuid
@@ -108,7 +123,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getFullName() : string
+    public function getFullName(): string
     {
         return $this->getFirstName() . ' ' . $this->getLastName();
     }
@@ -135,6 +150,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+    /**
+     * @param array<string> $roles
+     * @return $this
+     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -224,7 +243,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addEventOrganiser(EventOrganiser $eventOrganiser): static
     {
-        if (!$this->eventOrganisers->contains($eventOrganiser)) {
+        if (! $this->eventOrganisers->contains($eventOrganiser)) {
             $this->eventOrganisers->add($eventOrganiser);
             $eventOrganiser->setOwner($this);
         }
@@ -242,11 +261,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getEmail();
     }
 
     public function getAvatar(): ?string
@@ -271,7 +285,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addImageCollection(ImageCollection $imageCollection): static
     {
-        if (!$this->imageCollections->contains($imageCollection)) {
+        if (! $this->imageCollections->contains($imageCollection)) {
             $this->imageCollections->add($imageCollection);
             $imageCollection->setOwner($this);
         }
@@ -301,7 +315,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addEventGroup(EventGroup $eventGroup): static
     {
-        if (!$this->eventGroups->contains($eventGroup)) {
+        if (! $this->eventGroups->contains($eventGroup)) {
             $this->eventGroups->add($eventGroup);
             $eventGroup->setOwner($this);
         }
@@ -331,7 +345,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addEventGroupMember(EventGroupMember $eventGroupMember): static
     {
-        if (!$this->eventGroupMembers->contains($eventGroupMember)) {
+        if (! $this->eventGroupMembers->contains($eventGroupMember)) {
             $this->eventGroupMembers->add($eventGroupMember);
             $eventGroupMember->setOwner($this);
         }
@@ -419,7 +433,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addEventInvitation(EventInvitation $eventInvitation): self
     {
-        if (!$this->eventInvitations->contains($eventInvitation)) {
+        if (! $this->eventInvitations->contains($eventInvitation)) {
             $this->eventInvitations[] = $eventInvitation;
             $eventInvitation->setOwner($this);
         }
@@ -429,15 +443,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeEventInvitation(EventInvitation $eventInvitation): self
     {
-        if ($this->eventInvitations->removeElement($eventInvitation)) {
-            // set the owning side to null (unless already changed)
-            if ($eventInvitation->getOwner() === $this) {
-                $eventInvitation->setOwner(null);
-            }
-        }
-
+        $this->eventInvitations->removeElement($eventInvitation);
         return $this;
     }
 
+    public function getCreatedAt(): null|CarbonImmutable
+    {
+        return $this->createdAt;
+    }
 
+    public function setCreatedAt(CarbonImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
 }

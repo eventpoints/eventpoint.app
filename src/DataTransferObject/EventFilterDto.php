@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataTransferObject;
 
 use App\Entity\Category;
@@ -7,8 +9,11 @@ use App\Entity\Category;
 class EventFilterDto
 {
     private null|string $title = null;
+
     private null|string $period = 'today';
+
     private null|Category $category = null;
+
     public function getTitle(): ?string
     {
         return $this->title;
@@ -38,5 +43,4 @@ class EventFilterDto
     {
         $this->category = $category;
     }
-
 }

@@ -1,29 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Factory\Event;
 
 use App\Entity\Event\Event;
-use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventInvitation;
+use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventParticipant;
 use App\Entity\Event\EventRejection;
 use App\Entity\Event\EventRequest;
-use DateTimeImmutable;
+use Carbon\CarbonImmutable;
 
 final class EventFactory
 {
-
     public function create(
         string            $title,
-        DateTimeImmutable $startAt,
-        DateTimeImmutable $endAt,
+        CarbonImmutable $startAt,
+        CarbonImmutable $endAt,
         string            $base64Image,
         string            $latitude,
         string            $longitude,
         string            $description,
         bool              $isPrivate
-    ): Event
-    {
+    ): Event {
         $event = new Event();
         $event->setTitle($title);
         $event->setDescription($description);
@@ -39,21 +39,17 @@ final class EventFactory
 
     /**
      * @param array<int,EventOrganiser> $eventCrewMembers
-     * @param Event $event
-     * @return void
      */
     public function addEventOrganisers(array $eventCrewMembers, Event $event): void
     {
         foreach ($eventCrewMembers as $eventCrewMember) {
             $eventCrewMember->setEvent($event);
-            $event->addEventCrewMember($eventCrewMember);
+            $event->addEventOrganiser($eventCrewMember);
         }
     }
 
     /**
      * @param array<int,EventParticipant> $eventParticipants
-     * @param Event $event
-     * @return void
      */
     public function addEventParticipants(array $eventParticipants, Event $event): void
     {
@@ -65,21 +61,17 @@ final class EventFactory
 
     /**
      * @param array<int,EventInvitation> $eventInvites
-     * @param Event $event
-     * @return void
      */
     public function addEventInvitations(array $eventInvites, Event $event): void
     {
         foreach ($eventInvites as $eventInvite) {
             $eventInvite->setEvent($event);
-            $event->addEventInvite($eventInvite);
+            $event->addEventInvitation($eventInvite);
         }
     }
 
     /**
      * @param array<int,EventRequest> $eventRequests
-     * @param Event $event
-     * @return void
      */
     public function addEventRequests(array $eventRequests, Event $event): void
     {
@@ -91,8 +83,6 @@ final class EventFactory
 
     /**
      * @param array<int,EventRejection> $eventRejections
-     * @param Event $event
-     * @return void
      */
     public function addEventRejections(array $eventRejections, Event $event): void
     {
@@ -101,5 +91,4 @@ final class EventFactory
             $event->addEventRejection($eventRejection);
         }
     }
-
 }

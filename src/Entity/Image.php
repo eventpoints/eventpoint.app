@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Entity\Event\Event;
 use App\Repository\ImageRepository;
-use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -43,6 +41,7 @@ final class Image
 
         return $this;
     }
+
     public function getImageCollection(): ?ImageCollection
     {
         return $this->imageCollection;

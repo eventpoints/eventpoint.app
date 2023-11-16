@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Category;
-use Doctrine\ORM\Cache\AssociationCacheEntry;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
@@ -23,9 +24,9 @@ class CategoryCrudController extends AbstractCrudController
             TextField::new('title'),
             AssociationField::new('subcategories')
                 ->setFormTypeOption(
-                    'by_reference', false
+                    'by_reference',
+                    false
                 )->autocomplete(),
         ];
     }
-
 }

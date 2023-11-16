@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace App\Repository\Event;
 
@@ -45,6 +45,7 @@ class EventRejectionRepository extends ServiceEntityRepository
                 ->flush();
         }
     }
+
     public function findByEvent(Event $event, bool $isQuery = false): mixed
     {
         $qb = $this->createQueryBuilder('er');

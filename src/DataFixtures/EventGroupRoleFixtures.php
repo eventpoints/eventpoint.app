@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\EventGroup\EventGroupRole;
@@ -20,8 +22,10 @@ class EventGroupRoleFixtures extends Fixture
         }
     }
 
-    public
-    function getAllCategories(): array
+    /**
+     * @return array<string,string>
+     */
+    public function getAllCategories(): array
     {
         return EventGroupRoleEnum::getGroupRoles();
     }

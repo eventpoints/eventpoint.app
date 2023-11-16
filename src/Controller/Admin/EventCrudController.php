@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Event\Event;
@@ -25,9 +27,13 @@ class EventCrudController extends AbstractCrudController
             DateTimeField::new('startAt'),
             DateTimeField::new('endAt'),
             BooleanField::new('isPrivate'),
-            AssociationField::new('eventParticipants')->setFormTypeOption('by_reference', false
+            AssociationField::new('eventParticipants')->setFormTypeOption(
+                'by_reference',
+                false
             )->autocomplete(),
-            AssociationField::new('categories')->setFormTypeOption('by_reference', false
+            AssociationField::new('categories')->setFormTypeOption(
+                'by_reference',
+                false
             )->autocomplete(),
 
         ];

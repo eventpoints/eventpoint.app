@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Factory;
 
 use App\Entity\Event\Event;
@@ -11,8 +13,6 @@ class ImageCollectionFactory
 {
     /**
      * @param array<int, Image> $images
-     * @param User $owner
-     * @return ImageCollection
      */
     public function create(array $images, User $owner, Event $event): ImageCollection
     {
@@ -24,5 +24,4 @@ class ImageCollectionFactory
         $imageCollection->setEvent($event);
         return $imageCollection;
     }
-
 }

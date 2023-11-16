@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Entity\Event\Event;
 use App\Repository\ImageCollectionRepository;
-use DateTimeImmutable;
+use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,7 +22,7 @@ class ImageCollection
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\OneToMany(mappedBy: 'imageCollection', targetEntity: Image::class,cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(mappedBy: 'imageCollection', targetEntity: Image::class, cascade: ['persist', 'remove'])]
     private Collection $images;
 
     #[ORM\ManyToOne(inversedBy: 'imageCollections')]
@@ -28,13 +30,14 @@ class ImageCollection
 
     #[ORM\ManyToOne(inversedBy: 'imageCollections')]
     private ?Event $event = null;
+
     #[ORM\Column]
-    private null|DateTimeImmutable $createdAt = null;
+    private null|CarbonImmutable $createdAt = null;
 
     public function __construct()
     {
         $this->images = new ArrayCollection();
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = new CarbonImmutable();
     }
 
     public function getId(): null|Uuid
@@ -52,7 +55,7 @@ class ImageCollection
 
     public function addImage(Image $image): static
     {
-        if (!$this->images->contains($image)) {
+        if (! $this->images->contains($image)) {
             $this->images->add($image);
             $image->setImageCollection($this);
         }
@@ -96,12 +99,12 @@ class ImageCollection
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTimeImmutable
+    public function getCreatedAt(): null|CarbonImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): static
+    public function setCreatedAt(CarbonImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 

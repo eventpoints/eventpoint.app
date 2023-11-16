@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Admin;
 
 use App\Entity\Event\EventRole;
@@ -21,7 +23,7 @@ class EventRoleCrudController extends AbstractCrudController
             IdField::new('id')->onlyOnIndex(),
             TextField::new('title'),
             TextField::new('name'),
-            AssociationField::new('eventParticipant')
+            AssociationField::new('eventParticipant'),
         ];
     }
 }

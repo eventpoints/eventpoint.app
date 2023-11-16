@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Controller\Event;
 
 use App\Entity\Event\Event;
@@ -12,13 +14,10 @@ use Symfony\Component\Routing\Annotation\Route;
 class EventOrganiserController extends AbstractController
 {
     #[Route(path: '/', name: 'event_organisers')]
-    public function index(Event $event) : Response
+    public function index(Event $event): Response
     {
-
-
         return $this->render('events/organisers/index.html.twig', [
-            'event' => $event
+            'event' => $event,
         ]);
     }
-
 }

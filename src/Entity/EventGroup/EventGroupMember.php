@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\EventGroup;
 
 use App\Entity\User;
 use App\Repository\EventGroupMemberRepository;
-use DateTimeImmutable;
+use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -27,7 +29,7 @@ class EventGroupMember
     private ?EventGroup $eventGroup = null;
 
     #[ORM\Column]
-    private DateTimeImmutable $createdAt;
+    private CarbonImmutable $createdAt;
 
     #[ORM\OneToMany(mappedBy: 'eventGroupMember', targetEntity: EventGroupRole::class)]
     private Collection $roles;
@@ -37,7 +39,7 @@ class EventGroupMember
 
     public function __construct()
     {
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = new CarbonImmutable();
         $this->roles = new ArrayCollection();
     }
 
@@ -70,12 +72,12 @@ class EventGroupMember
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTimeImmutable
+    public function getCreatedAt(): null|CarbonImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): static
+    public function setCreatedAt(CarbonImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 
@@ -92,7 +94,7 @@ class EventGroupMember
 
     public function addRole(EventGroupRole $role): static
     {
-        if (!$this->roles->contains($role)) {
+        if (! $this->roles->contains($role)) {
             $this->roles->add($role);
             $role->setEventGroupMember($this);
         }
@@ -123,5 +125,4 @@ class EventGroupMember
 
         return $this;
     }
-
 }

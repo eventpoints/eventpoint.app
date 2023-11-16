@@ -6,9 +6,7 @@ namespace App\Entity\Event;
 
 use App\Entity\User;
 use App\Repository\Event\EventParticipantRepository;
-use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -26,15 +24,14 @@ class EventParticipant
     private User $owner;
 
     #[ORM\Column]
-    private DateTimeImmutable $createdAt;
+    private CarbonImmutable $createdAt;
 
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'eventUsers')]
     private Event $event;
 
     public function __construct()
     {
-        $this->createdAt = new DateTimeImmutable();
-        $this->roles = new ArrayCollection();
+        $this->createdAt = new CarbonImmutable();
     }
 
     public function getId(): Uuid
@@ -54,16 +51,9 @@ class EventParticipant
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTimeImmutable
+    public function getCreatedAt(): null|CarbonImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getEvent(): Event
@@ -77,5 +67,4 @@ class EventParticipant
 
         return $this;
     }
-
 }

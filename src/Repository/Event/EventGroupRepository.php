@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Event;
 
 use App\Entity\EventGroup\EventGroup;
@@ -40,16 +42,18 @@ class EventGroupRepository extends ServiceEntityRepository
         }
     }
 
-    public function findByUser(User $user) : array
+    /**
+     * @return array<int, EventGroup>
+     */
+    public function findByUser(User $user): array
     {
         $qb = $this->createQueryBuilder('event_group');
 
         $qb->leftJoin('event_group.eventGroupMembers', 'eventGroupMember');
         $qb->andWhere(
-            $qb->expr()->eq('eventGroupMember.owner',':user')
+            $qb->expr()->eq('eventGroupMember.owner', ':user')
         )->setParameter('user', $user);
 
         return $qb->getQuery()->getResult();
     }
-
 }

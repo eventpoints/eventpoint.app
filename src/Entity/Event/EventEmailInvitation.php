@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Event;
 
 use App\Repository\EventEmailInvitationRepository;
-use DateTimeImmutable;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -24,7 +26,7 @@ class EventEmailInvitation
     private Uuid $token;
 
     #[ORM\Column]
-    private DateTimeImmutable $createdAt;
+    private CarbonImmutable $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'emailInvitations')]
     private ?Event $event = null;
@@ -32,7 +34,7 @@ class EventEmailInvitation
     public function __construct()
     {
         $this->token = Uuid::v4();
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = new CarbonImmutable();
     }
 
     public function getId(): null|Uuid
@@ -64,12 +66,12 @@ class EventEmailInvitation
         return $this;
     }
 
-    public function getCreatedAt(): DateTimeImmutable
+    public function getCreatedAt(): null|CarbonImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): static
+    public function setCreatedAt(CarbonImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 

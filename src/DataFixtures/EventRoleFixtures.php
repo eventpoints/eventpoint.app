@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
-use App\Entity\Category;
 use App\Entity\Event\EventRole;
 use App\Enum\EventRoleEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -21,8 +22,10 @@ class EventRoleFixtures extends Fixture
         }
     }
 
-    public
-    function getAllCategories(): array
+    /**
+     * @return string[]
+     */
+    public function getAllCategories(): array
     {
         return EventRoleEnum::getEventRoles();
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Controller\User;
 
 use App\Entity\User;
@@ -12,22 +14,20 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 #[Route('/user')]
 class InvitationController extends AbstractController
 {
-
     public function __construct(
         private readonly EventInvitationRepository $eventInvitationRepository
-    )
-    {
+    ) {
     }
 
     #[Route(path: '/invitations', name: 'user_invitations')]
     public function index(#[CurrentUser] User $currentUser): Response
     {
-        $invitations = $this->eventInvitationRepository->findBy(['owner' => $currentUser]);
+        $invitations = $this->eventInvitationRepository->findBy([
+            'owner' => $currentUser,
+        ]);
 
-        return $this->render('user/invitations.html.twig',[
-            'invitations' => $invitations
+        return $this->render('user/invitations.html.twig', [
+            'invitations' => $invitations,
         ]);
     }
-
-
 }

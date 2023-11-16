@@ -4,24 +4,18 @@ declare(strict_types=1);
 
 namespace App\Service\RegionalSettingsService;
 
-use App\Entity\User;
-use App\Enum\RegionalEnum;
 use App\ValueObject\RegionalSettingValueObject;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\LocaleSwitcher;
-use Twig\Environment;
-use Twig\Extension\CoreExtension;
 
-final readonly class RegionalSettingsService
+final class RegionalSettingsService
 {
     private RegionalSettingValueObject $regionalSettingValueObject;
 
     public function __construct(
         private readonly RequestStack   $requestStack,
         private readonly LocaleSwitcher $localeSwitcher,
-    )
-    {
+    ) {
         $this->regionalSettingValueObject = new RegionalSettingValueObject();
     }
 
@@ -50,5 +44,4 @@ final readonly class RegionalSettingsService
         $this->regionalSettingValueObject->setTimezone($regionalSettingValueObject->getTimezone());
         $this->requestStack->getSession()->set('_timezone', $regionalSettingValueObject->getTimezone());
     }
-
 }

@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Event;
 
 use App\Entity\User;
 use App\Repository\Event\EventOrganiserRepository;
-use DateTimeImmutable;
+use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -28,7 +30,7 @@ class EventOrganiser
     private ?Event $event = null;
 
     #[ORM\Column]
-    private DateTimeImmutable $createdAt;
+    private CarbonImmutable $createdAt;
 
     #[ORM\OneToMany(mappedBy: 'eventOrganiser', targetEntity: EventRole::class)]
     private Collection $roles;
@@ -36,7 +38,7 @@ class EventOrganiser
     public function __construct()
     {
         $this->roles = new ArrayCollection();
-        $this->createdAt = new DateTimeImmutable();
+        $this->createdAt = new CarbonImmutable();
     }
 
     public function getId(): null|Uuid
@@ -68,12 +70,12 @@ class EventOrganiser
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTimeImmutable
+    public function getCreatedAt(): null|CarbonImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): static
+    public function setCreatedAt(CarbonImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
 
@@ -90,7 +92,7 @@ class EventOrganiser
 
     public function addRole(EventRole $role): static
     {
-        if (!$this->roles->contains($role)) {
+        if (! $this->roles->contains($role)) {
             $this->roles->add($role);
             $role->setEventOrganiser($this);
         }

@@ -11,7 +11,6 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\LanguageType;
 use Symfony\Component\Form\Extension\Core\Type\TimezoneType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -24,8 +23,7 @@ class RegionFilterType extends AbstractType
         private readonly TranslatorInterface     $translator,
         private readonly RegionalSettingsService $regionalSettingsService,
         private readonly Security                $security,
-    )
-    {
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -33,35 +31,7 @@ class RegionFilterType extends AbstractType
         $builder->setMethod('get');
         /** @var User $user */
         $user = $this->security->getUser();
-        if ($user instanceof User) {
-            $builder->add('locale', LanguageType::class, [
-                'label' => $this->translator->trans('language'),
-                'choice_loader' => null,
-                'choices' => [
-                    'English' => 'en',
-                    'Čeština' => 'cz',
-                    'Русский' => 'ru',
-                ],
-                'data' => $user->getLocale(),
-            ])
-                ->add('region', CountryType::class, [
-                    'label' => $this->translator->trans('region-country'),
-                    'data' => $user->getCountry(),
-                ])
-                ->add('currency', CurrencyType::class, [
-                    'choice_loader' => null,
-                    'choices' => [
-                        'EUR' => 'EUR',
-                        'CZK' => 'CZK',
-                        'USD' => 'USD',
-                    ],
-                    'label' => $this->translator->trans('currency'),
-                    'data' => $user->getCurrency(),
-                ])
-                ->add('timezone', TimezoneType::class, [
-                    'data' => $user->getTimezone(),
-                ]);
-        } else {
+        if (! $user instanceof User) {
             $builder->add('locale', LanguageType::class, [
                 'label' => $this->translator->trans('language'),
                 'choice_loader' => null,
@@ -90,6 +60,34 @@ class RegionFilterType extends AbstractType
                 ->add('timezone', TimezoneType::class, [
                     'data' => $this->regionalSettingsService->getRegionalSettingValueObject()->getTimezone(),
                 ]);
+        } else {
+            $builder->add('locale', LanguageType::class, [
+                'label' => $this->translator->trans('language'),
+                'choice_loader' => null,
+                'choices' => [
+                    'English' => 'en',
+                    'Čeština' => 'cz',
+                    'Русский' => 'ru',
+                ],
+                'data' => $user->getLocale(),
+            ])
+                ->add('region', CountryType::class, [
+                    'label' => $this->translator->trans('region-country'),
+                    'data' => $user->getCountry(),
+                ])
+                ->add('currency', CurrencyType::class, [
+                    'choice_loader' => null,
+                    'choices' => [
+                        'EUR' => 'EUR',
+                        'CZK' => 'CZK',
+                        'USD' => 'USD',
+                    ],
+                    'label' => $this->translator->trans('currency'),
+                    'data' => $user->getCurrency(),
+                ])
+                ->add('timezone', TimezoneType::class, [
+                    'data' => $user->getTimezone(),
+                ]);
         }
     }
 
@@ -97,7 +95,7 @@ class RegionFilterType extends AbstractType
     {
         $resolver->setRequired(['request']);
         $resolver->setDefaults([
-            'data_class' => RegionalSettingValueObject::class
+            'data_class' => RegionalSettingValueObject::class,
         ]);
     }
 }

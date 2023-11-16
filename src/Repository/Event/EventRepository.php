@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Repository\Event;
 
 use App\DataTransferObject\EventFilterDto;
@@ -29,9 +31,8 @@ class EventRepository extends ServiceEntityRepository
     public function __construct(
         private readonly ManagerRegistry        $registry,
         private readonly ApplicationTimeService $applicationTimeService,
-    )
-    {
-        parent::__construct($registry, Event::class);
+    ) {
+        parent::__construct($this->registry, Event::class);
     }
 
     public function save(Event $entity, bool $flush = false): void
@@ -57,7 +58,6 @@ class EventRepository extends ServiceEntityRepository
      */
     public function findByToday(): array
     {
-
         $qb = $this->createQueryBuilder('event');
         $qb->andWhere(
             $qb->expr()->gte('event.startAt', ':dateStart')
@@ -67,7 +67,6 @@ class EventRepository extends ServiceEntityRepository
             $qb->expr()->lte('event.startAt', ':dateEnd')
         )->setParameter('dateEnd', $this->applicationTimeService->getNow()->setTime(24, 60, 60, 60)->toImmutable(), Types::DATETIME_IMMUTABLE);
 
-
         return $qb->getQuery()->getResult();
     }
 
@@ -76,29 +75,29 @@ class EventRepository extends ServiceEntityRepository
      */
     public function findByPeriod(mixed $period, null|QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
-        if (!$qb instanceof QueryBuilder) {
+        if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('asset');
         }
         $result = $qb;
 
         $start = match ($period) {
             'last-week' => $this->applicationTimeService->getNow()->subWeek()->startOfWeek()->startOfDay()->toImmutable(),
-            'today' => $this->applicationTimeService->getNow()->startOfDay()->toImmutable(),
             'tomorrow' => $this->applicationTimeService->getNow()->addDay()->startOfDay()->toImmutable(),
             'this-week' => $this->applicationTimeService->getNow()->previous(Carbon::MONDAY)->startOfDay()->toImmutable(),
             'this-weekend' => $this->applicationTimeService->getNow()->next(Carbon::SATURDAY)->startOfDay()->toImmutable(),
             'next-week' => $this->applicationTimeService->getNow()->addWeek()->startOfDay()->toImmutable(),
             'next-month' => $this->applicationTimeService->getNow()->addMonth()->startOfDay()->toImmutable(),
+            default => $this->applicationTimeService->getNow()->startOfDay()->toImmutable(),
         };
 
         $end = match ($period) {
             'last-week' => $this->applicationTimeService->getNow()->subWeek()->endOfWeek()->endOfDay()->toImmutable(),
-            'today' => $this->applicationTimeService->getNow()->endOfDay()->toImmutable(),
             'tomorrow' => $this->applicationTimeService->getNow()->addDay()->endOfDay()->toImmutable(),
             'this-week' => $this->applicationTimeService->getNow()->next(Carbon::FRIDAY)->endOfDay()->toImmutable(),
             'this-weekend' => $this->applicationTimeService->getNow()->next(Carbon::SUNDAY)->endOfDay()->toImmutable(),
             'next-week' => $this->applicationTimeService->getNow()->addWeek()->endOfWeek()->endOfDay()->toImmutable(),
             'next-month' => $this->applicationTimeService->getNow()->addMonth()->endOfMonth()->endOfDay()->toImmutable(),
+            default => $this->applicationTimeService->getNow()->endOfDay()->toImmutable(),
         };
 
         $qb->andWhere(
@@ -122,10 +121,13 @@ class EventRepository extends ServiceEntityRepository
         return $result->getQuery()->getResult();
     }
 
+    /**
+     * @return Query|array<int, Event>
+     */
     public function findByFilter(EventFilterDto $eventFilterDto, bool $isQuery = false): Query|array
     {
         $qb = $this->createQueryBuilder('event');
-        if (!empty($eventFilterDto->getPeriod())) {
+        if (! empty($eventFilterDto->getPeriod())) {
             $this->findByPeriod(period: $eventFilterDto->getPeriod(), qb: $qb);
         }
 
@@ -133,7 +135,7 @@ class EventRepository extends ServiceEntityRepository
             $this->findByCategory(category: $eventFilterDto->getCategory(), qb: $qb);
         }
 
-        if (!empty($eventFilterDto->getTitle())) {
+        if (! empty($eventFilterDto->getTitle())) {
             $this->findByTitle(title: $eventFilterDto->getTitle(), qb: $qb);
         }
 
@@ -150,10 +152,12 @@ class EventRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-
+    /**
+     * @return Query|array<int, Event>
+     */
     public function findByCategory(Category $category, QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
-        if (!$qb instanceof QueryBuilder) {
+        if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event');
         }
         $result = $qb;
@@ -170,9 +174,12 @@ class EventRepository extends ServiceEntityRepository
         return $result->getQuery()->getResult();
     }
 
+    /**
+     * @return Query|array<int, Event>
+     */
     public function findByTitle(string $title, QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
-        if (!$qb instanceof QueryBuilder) {
+        if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event');
         }
         $result = $qb;
@@ -193,6 +200,9 @@ class EventRepository extends ServiceEntityRepository
         return $result->getQuery()->getResult();
     }
 
+    /**
+     * @return array<int, Event>
+     */
     public function findUpcomingByUser(User $user): array
     {
         $qb = $this->createQueryBuilder('event');

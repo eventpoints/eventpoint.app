@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Form\Form;
 
 use App\Entity\User;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
@@ -20,12 +21,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserAccountFormType extends AbstractType
 {
-
     public function __construct(
         private readonly TranslatorInterface $translator,
-        private readonly Security            $security
-    )
-    {
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -33,13 +31,13 @@ class UserAccountFormType extends AbstractType
         $builder
             ->add('firstName', TextType::class, [
                 'row_attr' => [
-                    'class' => 'w-50'
-                ]
+                    'class' => 'w-50',
+                ],
             ])
             ->add('lastName', TextType::class, [
                 'row_attr' => [
-                    'class' => 'w-50'
-                ]
+                    'class' => 'w-50',
+                ],
             ])
             ->add('email', EmailType::class)
             ->add('locale', LanguageType::class, [
@@ -66,10 +64,16 @@ class UserAccountFormType extends AbstractType
             ])
             ->add('password', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'options' => ['attr' => ['class' => 'password-field']],
+                'options' => [
+                    'attr' => [
+                        'class' => 'password-field',
+                    ],
+                ],
                 'invalid_message' => $this->translator->trans('passwords-not-match'),
                 'first_options' =>
-                    ['label' => $this->translator->trans('password')],
+                    [
+                        'label' => $this->translator->trans('password'),
+                    ],
                 'second_options' =>
                     [
                         'label' => $this->translator->trans('repeat-password'),
@@ -79,7 +83,7 @@ class UserAccountFormType extends AbstractType
             ])
             ->add('avatar', FileType::class, [
                 'row_attr' => [
-                    'class' => 'w-75'
+                    'class' => 'w-75',
                 ],
                 'mapped' => false,
                 'required' => false,

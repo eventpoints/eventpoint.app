@@ -24,12 +24,10 @@ class EventGroupFormType extends AbstractType
             ->add('title', TextType::class, [
                 'row_attr' => [
                     'class' => 'form-floating mb-3',
-                ]
+                ],
             ])->add('events', EntitySelectionGroupType::class, [
                 'class' => Event::class,
-                'choice_label' => function (Event $event): string {
-                    return $event->getTitleAndDate();
-                },
+                'choice_label' => fn (Event $event): string => $event->getTitleAndDate(),
                 'searchable' => false,
                 'label' => 'add events',
                 'expanded' => true,
@@ -51,7 +49,7 @@ class EventGroupFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => EventGroup::class,
-            'owner' => User::class
+            'owner' => User::class,
         ]);
     }
 }

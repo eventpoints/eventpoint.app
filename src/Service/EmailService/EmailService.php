@@ -17,6 +17,11 @@ final readonly class EmailService
         private MailerInterface $mailer
     ) {
     }
+
+    /**
+     * @param array<string|int|object> $context
+     * @throws TransportExceptionInterface
+     */
     public function sendRegistrationWelcomeEmail(string $recipientEmailAddress, array $context = []): void
     {
         $this->send(
@@ -26,6 +31,11 @@ final readonly class EmailService
             context: $context
         );
     }
+
+    /**
+     * @param array<string|int|object> $context
+     * @throws TransportExceptionInterface
+     */
     public function sendEventParticipantInvitationEmail(string $recipientEmailAddress, array $context = []): void
     {
         $this->send(
@@ -36,6 +46,10 @@ final readonly class EmailService
         );
     }
 
+    /**
+     * @param array<string|int|object> $context
+     * @throws TransportExceptionInterface
+     */
     public function sendEventOrgniserInvitationEmail(string $recipientEmailAddress, array $context = []): void
     {
         $this->send(
@@ -46,6 +60,10 @@ final readonly class EmailService
         );
     }
 
+    /**
+     * @param array<string|int|object> $context
+     * @throws TransportExceptionInterface
+     */
     public function sendInviteToUserWithoutAccount(string $recipientEmailAddress, array $context = []): void
     {
         $this->send(
@@ -57,6 +75,7 @@ final readonly class EmailService
     }
 
     /**
+     * @param array<string|int|object> $context
      * @throws TransportExceptionInterface
      */
     public function sendMessageRecivedEmail(string $recipientEmailAddress, array $context = []): void
@@ -69,6 +88,9 @@ final readonly class EmailService
         );
     }
 
+    /**
+     * @param array<string|int|object> $context
+     */
     private function compose(
         string $subject,
         string $template,
@@ -85,6 +107,7 @@ final readonly class EmailService
     }
 
     /**
+     * @param array<string|int|object> $context
      * @throws TransportExceptionInterface
      */
     private function send(

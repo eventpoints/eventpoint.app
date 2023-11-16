@@ -13,11 +13,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EntitySelectionGroupType extends AbstractType
 {
-
     public function __construct(
         private readonly TranslatorInterface $translator
-    )
-    {
+    ) {
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -26,7 +24,7 @@ class EntitySelectionGroupType extends AbstractType
             'expanded' => true,
             'multiple' => true,
             'searchable' => true,
-            'empty_message' => $this->translator->trans('no-select-options')
+            'empty_message' => $this->translator->trans('no-select-options'),
         ]);
         $resolver->setAllowedTypes('searchable', 'bool');
     }

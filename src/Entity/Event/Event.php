@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity\Event;
 
 use App\Entity\Category;
@@ -9,7 +11,6 @@ use App\Entity\ImageCollection;
 use App\Entity\User;
 use App\Repository\Event\EventRepository;
 use Carbon\CarbonImmutable;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -19,7 +20,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
-class Event
+class Event implements \Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -30,11 +31,11 @@ class Event
     #[ORM\Column(length: 255)]
     private null|string $title = null;
 
-    #[ORM\Column]
-    private null|DateTimeImmutable $startAt = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private null|CarbonImmutable $startAt = null;
 
-    #[ORM\Column(nullable: true)]
-    private null|DateTimeImmutable $endAt = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private null|CarbonImmutable $endAt = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private null|string $description = null;
@@ -55,30 +56,30 @@ class Event
     private ?string $base64Image = null;
 
     /**
-     * @var Collection<int, EventParticipant>
+     * @var Collection<int, EventParticipant> $eventParticipants
      */
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventParticipant::class, cascade: ['persist', 'remove'])]
     private Collection $eventParticipants;
 
     /**
-     * @var Collection<int, EventInvitation>
+     * @var Collection<int, EventInvitation> $eventInvitations
      */
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'])]
     private Collection $eventInvitations;
 
     /**
-     * @var Collection<int, EventRequest>
+     * @var Collection<int, EventRequest> $eventRequests
      */
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventRequest::class, cascade: ['persist', 'remove'])]
     private Collection $eventRequests;
 
     /**
-     * @var Collection<int, EventRejection>
+     * @var Collection<int, EventRejection> $eventRejections
      */
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventRejection::class, cascade: ['persist', 'remove'])]
     private Collection $eventRejections;
 
-    #[ORM\OneToMany(mappedBy: 'event', targetEntity: Image::class, cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: Image::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $images;
 
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventOrganiser::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -88,7 +89,9 @@ class Event
     private ?bool $isPrivate = false;
 
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: ImageCollection::class)]
-    #[ORM\OrderBy(['createdAt' => Criteria::DESC])]
+    #[ORM\OrderBy([
+        'createdAt' => Criteria::DESC,
+    ])]
     private Collection $imageCollections;
 
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventEmailInvitation::class, cascade: ['persist', 'remove'])]
@@ -100,6 +103,9 @@ class Event
     #[ORM\Column(length: 255)]
     private ?string $address = null;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private CarbonImmutable $createdAt;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -107,6 +113,12 @@ class Event
         $this->eventOrganisers = new ArrayCollection();
         $this->imageCollections = new ArrayCollection();
         $this->eventEmailInvitations = new ArrayCollection();
+        $this->createdAt = new CarbonImmutable();
+    }
+
+    public function __toString(): string
+    {
+        return (string) $this->getTitle();
     }
 
     public function getId(): null|Uuid
@@ -126,24 +138,24 @@ class Event
         return $this;
     }
 
-    public function getStartAt(): null|DateTimeImmutable|CarbonImmutable
+    public function getStartAt(): null|CarbonImmutable
     {
         return $this->startAt;
     }
 
-    public function setStartAt(DateTimeImmutable $startAt): static
+    public function setStartAt(CarbonImmutable $startAt): static
     {
         $this->startAt = $startAt;
 
         return $this;
     }
 
-    public function getEndAt(): null|DateTimeImmutable|CarbonImmutable
+    public function getEndAt(): null|CarbonImmutable
     {
         return $this->endAt;
     }
 
-    public function setEndAt(?DateTimeImmutable $endAt): static
+    public function setEndAt(null|CarbonImmutable $endAt): static
     {
         $this->endAt = $endAt;
 
@@ -184,7 +196,7 @@ class Event
 
     public function addCategory(Category $category): static
     {
-        if (!$this->categories->contains($category)) {
+        if (! $this->categories->contains($category)) {
             $this->categories->add($category);
         }
 
@@ -198,6 +210,9 @@ class Event
         return $this;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function getInterval(): string
     {
         return $this->getStartAt()->diffAsCarbonInterval($this->getEndAt())->forHumans(short: true);
@@ -265,7 +280,7 @@ class Event
      */
     public function getEventRequests(): Collection
     {
-        return $this->eventRequests;
+        return $this->getEventRequests();
     }
 
     /**
@@ -273,12 +288,12 @@ class Event
      */
     public function getEventParticipants(): Collection
     {
-        return $this->eventParticipants;
+        return $this->getEventParticipants();
     }
 
     public function addEventParticipant(EventParticipant $user): self
     {
-        if (!$this->eventParticipants->contains($user)) {
+        if (! $this->getEventParticipants()->contains($user)) {
             $this->eventParticipants->add($user);
             $user->setEvent($this);
         }
@@ -289,14 +304,14 @@ class Event
     public function removeEventParticipant(EventParticipant $user): self
     {
         // set the owning side to null (unless already changed)
-        $this->eventParticipants->removeElement($user);
+        $this->getEventParticipants()->removeElement($user);
 
         return $this;
     }
 
     public function addEventRequest(EventRequest $eventRequest): self
     {
-        if (!$this->eventRequests->contains($eventRequest)) {
+        if (! $this->getEventRequests()->contains($eventRequest)) {
             $this->eventRequests->add($eventRequest);
             $eventRequest->setEvent($this);
         }
@@ -321,11 +336,7 @@ class Event
 
     public function addEventInvitation(EventInvitation $eventInvite): self
     {
-        if (!$this->eventParticipants->exists(function (int $key, EventParticipant $eventParticipant) use ($eventInvite) {
-                return $eventParticipant->getEvent() === $eventInvite->getEvent() && $eventParticipant->getOwner() === $eventInvite->getOwner();
-            }) && !$this->eventInvitations->exists(function (int $key, EventInvitation $existingEventInvite) use ($eventInvite) {
-                return $existingEventInvite->getEvent() === $eventInvite->getEvent() && $existingEventInvite->getOwner() === $eventInvite->getOwner();
-            })) {
+        if (! $this->getEventParticipants()->exists(fn (int $key, EventParticipant $eventParticipant) => $eventParticipant->getEvent() === $eventInvite->getEvent() && $eventParticipant->getOwner() === $eventInvite->getOwner()) && ! $this->eventInvitations->exists(fn (int $key, EventInvitation $existingEventInvite) => $existingEventInvite->getEvent() === $eventInvite->getEvent() && $existingEventInvite->getOwner() === $eventInvite->getOwner())) {
             $this->eventInvitations->add($eventInvite);
             $eventInvite->setEvent($this);
         }
@@ -353,7 +364,7 @@ class Event
 
     public function addEventRejection(EventRejection $eventRejection): self
     {
-        if (!$this->eventRejections->contains($eventRejection)) {
+        if (! $this->getEventRejections()->contains($eventRejection)) {
             $this->eventRejections->add($eventRejection);
             $eventRejection->setEvent($this);
         }
@@ -363,8 +374,7 @@ class Event
 
     public function removeEventRejection(EventRejection $eventRejection): self
     {
-        // set the owning side to null (unless already changed)
-        if ($this->eventRejections->removeElement($eventRejection) && $eventRejection->getEvent() === $this) {
+        if ($this->getEventRejections()->removeElement($eventRejection) && $eventRejection->getEvent() === $this) {
             $eventRejection->setEvent(null);
         }
 
@@ -381,9 +391,8 @@ class Event
 
     public function addImage(Image $image): static
     {
-        if (!$this->images->contains($image)) {
+        if (! $this->images->contains($image)) {
             $this->images->add($image);
-            $image->setEvent($this);
         }
 
         return $this;
@@ -391,13 +400,7 @@ class Event
 
     public function removeImage(Image $image): static
     {
-        if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
-            if ($image->getEvent() === $this) {
-                $image->setEvent(null);
-            }
-        }
-
+        $this->images->removeElement($image);
         return $this;
     }
 
@@ -416,7 +419,7 @@ class Event
 
     public function addEventOrganiser(EventOrganiser $eventOrganiser): static
     {
-        if (!$this->eventOrganisers->contains($eventOrganiser)) {
+        if (! $this->getEventOrganisers()->contains($eventOrganiser)) {
             $this->eventOrganisers->add($eventOrganiser);
             $eventOrganiser->setEvent($this);
         }
@@ -426,7 +429,7 @@ class Event
 
     public function removeEventOrganiser(EventOrganiser $eventOrganiser): static
     {
-        if ($this->eventOrganisers->removeElement($eventOrganiser)) {
+        if ($this->getEventOrganisers()->removeElement($eventOrganiser)) {
             // set the owning side to null (unless already changed)
             if ($eventOrganiser->getEvent() === $this) {
                 $eventOrganiser->setEvent(null);
@@ -434,11 +437,6 @@ class Event
         }
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return $this->getTitle();
     }
 
     public function isIsPrivate(): ?bool
@@ -463,7 +461,7 @@ class Event
 
     public function addImageCollection(ImageCollection $imageCollection): static
     {
-        if (!$this->imageCollections->contains($imageCollection)) {
+        if (! $this->getImageCollections()->contains($imageCollection)) {
             $this->imageCollections->add($imageCollection);
             $imageCollection->setEvent($this);
         }
@@ -473,7 +471,7 @@ class Event
 
     public function removeImageCollection(ImageCollection $imageCollection): static
     {
-        if ($this->imageCollections->removeElement($imageCollection)) {
+        if ($this->getImageCollections()->removeElement($imageCollection)) {
             // set the owning side to null (unless already changed)
             if ($imageCollection->getEvent() === $this) {
                 $imageCollection->setEvent(null);
@@ -513,7 +511,7 @@ class Event
 
     public function addEmailInvitation(EventEmailInvitation $emailInvitation): static
     {
-        if (!$this->eventEmailInvitations->contains($emailInvitation)) {
+        if (! $this->getEventEmailInvitations()->contains($emailInvitation)) {
             $this->eventEmailInvitations->add($emailInvitation);
             $emailInvitation->setEvent($this);
         }
@@ -523,7 +521,7 @@ class Event
 
     public function removeEmailInvitation(EventEmailInvitation $emailInvitation): static
     {
-        if ($this->eventEmailInvitations->removeElement($emailInvitation)) {
+        if ($this->getEventEmailInvitations()->removeElement($emailInvitation)) {
             // set the owning side to null (unless already changed)
             if ($emailInvitation->getEvent() === $this) {
                 $emailInvitation->setEvent(null);
@@ -550,11 +548,9 @@ class Event
         return $this->getTitle() . ' (' . $this->getStartAt()->rawFormat('j.m.y H:i') . ' - ' . $this->getEndAt()->rawFormat('j.m.y H:i') . ')';
     }
 
-    public function getUnansweredInvitation(User $user) : null|EventInvitation
+    public function getUnansweredInvitation(User $user): null|EventInvitation
     {
-        return $this->getEventInvitations()->findFirst(function (int $key, EventInvitation $eventInvitation) use ($user){
-            return $eventInvitation->getOwner() === $user;
-        });
+        return $this->getEventInvitations()->findFirst(fn (int $key, EventInvitation $eventInvitation) => $eventInvitation->getOwner() === $user);
     }
 
     public function getAddress(): ?string
@@ -569,5 +565,15 @@ class Event
         return $this;
     }
 
+    public function getCreatedAt(): CarbonImmutable
+    {
+        return $this->createdAt;
+    }
 
+    public function setCreatedAt(CarbonImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
 }

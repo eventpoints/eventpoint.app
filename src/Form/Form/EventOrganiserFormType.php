@@ -6,12 +6,9 @@ namespace App\Form\Form;
 
 use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventRole;
-use App\Enum\EventRoleEnum;
 use App\Form\Type\UserAutocompleteField;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -24,7 +21,7 @@ class EventOrganiserFormType extends AbstractType
                 'row_attr' => [
                     'class' => 'form-floating mb-3',
                 ],
-                'multiple' => false
+                'multiple' => false,
             ])
             ->add('roles', EntityType::class, [
                 'row_attr' => [

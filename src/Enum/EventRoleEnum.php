@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enum;
 
-enum EventRoleEnum : string
+enum EventRoleEnum: string
 {
     case ROLE_EVENT_MOD = 'role.event.mod';
     case ROLE_EVENT_MANAGER = 'role.event.manager';
@@ -10,7 +12,10 @@ enum EventRoleEnum : string
     case ROLE_EVENT_PROMOTER = 'role.event.promoter';
     case ROLE_EVENT_SPONSOR = 'role.event.sponsor';
 
-    public static function getEventRoles() : array
+    /**
+     * @return array<string,string>
+     */
+    public static function getEventRoles(): array
     {
         return [
             self::ROLE_EVENT_MOD->value => self::ROLE_EVENT_MOD->name,

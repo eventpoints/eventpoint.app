@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
-use Symfony\Component\Translation\TranslatorInterface;
 
 #[Route('/region')]
 class RegionalSettingsController extends AbstractController
@@ -22,8 +21,7 @@ class RegionalSettingsController extends AbstractController
     public function __construct(
         private readonly RegionalSettingsService $regionalSettingsService,
         private readonly UserRepository          $userRepository,
-    )
-    {
+    ) {
     }
 
     #[Route(path: '/', name: '_app_regional_settings', methods: ['GET', 'POST'])]
