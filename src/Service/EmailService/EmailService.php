@@ -14,7 +14,7 @@ final class EmailService
     private const SENDER_EMAIL_ADDRESS = 'no-reply@example.com';
 
     public function __construct(
-        private MailerInterface $mailer
+        private readonly MailerInterface $mailer
     ) {
     }
 
