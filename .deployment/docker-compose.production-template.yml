@@ -13,7 +13,7 @@ volumes:
 
 services:
   php:
-    image: ghcr.io/eventpoints/eventpoint-php:main
+    image: ghcr.io/eventpoints/php:main
     volumes:
       - php_socket:/var/run/php
       - ./php/php.ini:/usr/local/etc/php/php.ini
