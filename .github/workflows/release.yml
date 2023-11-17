@@ -25,7 +25,7 @@ jobs:
                 with:
                     # list of Docker images to use as base name for tags
                     images: |
-                        ghcr.io/eventpoints/eventpoint.app-php
+                        ghcr.io/eventpoints/php
                     # generate Docker tags based on the following events/attributes
                     tags: |
                         type=ref,event=branch
@@ -37,7 +37,7 @@ jobs:
                 with:
                     # list of Docker images to use as base name for tags
                     images: |
-                        ghcr.io/eventpoints/eventpoint.app-caddy
+                        ghcr.io/eventpoints/caddy
                     # generate Docker tags based on the following events/attributes
                     tags: |
                         type=ref,event=branch
@@ -101,7 +101,7 @@ jobs:
             -   run: cat .deployment/docker-compose.yml
 
             -   name: Rsync Docker files
-                uses: burnett01/rsync-deployments@5.2
+                uses: burnett01/rsync-deployments@6
                 with:
                     switches: -azvr --exclude='docker-compose.production-template.yml'
                     path: ./.deployment/
