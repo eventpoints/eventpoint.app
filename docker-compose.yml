@@ -1,8 +1,9 @@
-version: "3.4"
+version: "3.9"
 
 services:
   php:
     image: ghcr.io/eventpoints/php:main
+    platform: linux/amd64
     volumes:
       - .:/app:cached
       - php_socket:/var/run/php
@@ -17,6 +18,7 @@ services:
 
   caddy:
     image: ghcr.io/eventpoints/caddy:main
+    platform: linux/amd64
     depends_on:
       - php
     environment:
@@ -44,11 +46,11 @@ services:
         protocol: udp
 
   js-watch:
-    image: node:14
+    image: node:21
     volumes:
       - .:/app:cached
     working_dir: /app
-    entrypoint: [""]
+    entrypoint: [ "" ]
     command: "bash -c 'yarn install && yarn run watch'"
 
   database:

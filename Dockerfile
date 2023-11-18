@@ -6,7 +6,7 @@ ENV APP_ENV="prod" \
     PHP_EXPOSE_PHP="off" \
     PHP_OPCACHE_VALIDATE_TIMESTAMPS=0
 
-RUN rm /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+RUN rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
 RUN mkdir -p var/cache var/log
 
@@ -17,7 +17,7 @@ RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts
 
 
 
-FROM node:14 as js-builder
+FROM node:21 as js-builder
 
 WORKDIR /build
 
