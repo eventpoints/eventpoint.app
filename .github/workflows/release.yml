@@ -101,7 +101,7 @@ jobs:
             -   run: cat .deployment/docker-compose.yml
 
             -   name: Rsync Docker files
-                uses: burnett01/rsync-deployments@6
+                uses: burnett01/rsync-deployments@5.2
                 with:
                     switches: -azvr --exclude='docker-compose.production-template.yml'
                     path: ./.deployment/
