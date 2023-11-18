@@ -17,17 +17,12 @@ RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts
 
 
 
-# Use an official Node.js image with a specific version
 FROM node:14 as js-builder
 
-# Set the working directory in the container
 WORKDIR /build
 
-# Copy /vendor from the composer image
-COPY --from=composer /app /vendor
-
-# Set up Git credentials if needed (for private repositories)
-# RUN echo "machine github.com login YOUR_GITHUB_TOKEN password x-oauth-basic" > ~/.netrc
+# We need /vendor here
+COPY --from=composer /app .
 
 # Install npm packages
 COPY package.json yarn.lock webpack.config.js ./
@@ -36,7 +31,6 @@ RUN yarn install
 # Production yarn build
 COPY ./assets ./assets
 
-# Run the build command
 RUN yarn run build
 
 
