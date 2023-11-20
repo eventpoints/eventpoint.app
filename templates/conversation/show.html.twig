@@ -22,7 +22,49 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-md-9">
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-header p-1 text-end">
+                        <div class="dropdown">
+                            <button class="btn btn-white shadow-none" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-three-dots-vertical fs-4 lh-1"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Action</a></li>
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div {{ stimulus_controller('messages') }} class="list-group messages_container list-group-flush">
+                        {% for message in conversation.messages %}
+                            {% if loop.first or message.conversationParticipant.owner != conversation.messages[loop.index0 - 1].conversationParticipant.owner %}
+                                <div class="list-group-item sticky-top z-3 d-flex justify-content-start align-items-center">
+                                    <div>
+                                        <img src="{{ message.conversationParticipant.owner.avatar }}" height="30"
+                                             class="border rounded-circle me-3"/>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold lh-1">{{ message.conversationParticipant.owner.fullName }}</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="list-group-item list-group-item-action">
+                                {{ message.content|nl2br }}
+                                <div class="text-center text-muted">{{ message.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="card-footer">
+                        {{ form_start(messageForm) }}
+                        {{ form_row(messageForm.content) }}
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">{{ 'send'|trans }}</button>
+                        </div>
+                        {{ form_end(messageForm) }}
+                    </div>
+                </div>
             </div>
         </div>
     </div

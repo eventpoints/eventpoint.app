@@ -12,15 +12,10 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class ConversationController extends AbstractController
 {
-    #[Route(path: '/conversation', name: 'user_conversations')]
+    #[Route(path: '/conversations', name: 'user_conversations')]
     public function index(#[CurrentUser] User $currentUser): Response
     {
         return $this->render('user/conversations.html.twig');
     }
 
-    #[Route(path: '/conversation/{id}', name: 'show_user_conversation')]
-    public function show(#[CurrentUser] User $currentUser): Response
-    {
-        return $this->render('conversations.html.twig');
-    }
 }

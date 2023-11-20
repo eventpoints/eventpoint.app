@@ -40,6 +40,13 @@
   z-index: 90000;
 }
 
+.messages_container{
+  min-height: 50vh;
+  max-height: 50vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
 .map {
   width: 100%;
   min-height: 350px;

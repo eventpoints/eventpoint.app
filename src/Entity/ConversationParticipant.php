@@ -81,7 +81,7 @@ class ConversationParticipant
     {
         if (! $this->messages->contains($message)) {
             $this->messages->add($message);
-            $message->setConversationUser($this);
+            $message->setConversationParticipant($this);
         }
 
         return $this;
@@ -91,8 +91,8 @@ class ConversationParticipant
     {
         if ($this->messages->removeElement($message)) {
             // set the owning side to null (unless already changed)
-            if ($message->getConversationUser() === $this) {
-                $message->setConversationUser(null);
+            if ($message->getConversationParticipant() === $this) {
+                $message->setConversationParticipant(null);
             }
         }
 

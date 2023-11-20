@@ -31,10 +31,14 @@ class Conversation
     #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: ConversationParticipant::class, cascade: ['persist', 'remove'])]
     private Collection $conversationParticipants;
 
+    #[ORM\OneToMany(mappedBy: 'conversation', targetEntity: Message::class, cascade: ['persist', 'remove'])]
+    private Collection $messages;
+
     public function __construct()
     {
         $this->createdAt = new CarbonImmutable();
         $this->conversationParticipants = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     public function getId(): null|Uuid
@@ -90,6 +94,36 @@ class Conversation
             // set the owning side to null (unless already changed)
             if ($conversationParticipant->getConversation() === $this) {
                 $conversationParticipant->setConversation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Message>
+     */
+    public function getMessages(): Collection
+    {
+        return $this->messages;
+    }
+
+    public function addMessage(Message $message): static
+    {
+        if (!$this->messages->contains($message)) {
+            $this->messages->add($message);
+            $message->setConversation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMessage(Message $message): static
+    {
+        if ($this->messages->removeElement($message)) {
+            // set the owning side to null (unless already changed)
+            if ($message->getConversation() === $this) {
+                $message->setConversation(null);
             }
         }
 

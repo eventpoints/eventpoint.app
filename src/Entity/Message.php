@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\MessageRepository;
+use Carbon\CarbonImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -23,7 +24,18 @@ class Message
     private ?string $content = null;
 
     #[ORM\ManyToOne(inversedBy: 'messages')]
-    private ?ConversationParticipant $conversationUser = null;
+    private ?ConversationParticipant $conversationParticipant = null;
+
+    #[ORM\ManyToOne(inversedBy: 'messages')]
+    private ?Conversation $conversation = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private CarbonImmutable|null $createdAt = null;
+
+    public function __construct()
+    {
+        $this->createdAt = new CarbonImmutable();
+    }
 
     public function getId(): null|Uuid
     {
@@ -42,15 +54,40 @@ class Message
         return $this;
     }
 
-    public function getConversationUser(): ?ConversationParticipant
+    public function getConversationParticipant(): ?ConversationParticipant
     {
-        return $this->conversationUser;
+        return $this->conversationParticipant;
     }
 
-    public function setConversationUser(?ConversationParticipant $conversationUser): static
+    public function setConversationParticipant(?ConversationParticipant $conversationUser): static
     {
-        $this->conversationUser = $conversationUser;
+        $this->conversationParticipant = $conversationUser;
 
         return $this;
     }
+
+    public function getConversation(): ?Conversation
+    {
+        return $this->conversation;
+    }
+
+    public function setConversation(?Conversation $conversation): static
+    {
+        $this->conversation = $conversation;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): null|CarbonImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(CarbonImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
 }
