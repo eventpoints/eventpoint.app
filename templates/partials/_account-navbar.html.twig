@@ -12,6 +12,13 @@
         </div>
         <div class="bi bi-postcard-heart fs-4"></div>
     </a>
+    <a href="{{ path('user_conversations') }}" class="{{ app.request.get('_route') == 'user_conversations' ? 'active' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-start align-items-center">
+            <div class="me-3">{{ 'conversations'|trans|capitalize }}</div>
+            <div class="badge badge-pill text-bg-dark">{{ app.user.conversationUsers.count|compact_notation }}</div>
+        </div>
+        <div class="bi bi-chat fs-4"></div>
+    </a>
     <a href="{{ path('user_groups') }}" class="{{ app.request.get('_route') == 'user_groups' ? 'active' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
         <div>
             {{ 'groups'|trans|capitalize }}

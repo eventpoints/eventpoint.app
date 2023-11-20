@@ -28,7 +28,7 @@
                         </div>
                     </div>
                     <div class="list-group list-group-flush">
-                        <a href="#"
+                        <a href="{{ path('create_direct_conversation', {id: user.id}) }}"
                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             <div>{{ 'send-message'|trans }}</div>
                             <div class="bi bi-chat fs-4"></div>

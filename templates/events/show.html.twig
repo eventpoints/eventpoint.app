@@ -151,7 +151,10 @@
                                 {% for organiser in event.eventOrganisers %}
                                     <div class="list-group-item d-flex justify-content-start">
                                         <div class="me-2">
-                                            <img height="50" class="rounded-circle" src="{{ organiser.owner.avatar }}"/>
+                                            <a href="{{ path('show_profile', {id: organiser.owner.id}) }}">
+                                                <img height="50" class="rounded-circle border"
+                                                     src="{{ organiser.owner.avatar }}"/>
+                                            </a>
                                         </div>
                                         <div>
                                             <div>{{ organiser.owner.fullName }}</div>

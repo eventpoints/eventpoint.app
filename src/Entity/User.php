@@ -106,6 +106,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventDiscussionCommentVote::class)]
     private Collection $eventDiscussionCommentVotes;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Conversation::class)]
+    private Collection $authoredConversations;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: ConversationParticipant::class)]
+    private Collection $conversationUsers;
+
     public function __construct()
     {
         $this->eventOrganisers = new ArrayCollection();
@@ -118,6 +124,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->authoredEvents = new ArrayCollection();
         $this->eventDiscussionComments = new ArrayCollection();
         $this->eventDiscussionCommentVotes = new ArrayCollection();
+        $this->authoredConversations = new ArrayCollection();
+        $this->conversationUsers = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -574,6 +582,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
             // set the owning side to null (unless already changed)
             if ($eventDiscussionCommentVote->getOwner() === $this) {
                 $eventDiscussionCommentVote->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Conversation>
+     */
+    public function getAuthoredConversations(): Collection
+    {
+        return $this->authoredConversations;
+    }
+
+    public function addAuthoredConversation(Conversation $authoredConversation): static
+    {
+        if (! $this->authoredConversations->contains($authoredConversation)) {
+            $this->authoredConversations->add($authoredConversation);
+            $authoredConversation->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAuthoredConversation(Conversation $authoredConversation): static
+    {
+        if ($this->authoredConversations->removeElement($authoredConversation)) {
+            // set the owning side to null (unless already changed)
+            if ($authoredConversation->getOwner() === $this) {
+                $authoredConversation->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ConversationParticipant>
+     */
+    public function getConversationUsers(): Collection
+    {
+        return $this->conversationUsers;
+    }
+
+    public function addConversationUser(ConversationParticipant $conversationUser): static
+    {
+        if (! $this->conversationUsers->contains($conversationUser)) {
+            $this->conversationUsers->add($conversationUser);
+            $conversationUser->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConversationUser(ConversationParticipant $conversationUser): static
+    {
+        if ($this->conversationUsers->removeElement($conversationUser)) {
+            // set the owning side to null (unless already changed)
+            if ($conversationUser->getOwner() === $this) {
+                $conversationUser->setOwner(null);
             }
         }
 
