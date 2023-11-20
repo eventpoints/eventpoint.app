@@ -9,6 +9,7 @@ use App\Entity\Event\Event;
 use App\Entity\Event\EventEmailInvitation;
 use App\Entity\User;
 use App\Enum\EventRoleEnum;
+use App\Factory\Event\EventFactory;
 use App\Factory\Event\EventOrganiserFactory;
 use App\Factory\ImageCollectionFactory;
 use App\Factory\ImageFactory;
@@ -37,7 +38,8 @@ class EventController extends AbstractController
         private readonly ImageCollectionRepository $imageCollectionRepository,
         private readonly PaginatorInterface        $paginator,
         private readonly EventOrganiserFactory     $eventCrewMemberFactory,
-        private readonly EventRoleRepository       $eventRoleRepository
+        private readonly EventRoleRepository       $eventRoleRepository,
+        private readonly EventFactory       $eventFactory
     ) {
     }
 
@@ -72,7 +74,8 @@ class EventController extends AbstractController
     #[Route(path: '/events/create', name: 'create_event')]
     public function create(Request $request, #[CurrentUser] User $currentUser): Response
     {
-        $eventForm = $this->createForm(EventFormType::class);
+        $event = $this->eventFactory->create(owner: $currentUser);
+        $eventForm = $this->createForm(EventFormType::class, $event);
         $eventForm->handleRequest($request);
         if ($eventForm->isSubmitted() && $eventForm->isValid()) {
             $image = $eventForm->get('image')->getData();

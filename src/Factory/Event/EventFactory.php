@@ -10,22 +10,26 @@ use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventParticipant;
 use App\Entity\Event\EventRejection;
 use App\Entity\Event\EventRequest;
+use App\Entity\User;
 use Carbon\CarbonImmutable;
 
 final class EventFactory
 {
     public function create(
-        string            $title,
-        CarbonImmutable $startAt,
-        CarbonImmutable $endAt,
-        string            $base64Image,
-        string            $latitude,
-        string            $longitude,
-        string            $description,
-        bool              $isPrivate
+        null|string            $title = null,
+        null|string            $address = null,
+        null|CarbonImmutable $startAt = null,
+        null|CarbonImmutable $endAt = null,
+        null|string            $base64Image = null,
+        null|string            $latitude = null,
+        null|string            $longitude = null,
+        null|string            $description = null,
+        null|bool              $isPrivate = null,
+        null|User              $owner = null,
     ): Event {
         $event = new Event();
         $event->setTitle($title);
+        $event->setAddress($address);
         $event->setDescription($description);
         $event->setStartAt($startAt);
         $event->setEndAt($endAt);
@@ -33,7 +37,7 @@ final class EventFactory
         $event->setLatitude($latitude);
         $event->setLongitude($longitude);
         $event->setIsPrivate($isPrivate);
-
+        $event->setOwner($owner);
         return $event;
     }
 

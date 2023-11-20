@@ -13,7 +13,7 @@ final class ImageUploadService
     public function processAvatar(UploadedFile $file): Image
     {
         $manager = new ImageManager([
-            'driver' => 'gd',
+            'driver' => 'imagick',
         ]);
         $image = $manager->make($file->getRealPath());
         $image->fit(400, 400);
@@ -23,7 +23,7 @@ final class ImageUploadService
     public function processPhoto(UploadedFile $file): Image
     {
         $manager = new ImageManager([
-            'driver' => 'gd',
+            'driver' => 'imagick',
         ]);
         $image = $manager->make($file->getRealPath());
 

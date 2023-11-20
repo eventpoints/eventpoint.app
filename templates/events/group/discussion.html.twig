@@ -7,7 +7,20 @@
                 {{ include('partials/_event-group-navbar.html.twig') }}
             </div>
             <div class="col-12 col-md-8">
-
+                <div class="list-group">
+                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                       href="{{ path('create_group_discussion', {id: eventGroup.id}) }}">
+                        <div>{{ 'create-group-discussion'|trans }}</div>
+                        <div class="bi bi-plus-circle fs-4"></div>
+                    </a>
+                    {% for discussion in eventGroup.eventGroupDiscussions %}
+                        <a class="list-group-item list-group-item-action"
+                           href="{{ path('show_group_discussion', {id: discussion.id}) }}">
+                            <div class="fw-bold">{{ discussion.agenda }}</div>
+                            <div>{{ discussion.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                        </a>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

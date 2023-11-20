@@ -223,4 +223,19 @@ class EventRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @param User $user
+     * @return array<int, Event>
+     */
+    public function findByUser(User $user): array
+    {
+        $qb = $this->createQueryBuilder('event');
+
+        $qb->andWhere(
+            $qb->expr()->eq('event.owner', ':user')
+        )->setParameter('user', $user);
+
+        return $qb->getQuery()->getResult();
+    }
 }

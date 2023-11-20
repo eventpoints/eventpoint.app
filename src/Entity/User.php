@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Entity\Contract\UpdatedAtInterface;
+use App\Entity\Event\Event;
 use App\Entity\Event\EventInvitation;
 use App\Entity\Event\EventOrganiser;
 use App\Entity\EventGroup\EventGroup;
@@ -14,6 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -23,7 +26,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface, \Stringable
+class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringable, UpdatedAtInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -91,6 +94,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private CarbonImmutable $updatedAt;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Event::class)]
+    private Collection $authoredEvents;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventDiscussionComment::class)]
+    private Collection $eventDiscussionComments;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventDiscussionCommentVote::class)]
+    private Collection $eventDiscussionCommentVotes;
+
     public function __construct()
     {
         $this->eventOrganisers = new ArrayCollection();
@@ -99,6 +114,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
         $this->eventGroupMembers = new ArrayCollection();
         $this->eventInvitations = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
+        $this->updatedAt = new CarbonImmutable();
+        $this->authoredEvents = new ArrayCollection();
+        $this->eventDiscussionComments = new ArrayCollection();
+        $this->eventDiscussionCommentVotes = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -455,6 +474,108 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     public function setCreatedAt(CarbonImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): CarbonImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(CarbonImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Event>
+     */
+    public function getAuthoredEvents(): Collection
+    {
+        return $this->authoredEvents;
+    }
+
+    public function addAuthouredEvent(Event $authouredEvent): static
+    {
+        if (! $this->authoredEvents->contains($authouredEvent)) {
+            $this->authoredEvents->add($authouredEvent);
+            $authouredEvent->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAuthouredEvent(Event $authouredEvent): static
+    {
+        if ($this->authoredEvents->removeElement($authouredEvent)) {
+            // set the owning side to null (unless already changed)
+            if ($authouredEvent->getOwner() === $this) {
+                $authouredEvent->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventDiscussionComment>
+     */
+    public function getEventDiscussionComments(): Collection
+    {
+        return $this->eventDiscussionComments;
+    }
+
+    public function addEventDiscussionComment(EventDiscussionComment $eventDiscussionComment): static
+    {
+        if (! $this->eventDiscussionComments->contains($eventDiscussionComment)) {
+            $this->eventDiscussionComments->add($eventDiscussionComment);
+            $eventDiscussionComment->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventDiscussionComment(EventDiscussionComment $eventDiscussionComment): static
+    {
+        if ($this->eventDiscussionComments->removeElement($eventDiscussionComment)) {
+            // set the owning side to null (unless already changed)
+            if ($eventDiscussionComment->getOwner() === $this) {
+                $eventDiscussionComment->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventDiscussionCommentVote>
+     */
+    public function getEventDiscussionCommentVotes(): Collection
+    {
+        return $this->eventDiscussionCommentVotes;
+    }
+
+    public function addEventDiscussionCommentVote(EventDiscussionCommentVote $eventDiscussionCommentVote): static
+    {
+        if (! $this->eventDiscussionCommentVotes->contains($eventDiscussionCommentVote)) {
+            $this->eventDiscussionCommentVotes->add($eventDiscussionCommentVote);
+            $eventDiscussionCommentVote->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventDiscussionCommentVote(EventDiscussionCommentVote $eventDiscussionCommentVote): static
+    {
+        if ($this->eventDiscussionCommentVotes->removeElement($eventDiscussionCommentVote)) {
+            // set the owning side to null (unless already changed)
+            if ($eventDiscussionCommentVote->getOwner() === $this) {
+                $eventDiscussionCommentVote->setOwner(null);
+            }
+        }
 
         return $this;
     }

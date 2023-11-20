@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-4">
+                {{ form_start(eventDiscussionForm) }}
+                <div class="card">
+                    <div class="card-header">{{ 'create-group-discussion'|trans }}</div>
+                    <div class="card-body">
+                        {{ form_row(eventDiscussionForm.agenda) }}
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary w-100">{{ 'save'|trans }}</button>
+                    </div>
+                </div>
+                {{ form_end(eventDiscussionForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

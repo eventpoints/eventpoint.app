@@ -45,6 +45,7 @@ class CategoryFixtures extends Fixture
             'category.business-networking',
             'category.outdoor',
             'category.party',
+            'category.random',
             'category.social',
             'category.sports',
             'category.technology',

@@ -6,6 +6,7 @@ namespace App\Entity\Event;
 
 use App\Repository\EventEmailInvitationRepository;
 use Carbon\CarbonImmutable;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -25,7 +26,7 @@ class EventEmailInvitation
     #[ORM\Column(type: 'uuid')]
     private Uuid $token;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
     #[ORM\ManyToOne(inversedBy: 'emailInvitations')]

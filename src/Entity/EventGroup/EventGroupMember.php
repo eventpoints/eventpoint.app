@@ -9,6 +9,7 @@ use App\Repository\EventGroupMemberRepository;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -28,7 +29,7 @@ class EventGroupMember
     #[ORM\ManyToOne(inversedBy: 'eventGroupMembers')]
     private ?EventGroup $eventGroup = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
     #[ORM\OneToMany(mappedBy: 'eventGroupMember', targetEntity: EventGroupRole::class)]

@@ -11,16 +11,18 @@ use App\Entity\ImageCollection;
 use App\Entity\User;
 use App\Repository\Event\EventRepository;
 use Carbon\CarbonImmutable;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
-class Event implements \Stringable
+class Event implements Stringable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -41,10 +43,10 @@ class Event implements \Stringable
     private null|string $description = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
-    private string $latitude;
+    private null|string $latitude = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
-    private string $longitude;
+    private null|string $longitude = null;
 
     #[ORM\Column]
     private null|bool $isOnline = false;
@@ -53,7 +55,7 @@ class Event implements \Stringable
     private Collection $categories;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $base64Image = null;
+    private null|string $base64Image = null;
 
     /**
      * @var Collection<int, EventParticipant> $eventParticipants
@@ -86,7 +88,7 @@ class Event implements \Stringable
     private Collection $eventOrganisers;
 
     #[ORM\Column]
-    private ?bool $isPrivate = false;
+    private null|bool $isPrivate = false;
 
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: ImageCollection::class)]
     #[ORM\OrderBy([
@@ -101,10 +103,14 @@ class Event implements \Stringable
     private null|EventGroup $eventGroup = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $address = null;
+    private null|string $address = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
+
+    #[ORM\ManyToOne(inversedBy: 'authoredEvents')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
 
     public function __construct()
     {
@@ -118,7 +124,7 @@ class Event implements \Stringable
 
     public function __toString(): string
     {
-        return (string) $this->getTitle();
+        return (string)$this->getTitle();
     }
 
     public function getId(): null|Uuid
@@ -126,12 +132,12 @@ class Event implements \Stringable
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): null|string
     {
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(null|string $title): static
     {
         $this->title = $title;
 
@@ -143,7 +149,7 @@ class Event implements \Stringable
         return $this->startAt;
     }
 
-    public function setStartAt(CarbonImmutable $startAt): static
+    public function setStartAt(null|CarbonImmutable $startAt): static
     {
         $this->startAt = $startAt;
 
@@ -196,7 +202,7 @@ class Event implements \Stringable
 
     public function addCategory(Category $category): static
     {
-        if (! $this->categories->contains($category)) {
+        if (!$this->categories->contains($category)) {
             $this->categories->add($category);
         }
 
@@ -215,37 +221,37 @@ class Event implements \Stringable
      */
     public function getInterval(): string
     {
-        return $this->getStartAt()->diffAsCarbonInterval($this->getEndAt())->forHumans(short: true);
+        return $this->startAt->diffAsCarbonInterval($this->getEndAt())->forHumans(short: true);
     }
 
     public function getDurationInHours(): float
     {
-        return round($this->getStartAt()->diffInRealHours($this->getEndAt()) / 60, 2);
+        return round($this->startAt->diffInRealHours($this->getEndAt()) / 60, 2);
     }
 
     public function getElapsedTimeInMinutes(): int
     {
-        return CarbonImmutable::now()->diffInRealMinutes($this->getStartAt());
+        return CarbonImmutable::now()->diffInRealMinutes($this->startAt);
     }
 
     public function getElapsedTimeAsInterval(): string
     {
-        return CarbonImmutable::now()->diffAsCarbonInterval($this->getStartAt())->forHumans(short: true);
+        return CarbonImmutable::now()->diffAsCarbonInterval($this->startAt)->forHumans(short: true);
     }
 
     public function getTimeRemainingAsInterval(): string
     {
-        return CarbonImmutable::now()->diffAsCarbonInterval($this->getEndAt())->forHumans(short: true);
+        return CarbonImmutable::now()->diffAsCarbonInterval($this->endAt)->forHumans(short: true);
     }
 
     public function getDurationInMinutes(): int
     {
-        return $this->getStartAt()->diffInRealMinutes($this->getEndAt());
+        return $this->startAt->diffInRealMinutes($this->endAt);
     }
 
     public function getDurationInHour(): float
     {
-        return round($this->getStartAt()->diffInRealMinutes($this->getEndAt()) / 60, 2);
+        return round($this->endAt->diffInRealMinutes($this->endAt) / 60, 2);
     }
 
     public function isPendingStart(): bool
@@ -263,12 +269,12 @@ class Event implements \Stringable
         return CarbonImmutable::now()->isAfter($this->getEndAt());
     }
 
-    public function getBase64Image(): ?string
+    public function getBase64Image(): null|string
     {
         return $this->base64Image;
     }
 
-    public function setBase64Image(?string $base64Image): static
+    public function setBase64Image(null|string $base64Image): static
     {
         $this->base64Image = $base64Image;
 
@@ -280,7 +286,7 @@ class Event implements \Stringable
      */
     public function getEventRequests(): Collection
     {
-        return $this->getEventRequests();
+        return $this->eventRequests;
     }
 
     /**
@@ -288,12 +294,12 @@ class Event implements \Stringable
      */
     public function getEventParticipants(): Collection
     {
-        return $this->getEventParticipants();
+        return $this->eventParticipants;
     }
 
     public function addEventParticipant(EventParticipant $user): self
     {
-        if (! $this->getEventParticipants()->contains($user)) {
+        if (!$this->getEventParticipants()->contains($user)) {
             $this->eventParticipants->add($user);
             $user->setEvent($this);
         }
@@ -311,7 +317,7 @@ class Event implements \Stringable
 
     public function addEventRequest(EventRequest $eventRequest): self
     {
-        if (! $this->getEventRequests()->contains($eventRequest)) {
+        if (!$this->getEventRequests()->contains($eventRequest)) {
             $this->eventRequests->add($eventRequest);
             $eventRequest->setEvent($this);
         }
@@ -336,7 +342,7 @@ class Event implements \Stringable
 
     public function addEventInvitation(EventInvitation $eventInvite): self
     {
-        if (! $this->getEventParticipants()->exists(fn (int $key, EventParticipant $eventParticipant) => $eventParticipant->getEvent() === $eventInvite->getEvent() && $eventParticipant->getOwner() === $eventInvite->getOwner()) && ! $this->eventInvitations->exists(fn (int $key, EventInvitation $existingEventInvite) => $existingEventInvite->getEvent() === $eventInvite->getEvent() && $existingEventInvite->getOwner() === $eventInvite->getOwner())) {
+        if (!$this->getEventParticipants()->exists(fn(int $key, EventParticipant $eventParticipant) => $eventParticipant->getEvent() === $eventInvite->getEvent() && $eventParticipant->getOwner() === $eventInvite->getOwner()) && !$this->eventInvitations->exists(fn(int $key, EventInvitation $existingEventInvite) => $existingEventInvite->getEvent() === $eventInvite->getEvent() && $existingEventInvite->getOwner() === $eventInvite->getOwner())) {
             $this->eventInvitations->add($eventInvite);
             $eventInvite->setEvent($this);
         }
@@ -364,7 +370,7 @@ class Event implements \Stringable
 
     public function addEventRejection(EventRejection $eventRejection): self
     {
-        if (! $this->getEventRejections()->contains($eventRejection)) {
+        if (!$this->getEventRejections()->contains($eventRejection)) {
             $this->eventRejections->add($eventRejection);
             $eventRejection->setEvent($this);
         }
@@ -391,7 +397,7 @@ class Event implements \Stringable
 
     public function addImage(Image $image): static
     {
-        if (! $this->images->contains($image)) {
+        if (!$this->images->contains($image)) {
             $this->images->add($image);
         }
 
@@ -419,7 +425,7 @@ class Event implements \Stringable
 
     public function addEventOrganiser(EventOrganiser $eventOrganiser): static
     {
-        if (! $this->getEventOrganisers()->contains($eventOrganiser)) {
+        if (!$this->getEventOrganisers()->contains($eventOrganiser)) {
             $this->eventOrganisers->add($eventOrganiser);
             $eventOrganiser->setEvent($this);
         }
@@ -439,12 +445,12 @@ class Event implements \Stringable
         return $this;
     }
 
-    public function isIsPrivate(): ?bool
+    public function isIsPrivate(): null|bool
     {
         return $this->isPrivate;
     }
 
-    public function setIsPrivate(bool $isPrivate): static
+    public function setIsPrivate(null|bool $isPrivate): static
     {
         $this->isPrivate = $isPrivate;
 
@@ -461,7 +467,7 @@ class Event implements \Stringable
 
     public function addImageCollection(ImageCollection $imageCollection): static
     {
-        if (! $this->getImageCollections()->contains($imageCollection)) {
+        if (!$this->getImageCollections()->contains($imageCollection)) {
             $this->imageCollections->add($imageCollection);
             $imageCollection->setEvent($this);
         }
@@ -481,22 +487,22 @@ class Event implements \Stringable
         return $this;
     }
 
-    public function getLatitude(): string
+    public function getLatitude(): null|string
     {
         return $this->latitude;
     }
 
-    public function setLatitude(string $latitude): void
+    public function setLatitude(null|string $latitude): void
     {
         $this->latitude = $latitude;
     }
 
-    public function getLongitude(): string
+    public function getLongitude(): null|string
     {
         return $this->longitude;
     }
 
-    public function setLongitude(string $longitude): void
+    public function setLongitude(null|string $longitude): void
     {
         $this->longitude = $longitude;
     }
@@ -511,7 +517,7 @@ class Event implements \Stringable
 
     public function addEmailInvitation(EventEmailInvitation $emailInvitation): static
     {
-        if (! $this->getEventEmailInvitations()->contains($emailInvitation)) {
+        if (!$this->getEventEmailInvitations()->contains($emailInvitation)) {
             $this->eventEmailInvitations->add($emailInvitation);
             $emailInvitation->setEvent($this);
         }
@@ -550,15 +556,15 @@ class Event implements \Stringable
 
     public function getUnansweredInvitation(User $user): null|EventInvitation
     {
-        return $this->getEventInvitations()->findFirst(fn (int $key, EventInvitation $eventInvitation) => $eventInvitation->getOwner() === $user);
+        return $this->getEventInvitations()->findFirst(fn(int $key, EventInvitation $eventInvitation) => $eventInvitation->getOwner() === $user);
     }
 
-    public function getAddress(): ?string
+    public function getAddress(): null|string
     {
         return $this->address;
     }
 
-    public function setAddress(string $address): static
+    public function setAddress(null|string $address): static
     {
         $this->address = $address;
 
@@ -573,6 +579,18 @@ class Event implements \Stringable
     public function setCreatedAt(CarbonImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-4">
+                <div class="card">
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item">
+                            <div>{{ '' }}</div>
+                            <div></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="card mb-5">
+                    <div class="card-header bg-light fs-3">{{ eventGroupDiscussion.agenda }}</div>
+                    <div class="list-group list-group-flush">
+                        {% for comment in eventGroupDiscussion.eventDiscussionComments %}
+                            <div class="card-header shadow bg-white sticky-top d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <a href="{{ path('show_profile', {id: comment.owner.id}) }}">
+                                            <img src="{{ comment.owner.avatar }}" class="rounded-circle border me-2"
+                                                 height="50"/>
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ comment.owner.fullName }}</div>
+                                        <div>{{ comment.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <a class="btn btn-outline-success rounded-pill text-decoration-none"
+                                       href="{{ path('create_discussion_comment_vote', {id: comment.id, type: 'up'}) }}">
+                                        <i class="bi bi-caret-up-fill me-2"></i>
+                                        <span>{{ comment.upVotes.count|compact_notation }}</span>
+                                    </a>
+                                    <a class="btn btn-outline-danger rounded-pill text-decoration-none"
+                                       href="{{ path('create_discussion_comment_vote', {id: comment.id, type: 'down'}) }}">
+                                        <i class="bi bi-caret-down-fill me-2"></i>
+                                        <span>{{ comment.downVotes.count|compact_notation }}</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="list-group-item">
+                                {{ comment.content|nl2br }}
+                            </div>
+                        {% endfor %}
+                        <div class="list-group-item">
+                            {{ form_start(eventDiscussionCommentForm) }}
+                            {{ form_row(eventDiscussionCommentForm.content) }}
+                            <div class="text-end mt-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="bi bi-send"></span>
+                                </button>
+                            </div>
+                            {{ form_end(eventDiscussionCommentForm) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

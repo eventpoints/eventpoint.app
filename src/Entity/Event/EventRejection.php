@@ -7,6 +7,7 @@ namespace App\Entity\Event;
 use App\Entity\User;
 use App\Repository\Event\EventRejectionRepository;
 use Carbon\CarbonImmutable;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -27,7 +28,7 @@ class EventRejection
     #[ORM\ManyToOne(inversedBy: 'eventRejections')]
     private ?Event $event = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
     public function __construct()

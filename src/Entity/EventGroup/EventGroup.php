@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity\EventGroup;
 
 use App\Entity\Event\Event;
+use App\Entity\EventGroupDiscussion;
 use App\Entity\User;
 use App\Enum\EventGroupRoleEnum;
 use App\Repository\Event\EventGroupRepository;
@@ -46,11 +47,15 @@ class EventGroup
     #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: EventGroupMember::class, cascade: ['persist'])]
     private Collection $eventGroupMembers;
 
+    #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: EventGroupDiscussion::class)]
+    private Collection $eventGroupDiscussions;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
         $this->eventGroupMembers = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
+        $this->eventGroupDiscussions = new ArrayCollection();
     }
 
     public function getId(): Uuid
@@ -160,5 +165,35 @@ class EventGroup
     public function getEventGroupMaintainers(): ArrayCollection
     {
         return $this->eventGroupMembers->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER->name));
+    }
+
+    /**
+     * @return Collection<int, EventGroupDiscussion>
+     */
+    public function getEventGroupDiscussions(): Collection
+    {
+        return $this->eventGroupDiscussions;
+    }
+
+    public function addEventGroupDiscussion(EventGroupDiscussion $eventGroupDiscussion): static
+    {
+        if (! $this->eventGroupDiscussions->contains($eventGroupDiscussion)) {
+            $this->eventGroupDiscussions->add($eventGroupDiscussion);
+            $eventGroupDiscussion->setEventGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventGroupDiscussion(EventGroupDiscussion $eventGroupDiscussion): static
+    {
+        if ($this->eventGroupDiscussions->removeElement($eventGroupDiscussion)) {
+            // set the owning side to null (unless already changed)
+            if ($eventGroupDiscussion->getEventGroup() === $this) {
+                $eventGroupDiscussion->setEventGroup(null);
+            }
+        }
+
+        return $this;
     }
 }

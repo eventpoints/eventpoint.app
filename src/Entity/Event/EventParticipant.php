@@ -7,6 +7,7 @@ namespace App\Entity\Event;
 use App\Entity\User;
 use App\Repository\Event\EventParticipantRepository;
 use Carbon\CarbonImmutable;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
@@ -23,7 +24,7 @@ class EventParticipant
     #[ORM\ManyToOne(targetEntity: User::class, cascade: ['persist'], inversedBy: 'acceptedEvents')]
     private User $owner;
 
-    #[ORM\Column]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'eventUsers')]

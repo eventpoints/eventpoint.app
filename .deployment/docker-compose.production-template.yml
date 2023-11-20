@@ -41,7 +41,7 @@ services:
       - internal
 
   caddy:
-    image: ghcr.io/eventpoints/eventpoint-caddy:main
+    image: ghcr.io/eventpoints/caddy:main
     depends_on:
       - php
     restart: unless-stopped

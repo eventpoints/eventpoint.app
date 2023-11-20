@@ -12,7 +12,7 @@ import 'bootstrap';
 import './styles/app.scss';
 
 document.addEventListener('turbo:load', function (e) {
-let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     let tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new Tooltip(tooltipTriggerEl)
     });
@@ -22,4 +22,3 @@ document.addEventListener('turbo:load', function (e) {
     const toastElList = document.querySelectorAll('.toast')
     const toastList = [...toastElList].map(toastEl => new Toast(toastEl, {}));
 });
-
