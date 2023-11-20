@@ -131,7 +131,7 @@ class EventDiscussionComment
      */
     public function getUpVotes(): ArrayCollection
     {
-        return $this->eventDiscussionCommentVotes->filter(fn(EventDiscussionCommentVote $commentVote) => $commentVote->getType() === VoteEnum::VOTE_UP);
+        return $this->eventDiscussionCommentVotes->filter(fn (EventDiscussionCommentVote $commentVote) => $commentVote->getType() === VoteEnum::VOTE_UP);
     }
 
     /**
@@ -139,6 +139,6 @@ class EventDiscussionComment
      */
     public function getDownVotes(): ArrayCollection
     {
-        return $this->eventDiscussionCommentVotes->filter(fn(EventDiscussionCommentVote $commentVote) => $commentVote->getType() === VoteEnum::VOTE_DOWN);
+        return $this->eventDiscussionCommentVotes->filter(fn (EventDiscussionCommentVote $commentVote) => $commentVote->getType() === VoteEnum::VOTE_DOWN);
     }
 }

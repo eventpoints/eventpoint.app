@@ -225,7 +225,6 @@ class EventRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param User $user
      * @return array<int, Event>
      */
     public function findByUser(User $user): array

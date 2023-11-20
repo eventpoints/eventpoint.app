@@ -17,7 +17,7 @@ class EventDiscussionCommentFormType extends AbstractType
         $builder
             ->add('content', TextEditorType::class, [
                 'attr' => [
-                    'class' => 'vh-25'
+                    'class' => 'vh-25',
                 ],
                 'row_attr' => [
                     'class' => 'form-floating',

@@ -11,7 +11,6 @@ use App\Entity\ImageCollection;
 use App\Entity\User;
 use App\Repository\Event\EventRepository;
 use Carbon\CarbonImmutable;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -124,7 +123,7 @@ class Event implements Stringable
 
     public function __toString(): string
     {
-        return (string)$this->getTitle();
+        return (string) $this->getTitle();
     }
 
     public function getId(): null|Uuid
@@ -202,7 +201,7 @@ class Event implements Stringable
 
     public function addCategory(Category $category): static
     {
-        if (!$this->categories->contains($category)) {
+        if (! $this->categories->contains($category)) {
             $this->categories->add($category);
         }
 
@@ -299,7 +298,7 @@ class Event implements Stringable
 
     public function addEventParticipant(EventParticipant $user): self
     {
-        if (!$this->getEventParticipants()->contains($user)) {
+        if (! $this->getEventParticipants()->contains($user)) {
             $this->eventParticipants->add($user);
             $user->setEvent($this);
         }
@@ -317,7 +316,7 @@ class Event implements Stringable
 
     public function addEventRequest(EventRequest $eventRequest): self
     {
-        if (!$this->getEventRequests()->contains($eventRequest)) {
+        if (! $this->getEventRequests()->contains($eventRequest)) {
             $this->eventRequests->add($eventRequest);
             $eventRequest->setEvent($this);
         }
@@ -342,7 +341,7 @@ class Event implements Stringable
 
     public function addEventInvitation(EventInvitation $eventInvite): self
     {
-        if (!$this->getEventParticipants()->exists(fn(int $key, EventParticipant $eventParticipant) => $eventParticipant->getEvent() === $eventInvite->getEvent() && $eventParticipant->getOwner() === $eventInvite->getOwner()) && !$this->eventInvitations->exists(fn(int $key, EventInvitation $existingEventInvite) => $existingEventInvite->getEvent() === $eventInvite->getEvent() && $existingEventInvite->getOwner() === $eventInvite->getOwner())) {
+        if (! $this->getEventParticipants()->exists(fn (int $key, EventParticipant $eventParticipant) => $eventParticipant->getEvent() === $eventInvite->getEvent() && $eventParticipant->getOwner() === $eventInvite->getOwner()) && ! $this->eventInvitations->exists(fn (int $key, EventInvitation $existingEventInvite) => $existingEventInvite->getEvent() === $eventInvite->getEvent() && $existingEventInvite->getOwner() === $eventInvite->getOwner())) {
             $this->eventInvitations->add($eventInvite);
             $eventInvite->setEvent($this);
         }
@@ -370,7 +369,7 @@ class Event implements Stringable
 
     public function addEventRejection(EventRejection $eventRejection): self
     {
-        if (!$this->getEventRejections()->contains($eventRejection)) {
+        if (! $this->getEventRejections()->contains($eventRejection)) {
             $this->eventRejections->add($eventRejection);
             $eventRejection->setEvent($this);
         }
@@ -397,7 +396,7 @@ class Event implements Stringable
 
     public function addImage(Image $image): static
     {
-        if (!$this->images->contains($image)) {
+        if (! $this->images->contains($image)) {
             $this->images->add($image);
         }
 
@@ -425,7 +424,7 @@ class Event implements Stringable
 
     public function addEventOrganiser(EventOrganiser $eventOrganiser): static
     {
-        if (!$this->getEventOrganisers()->contains($eventOrganiser)) {
+        if (! $this->getEventOrganisers()->contains($eventOrganiser)) {
             $this->eventOrganisers->add($eventOrganiser);
             $eventOrganiser->setEvent($this);
         }
@@ -467,7 +466,7 @@ class Event implements Stringable
 
     public function addImageCollection(ImageCollection $imageCollection): static
     {
-        if (!$this->getImageCollections()->contains($imageCollection)) {
+        if (! $this->getImageCollections()->contains($imageCollection)) {
             $this->imageCollections->add($imageCollection);
             $imageCollection->setEvent($this);
         }
@@ -517,7 +516,7 @@ class Event implements Stringable
 
     public function addEmailInvitation(EventEmailInvitation $emailInvitation): static
     {
-        if (!$this->getEventEmailInvitations()->contains($emailInvitation)) {
+        if (! $this->getEventEmailInvitations()->contains($emailInvitation)) {
             $this->eventEmailInvitations->add($emailInvitation);
             $emailInvitation->setEvent($this);
         }
@@ -556,7 +555,7 @@ class Event implements Stringable
 
     public function getUnansweredInvitation(User $user): null|EventInvitation
     {
-        return $this->getEventInvitations()->findFirst(fn(int $key, EventInvitation $eventInvitation) => $eventInvitation->getOwner() === $user);
+        return $this->getEventInvitations()->findFirst(fn (int $key, EventInvitation $eventInvitation) => $eventInvitation->getOwner() === $user);
     }
 
     public function getAddress(): null|string

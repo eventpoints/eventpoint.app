@@ -22,21 +22,20 @@ class EventGroupDiscussionCommentVoteController extends AbstractController
     public function __construct(
         private readonly EventGroupDiscussionCommentVoteFactory $eventGroupDiscussionCommentVoteFactory,
         private readonly EventDiscussionCommentVoteRepository   $eventDiscussionCommentVoteRepository
-    )
-    {
+    ) {
     }
 
     #[Route('/create/{id}/{type}', name: 'create_discussion_comment_vote', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(
         EventDiscussionComment $eventDiscussionComment,
         string                 $type,
-        #[CurrentUser] User    $currentUser
-    ): Response
-    {
+        #[CurrentUser]
+        User    $currentUser
+    ): Response {
         $voteType = VoteEnum::from($type);
         $vote = $this->eventDiscussionCommentVoteRepository->findOneBy([
             'discussionComment' => $eventDiscussionComment,
-            'owner' => $currentUser
+            'owner' => $currentUser,
         ]);
 
         if ($vote instanceof EventDiscussionCommentVote) {
