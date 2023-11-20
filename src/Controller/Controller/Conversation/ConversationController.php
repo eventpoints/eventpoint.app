@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller\Conversation;
 
-use _HumbugBoxa23482e0566a\Swoole\Exception;
 use App\Entity\Conversation;
 use App\Entity\ConversationParticipant;
 use App\Entity\Message;
@@ -12,7 +11,6 @@ use App\Entity\User;
 use App\Exception\ShouldNotHappenException;
 use App\Factory\Conversation\ConversationFactory;
 use App\Factory\Conversation\ConversationParticipantFactory;
-use App\Form\Form\EventFormType;
 use App\Form\Form\MessageFormType;
 use App\Repository\ConversationRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -28,22 +26,19 @@ class ConversationController extends AbstractController
         private readonly ConversationFactory            $conversationFactory,
         private readonly ConversationParticipantFactory $conversationParticipantFactory,
         private readonly ConversationRepository         $conversationRepository
-    )
-    {
+    ) {
     }
 
     /**
      * @throws ShouldNotHappenException
      */
-    #[Route('/conversation/show/{id}', name: 'show_conversation', methods: [Request::METHOD_GET,Request::METHOD_POST])]
+    #[Route('/conversation/show/{id}', name: 'show_conversation', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function show(Conversation $conversation, #[CurrentUser] User $currentUser, Request $request): Response
     {
         $message = new Message();
-        $conversationParticipant = $conversation->getConversationParticipants()->findFirst(function (int $key, ConversationParticipant $conversationParticipant) use ($currentUser) {
-            return $conversationParticipant->getOwner() === $currentUser;
-        });
+        $conversationParticipant = $conversation->getConversationParticipants()->findFirst(fn(int $key, ConversationParticipant $conversationParticipant) => $conversationParticipant->getOwner() === $currentUser);
 
-        if (!$conversationParticipant instanceof ConversationParticipant) {
+        if (! $conversationParticipant instanceof ConversationParticipant) {
             throw new ShouldNotHappenException('conversation participant must exist at this point');
         }
 
@@ -61,7 +56,7 @@ class ConversationController extends AbstractController
 
         return $this->render('conversation/show.html.twig', [
             'conversation' => $conversation,
-            'messageForm' => $messageForm
+            'messageForm' => $messageForm,
         ]);
     }
 

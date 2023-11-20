@@ -17,5 +17,4 @@ class ConversationController extends AbstractController
     {
         return $this->render('user/conversations.html.twig');
     }
-
 }

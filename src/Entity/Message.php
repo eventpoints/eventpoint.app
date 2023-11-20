@@ -89,5 +89,4 @@ class Message
 
         return $this;
     }
-
 }

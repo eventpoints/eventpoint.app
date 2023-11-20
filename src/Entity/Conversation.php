@@ -110,7 +110,7 @@ class Conversation
 
     public function addMessage(Message $message): static
     {
-        if (!$this->messages->contains($message)) {
+        if (! $this->messages->contains($message)) {
             $this->messages->add($message);
             $message->setConversation($this);
         }
