@@ -36,7 +36,7 @@ class ConversationController extends AbstractController
     public function show(Conversation $conversation, #[CurrentUser] User $currentUser, Request $request): Response
     {
         $message = new Message();
-        $conversationParticipant = $conversation->getConversationParticipants()->findFirst(fn(int $key, ConversationParticipant $conversationParticipant) => $conversationParticipant->getOwner() === $currentUser);
+        $conversationParticipant = $conversation->getConversationParticipants()->findFirst(fn (int $key, ConversationParticipant $conversationParticipant) => $conversationParticipant->getOwner() === $currentUser);
 
         if (! $conversationParticipant instanceof ConversationParticipant) {
             throw new ShouldNotHappenException('conversation participant must exist at this point');
