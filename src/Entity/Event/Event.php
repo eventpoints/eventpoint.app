@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Entity\Event;
 
 use App\Entity\Category;
+use App\Entity\EventCancellation;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\Image;
 use App\Entity\ImageCollection;
 use App\Entity\User;
 use App\Repository\Event\EventRepository;
 use Carbon\CarbonImmutable;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -33,10 +35,10 @@ class Event implements Stringable
     private null|string $title = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private null|CarbonImmutable $startAt = null;
+    private null|CarbonImmutable|DateTimeImmutable $startAt = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private null|CarbonImmutable $endAt = null;
+    private null|CarbonImmutable|DateTimeImmutable $endAt = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private null|string $description = null;
@@ -111,6 +113,9 @@ class Event implements Stringable
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
+    #[ORM\OneToOne(mappedBy: 'event', cascade: ['persist', 'remove'])]
+    private null|EventCancellation $eventCancellation = null;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -143,24 +148,24 @@ class Event implements Stringable
         return $this;
     }
 
-    public function getStartAt(): null|CarbonImmutable
+    public function getStartAt(): null|CarbonImmutable|DateTimeImmutable
     {
         return $this->startAt;
     }
 
-    public function setStartAt(null|CarbonImmutable $startAt): static
+    public function setStartAt(null|DateTimeImmutable|CarbonImmutable $startAt): static
     {
         $this->startAt = $startAt;
 
         return $this;
     }
 
-    public function getEndAt(): null|CarbonImmutable
+    public function getEndAt(): null|DateTimeImmutable|CarbonImmutable
     {
         return $this->endAt;
     }
 
-    public function setEndAt(null|CarbonImmutable $endAt): static
+    public function setEndAt(null|DateTimeImmutable|CarbonImmutable $endAt): static
     {
         $this->endAt = $endAt;
 
@@ -590,6 +595,28 @@ class Event implements Stringable
     public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getEventCancellation(): ?EventCancellation
+    {
+        return $this->eventCancellation;
+    }
+
+    public function setEventCancellation(?EventCancellation $eventCancellation): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($eventCancellation === null && $this->eventCancellation !== null) {
+            $this->eventCancellation->setEvent(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($eventCancellation !== null && $eventCancellation->getEvent() !== $this) {
+            $eventCancellation->setEvent($this);
+        }
+
+        $this->eventCancellation = $eventCancellation;
 
         return $this;
     }

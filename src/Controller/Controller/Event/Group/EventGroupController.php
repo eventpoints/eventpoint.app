@@ -83,9 +83,8 @@ class EventGroupController extends AbstractController
                 'title' => EventGroupRoleEnum::ROLE_GROUP_CREATOR->name,
             ]);
             $eventGroupMember = $this->eventGroupMemberFactory->create(owner: $currentUser, eventGroup: $eventGroup);
-            $eventGroupMember->addRole($eventGroupMaintainerRole);
             $eventGroupMember->addRole($eventGroupCreatorRole);
-
+            $eventGroupMember->addRole($eventGroupMaintainerRole);
             $eventGroup->addEventGroupMember($eventGroupMember);
 
             $this->eventGroupRepository->save(entity: $eventGroupForm->getData(), flush: true);

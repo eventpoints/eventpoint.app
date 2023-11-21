@@ -9,17 +9,21 @@ use App\Entity\Event\Event;
 use App\Entity\Event\EventEmailInvitation;
 use App\Entity\User;
 use App\Enum\EventRoleEnum;
+use App\Enum\FlashEnum;
 use App\Factory\Event\EventFactory;
 use App\Factory\Event\EventOrganiserFactory;
+use App\Factory\EventCancellationFactory;
 use App\Factory\ImageCollectionFactory;
 use App\Factory\ImageFactory;
 use App\Form\Filter\EventFilterType;
+use App\Form\Form\EventCancellationFormType;
 use App\Form\Form\EventFormType;
 use App\Form\Form\ImageFormType;
 use App\Repository\Event\EventRepository;
 use App\Repository\Event\EventRoleRepository;
 use App\Repository\ImageCollectionRepository;
 use App\Service\ImageUploadService\ImageUploadService;
+use Carbon\CarbonImmutable;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -27,6 +31,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EventController extends AbstractController
 {
@@ -39,7 +44,9 @@ class EventController extends AbstractController
         private readonly PaginatorInterface        $paginator,
         private readonly EventOrganiserFactory     $eventCrewMemberFactory,
         private readonly EventRoleRepository       $eventRoleRepository,
-        private readonly EventFactory       $eventFactory
+        private readonly EventFactory              $eventFactory,
+        private readonly EventCancellationFactory  $eventCancellationFactory,
+        private readonly TranslatorInterface       $translator
     ) {
     }
 
@@ -121,6 +128,39 @@ class EventController extends AbstractController
     {
         return $this->render('events/email-invitation.html.twig', [
             'emailInvitation' => $emailInvitation,
+        ]);
+    }
+
+    #[Route(path: '/events/settings/{id}', name: 'event_settings')]
+    public function settings(Event $event, Request $request, #[CurrentUser] User $currentUser): Response
+    {
+        return $this->render('events/settings.html.twig', [
+            'event' => $event,
+        ]);
+    }
+
+    #[Route(path: '/events/cancel/{id}', name: 'cancel_event')]
+    public function cancelEvent(Event $event, Request $request, #[CurrentUser] User $currentUser): Response
+    {
+        $eventCancellation = $this->eventCancellationFactory->create(event: $event, owner: $currentUser);
+        $eventCancellationForm = $this->createForm(EventCancellationFormType::class, $eventCancellation);
+        $eventCancellationForm->handleRequest($request);
+        if ($eventCancellationForm->isSubmitted() && $eventCancellationForm->isValid()) {
+            if (CarbonImmutable::now()->diffInRealMinutes($event->getStartAt()) < 30) {
+                $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('too-close-to-event-to-cancel'));
+                return $this->redirectToRoute('show_event', [
+                    'id' => $event->getId(),
+                ]);
+            }
+
+            $event->setEventCancellation($eventCancellation);
+            $this->eventRepository->save($event, true);
+            $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('event-canceled'));
+        }
+
+        return $this->render('events/cancel.html.twig', [
+            'eventCancellationForm' => $eventCancellationForm,
+            'event' => $event,
         ]);
     }
 

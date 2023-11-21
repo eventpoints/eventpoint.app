@@ -112,6 +112,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: ConversationParticipant::class)]
     private Collection $conversationUsers;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventCancellation::class)]
+    private Collection $eventCancellations;
+
     public function __construct()
     {
         $this->eventOrganisers = new ArrayCollection();
@@ -126,6 +129,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->eventDiscussionCommentVotes = new ArrayCollection();
         $this->authoredConversations = new ArrayCollection();
         $this->conversationUsers = new ArrayCollection();
+        $this->eventCancellations = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -642,6 +646,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
             // set the owning side to null (unless already changed)
             if ($conversationUser->getOwner() === $this) {
                 $conversationUser->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventCancellation>
+     */
+    public function getEventCancellations(): Collection
+    {
+        return $this->eventCancellations;
+    }
+
+    public function addEventCancellation(EventCancellation $eventCancellation): static
+    {
+        if (! $this->eventCancellations->contains($eventCancellation)) {
+            $this->eventCancellations->add($eventCancellation);
+            $eventCancellation->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventCancellation(EventCancellation $eventCancellation): static
+    {
+        if ($this->eventCancellations->removeElement($eventCancellation)) {
+            // set the owning side to null (unless already changed)
+            if ($eventCancellation->getOwner() === $this) {
+                $eventCancellation->setOwner(null);
             }
         }
 

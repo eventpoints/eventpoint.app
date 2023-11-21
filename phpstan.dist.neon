@@ -14,4 +14,8 @@ parameters:
         - '#Property [a-zA-Z0-9\\_::]+\$eventInvitations is never written, only read.#'
         - '#Property [a-zA-Z0-9\\_::]+\$eventRejections is never written, only read.#'
         - '#Property [a-zA-Z0-9\\_::]+\$eventRequests is never written, only read.#'
+        - '#Call to an undefined method DateTimeImmutable::diffAsCarbonInterval\(\)#'
+        - '#Call to an undefined method DateTimeImmutable::diffInRealMinutes\(\)#'
+        - '#Call to an undefined method DateTimeImmutable::diffInRealHours\(\)#'
+        - '#Call to an undefined method DateTimeImmutable::rawFormat\(\)#'
     checkGenericClassInNonGenericObjectType: false
