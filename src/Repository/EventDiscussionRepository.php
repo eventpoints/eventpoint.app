@@ -9,7 +9,6 @@ use App\Entity\EventGroupDiscussion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -50,14 +49,10 @@ class EventDiscussionRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param EventGroup $eventGroup
-     * @param bool $isQuery
      * @return array<int, EventGroup>|Query
-     *
      */
     public function findByGroup(EventGroup $eventGroup, bool $isQuery = false): array|Query
     {
-
         $qb = $this->createQueryBuilder('event_discussion');
         $qb->andWhere(
             $qb->expr()->eq('event_discussion.eventGroup', ':group')

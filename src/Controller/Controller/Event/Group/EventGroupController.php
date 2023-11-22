@@ -29,8 +29,7 @@ class EventGroupController extends AbstractController
         private readonly EventGroupRoleRepository  $eventGroupRoleRepository,
         private readonly EventDiscussionRepository $eventDiscussionRepository,
         private readonly PaginatorInterface        $paginator
-    )
-    {
+    ) {
     }
 
     #[Route('/show/{id}', name: 'event_group_show', methods: [Request::METHOD_GET, Request::METHOD_POST])]
@@ -69,7 +68,7 @@ class EventGroupController extends AbstractController
 
         return $this->render('events/group/discussion.html.twig', [
             'eventGroup' => $eventGroup,
-            'discussionPagination' => $discussionPagination
+            'discussionPagination' => $discussionPagination,
         ]);
     }
 
