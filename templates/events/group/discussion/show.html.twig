@@ -6,9 +6,10 @@
             <div class="col-12 col-md-4">
                 <div class="card">
                     <div class="list-group list-group-flush">
-                        <a href="#" class="list-group-item">
-                            <div>{{ '' }}</div>
-                            <div></div>
+                        <a href="{{ path('event_group_discussion',{id: eventGroupDiscussion.eventGroup.id}) }}"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div class="mdi bi-arrow-left fs-4"></div>
+                            <div>{{ 'group-discussions'|trans }}</div>
                         </a>
                     </div>
                 </div>

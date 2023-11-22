@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventGroupDiscussion;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -43,5 +47,27 @@ class EventDiscussionRepository extends ServiceEntityRepository
             $this->getEntityManager()
                 ->flush();
         }
+    }
+
+    /**
+     * @param EventGroup $eventGroup
+     * @param bool $isQuery
+     * @return array<int, EventGroup>|Query
+     *
+     */
+    public function findByGroup(EventGroup $eventGroup, bool $isQuery = false): array|Query
+    {
+
+        $qb = $this->createQueryBuilder('event_discussion');
+        $qb->andWhere(
+            $qb->expr()->eq('event_discussion.eventGroup', ':group')
+        )->setParameter('group', $eventGroup->getId(), 'uuid');
+        $qb->orderBy('event_discussion.createdAt', Criteria::DESC);
+
+        if ($isQuery) {
+            return $qb->getQuery();
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

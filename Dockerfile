@@ -32,8 +32,6 @@ COPY ./assets ./assets
 
 RUN yarn run build
 
-
-
 FROM composer as php
 
 COPY --from=js-builder /build .

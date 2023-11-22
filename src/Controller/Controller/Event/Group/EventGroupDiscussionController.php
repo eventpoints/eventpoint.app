@@ -61,7 +61,7 @@ class EventGroupDiscussionController extends AbstractController
         if ($eventDiscussionForm->isSubmitted() && $eventDiscussionForm->isValid()) {
             $this->discussionRepository->save($discussion, true);
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changes-saved'));
-            return $this->redirectToRoute('event_group_show', [
+            return $this->redirectToRoute('event_group_discussion', [
                 'id' => $eventGroup->getId(),
             ]);
         }

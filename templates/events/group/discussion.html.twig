@@ -13,13 +13,18 @@
                         <div>{{ 'create-group-discussion'|trans }}</div>
                         <div class="bi bi-plus-circle fs-4"></div>
                     </a>
-                    {% for discussion in eventGroup.eventGroupDiscussions %}
+                    {% for discussion in discussionPagination %}
                         <a class="list-group-item list-group-item-action"
                            href="{{ path('show_group_discussion', {id: discussion.id}) }}">
                             <div class="fw-bold">{{ discussion.agenda }}</div>
                             <div>{{ discussion.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
                         </a>
                     {% endfor %}
+                    {% if discussionPagination.totalItemCount ? discussionPagination.itemNumberPerPage() %}
+                        <div class="list-group-item">
+                            {{ knp_pagination_render(discussionPagination, viewParams={align: 'center', size: 'medium'}) }}
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

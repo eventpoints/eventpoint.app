@@ -11,7 +11,9 @@ use App\Enum\EventGroupRoleEnum;
 use App\Factory\EventGroup\EventGroupMemberFactory;
 use App\Form\Form\EventGroupFormType;
 use App\Repository\Event\EventGroupRepository;
+use App\Repository\EventDiscussionRepository;
 use App\Repository\EventGroupRoleRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,10 +24,13 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 class EventGroupController extends AbstractController
 {
     public function __construct(
-        private readonly EventGroupRepository $eventGroupRepository,
-        private readonly EventGroupMemberFactory $eventGroupMemberFactory,
-        private readonly EventGroupRoleRepository $eventGroupRoleRepository
-    ) {
+        private readonly EventGroupRepository      $eventGroupRepository,
+        private readonly EventGroupMemberFactory   $eventGroupMemberFactory,
+        private readonly EventGroupRoleRepository  $eventGroupRoleRepository,
+        private readonly EventDiscussionRepository $eventDiscussionRepository,
+        private readonly PaginatorInterface        $paginator
+    )
+    {
     }
 
     #[Route('/show/{id}', name: 'event_group_show', methods: [Request::METHOD_GET, Request::METHOD_POST])]
@@ -55,8 +60,16 @@ class EventGroupController extends AbstractController
     #[Route('/discussion/{id}', name: 'event_group_discussion', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function discussion(EventGroup $eventGroup, Request $request): Response
     {
+        $discussionsQuery = $this->eventDiscussionRepository->findByGroup($eventGroup, true);
+        $discussionPagination = $this->paginator->paginate(
+            target: $discussionsQuery,
+            page: $request->query->getInt('page', 1),
+            limit: 2
+        );
+
         return $this->render('events/group/discussion.html.twig', [
             'eventGroup' => $eventGroup,
+            'discussionPagination' => $discussionPagination
         ]);
     }
 
