@@ -17,7 +17,7 @@
         "webpack-cli": "^4.10.0",
         "webpack-notifier": "^1.15.0"
     },
-    "license": "UNLICENSED",
+    "license": "proprietary",
     "private": true,
     "scripts": {
         "dev-server": "encore dev-server",
@@ -27,15 +27,11 @@
     },
     "dependencies": {
         "@egjs/grid": "^1.14.2",
-        "@hotwired/strada": "^1.0.0-beta1",
         "@mapbox/mapbox-gl-geocoder": "^5.0.1",
-        "@mdi/font": "^7.2.96",
         "@popperjs/core": "^2.11.8",
-        "axios": "^1.6.1",
         "bootstrap": "^5.3.2",
         "bootstrap-icons": "^1.11.1",
         "mapbox-gl": "^2.8.2",
-        "material-datetime-picker": "^2.4.0",
         "stimulus-calendar": "^1.2.3",
         "stimulus-clipboard": "^4.0.1",
         "stimulus-lightbox": "^3.2.0",
