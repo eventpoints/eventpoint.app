@@ -30,7 +30,7 @@ RUN yarn install
 # Production yarn build
 COPY ./assets ./assets
 
-RUN yarn run build
+RUN yarn run build --verbose
 
 FROM composer as php
 
