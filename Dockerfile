@@ -31,7 +31,7 @@ RUN yarn install --no-cache
 COPY ./assets ./assets
 
 RUN yarn install --no-cache
-RUN yarn run build
+RUN yarn run build --no-cache
 
 FROM composer as php
 
