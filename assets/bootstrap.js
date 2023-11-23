@@ -4,8 +4,8 @@ import Lightbox from 'stimulus-lightbox'
 import Calendar from 'stimulus-calendar'
 
 export const app = startStimulusApp(require.context(
-    '@symfony/stimulus-bridge/lazy-controller-loader!./controllers',
-    false,
+    './controllers',
+    true,
     /\.[jt]sx?$/
 ));
 app.register('password-visibility', PasswordVisibility)
