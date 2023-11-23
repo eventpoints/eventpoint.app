@@ -37,8 +37,10 @@
         "mapbox-gl": "^2.8.2",
         "material-datetime-picker": "^2.4.0",
         "stimulus-calendar": "^1.2.3",
+        "stimulus-clipboard": "^4.0.1",
         "stimulus-lightbox": "^3.2.0",
         "stimulus-password-visibility": "^2.1.1",
+        "stimulus-read-more": "^4.1.0",
         "stimulus-textarea-autogrow": "^4.1.0"
     }
 }
