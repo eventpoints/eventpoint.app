@@ -25,12 +25,12 @@ COPY --from=composer /app .
 
 # Install npm packages
 COPY package.json yarn.lock webpack.config.js ./
-RUN yarn install
+RUN yarn install --verbose
 
 # Production yarn build
 COPY ./assets ./assets
 
-RUN yarn run build --verbose
+RUN yarn run build
 
 FROM composer as php
 
