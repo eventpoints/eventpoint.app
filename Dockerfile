@@ -11,12 +11,12 @@ RUN rm -f /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 RUN mkdir -p var/cache var/log
 
 # Intentionally split into multiple steps to leverage docker layer caching
-COPY composer.json ./
+COPY composer.json composer.lock symfony.lock ./
 
 RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts
 
 
-FROM node:16 as js-builder
+FROM node:14 as js-builder
 
 WORKDIR /build
 
@@ -24,13 +24,15 @@ WORKDIR /build
 COPY --from=composer /app .
 
 # Install npm packages
-COPY package.json webpack.config.js ./
+COPY package.json yarn.lock webpack.config.js ./
+RUN yarn install
 
 # Production yarn build
 COPY ./assets ./assets
 
-RUN yarn install --no-cache
-RUN yarn run build --no-cache
+RUN yarn run build
+
+
 
 FROM composer as php
 
