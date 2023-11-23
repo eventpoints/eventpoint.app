@@ -13,7 +13,7 @@ RUN mkdir -p var/cache var/log
 # Intentionally split into multiple steps to leverage docker layer caching
 COPY composer.json ./
 
-RUN composer update --no-dev --prefer-dist --no-interaction --no-scripts
+RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts
 
 
 FROM node:16 as js-builder
