@@ -30,6 +30,10 @@ RUN yarn install --no-cache
 # Production yarn build
 COPY ./assets ./assets
 
+rm -rf ./node_modules/
+rm -rf ./yarn.lock/
+
+RUN yarn install --no-cache
 RUN yarn run build
 
 FROM composer as php
