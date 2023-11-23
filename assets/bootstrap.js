@@ -1,3 +1,4 @@
+import '@symfony/autoimport';
 import {startStimulusApp} from '@symfony/stimulus-bridge';
 import PasswordVisibility from 'stimulus-password-visibility'
 import Lightbox from 'stimulus-lightbox'
