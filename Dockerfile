@@ -16,7 +16,7 @@ COPY composer.json ./
 RUN composer update --no-dev --prefer-dist --no-interaction --no-scripts
 
 
-FROM node:16 as js-builder
+FROM node:14 as js-builder
 
 WORKDIR /build
 
@@ -25,7 +25,6 @@ COPY --from=composer /app .
 
 # Install npm packages
 COPY package.json webpack.config.js ./
-RUN yarn install --no-cache
 
 # Production yarn build
 COPY ./assets ./assets
