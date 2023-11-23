@@ -1,11 +1,10 @@
-import '@symfony/autoimport';
 import {startStimulusApp} from '@symfony/stimulus-bridge';
 import PasswordVisibility from 'stimulus-password-visibility'
 import Lightbox from 'stimulus-lightbox'
 import Calendar from 'stimulus-calendar'
 
 export const app = startStimulusApp(require.context(
-    './controllers',
+    '@symfony/stimulus-bridge/lazy-controller-loader!./components',
     true,
     /\.[jt]sx?$/
 ));
