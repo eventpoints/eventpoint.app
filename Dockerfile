@@ -15,7 +15,6 @@ COPY composer.json composer.lock symfony.lock ./
 
 RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts
 
-
 FROM node:latest as js-builder
 
 WORKDIR /build
@@ -32,8 +31,6 @@ COPY ./assets ./assets
 
 RUN yarn run build
 
-
-
 FROM composer as php
 
 COPY --from=js-builder /build .
@@ -43,8 +40,6 @@ COPY . .
 RUN composer install --no-dev --no-interaction --classmap-authoritative
 RUN composer symfony:dump-env prod
 RUN chmod -R 777 var
-
-
 
 FROM ghcr.io/eventpoints/caddy:main AS caddy
 
