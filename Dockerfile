@@ -30,9 +30,6 @@ RUN yarn install --non-interactive
 # Production yarn build
 COPY ./assets ./assets
 
-RUN yarn run build
-
-
 
 FROM composer as php
 
