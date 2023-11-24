@@ -16,7 +16,7 @@ COPY composer.json composer.lock symfony.lock ./
 RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts
 
 # Install npm packages
-COPY package.json yarn.lock webpack.config.js ./
+COPY package.json package-lock.json webpack.config.js ./
 RUN npm install
 
 # Production yarn build
