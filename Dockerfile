@@ -1,4 +1,4 @@
-FROM ghcr.io/eventpoints/php:main AS composer
+FROM ghcr.io/eventpoints/php:main AS php
 
 ENV APP_ENV="prod" \
     APP_DEBUG=0 \
