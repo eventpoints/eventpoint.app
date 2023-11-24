@@ -1,4 +1,4 @@
-FROM ghcr.io/eventpoints/php:main AS composer
+FROM ghcr.io/eventpoints/php:main AS php
 
 ENV APP_ENV="prod" \
     APP_DEBUG=0 \
@@ -15,28 +15,15 @@ COPY composer.json composer.lock symfony.lock ./
 
 RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts
 
-
-FROM node:latest as js-builder
-
-WORKDIR /build
-
-# We need /vendor here
-COPY --from=composer /app .
-
 # Install npm packages
 COPY package.json yarn.lock webpack.config.js ./
-RUN yarn install
+RUN npm install
 
 # Production yarn build
 COPY ./assets ./assets
 
-RUN yarn run build
+RUN npm run build
 
-
-
-FROM composer as php
-
-COPY --from=js-builder /build .
 COPY . .
 
 # Need to run again to trigger scripts with application code present
