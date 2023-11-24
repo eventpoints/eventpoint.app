@@ -25,7 +25,7 @@ COPY --from=composer /app .
 
 # Install npm packages
 COPY package.json yarn.lock webpack.config.js ./
-RUN yarn install --production --non-interactive
+RUN yarn install --non-interactive
 
 # Production yarn build
 COPY ./assets ./assets
