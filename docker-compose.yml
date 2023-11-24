@@ -46,12 +46,13 @@ services:
         protocol: udp
 
   js-watch:
-    image: node:21
+    image: ghcr.io/eventpoints/php:main
+    platform: linux/amd64
     volumes:
       - .:/app:cached
     working_dir: /app
     entrypoint: [ "" ]
-    command: "bash -c 'yarn install && yarn run watch'"
+    command: "bash -c 'npm install && npm run watch'"
 
   database:
     image: postgres:13
