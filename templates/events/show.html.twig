@@ -38,7 +38,7 @@
 
 
         <div class="row justify-content-center mt-3">
-            {% if event.unansweredInvitation(app.user) %}
+            {% if app.user and event.unansweredInvitation(app.user) %}
                 {% set invitation = event.unansweredInvitation(app.user) %}
                 <div class="col-12">
                     <div class="card mb-3">
@@ -69,7 +69,7 @@
                         <div class="card-header">
                             <div>{{ 'event-not-published'|trans }}</div>
                         </div>
-                        {% if app.user|has_event_permission(event, 'role.event.manager') or app.user|has_event_permission(event, 'role.event.admin') %}
+                        {% if app.user and app.user|has_event_permission(event, 'role.event.manager') or app.user|has_event_permission(event, 'role.event.admin') %}
                             <div class="card-body">
                                 <div>{{ 'publish-event-journey-explainer'|trans }}</div>
                                 <a href="{{ path('event_settings', {id: event.id} ) }}">
@@ -86,8 +86,19 @@
                             {{ 'event-complete'|trans }}
                         </div>
                     {% endif %}
+                    {% if event.eventGroup %}
+                        <div class="list-group list-group-flush">
+                            <a href="{{ path('event_group_show', {id: event.eventGroup.id}) }}"
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div class="bi bi-people-fill fs-4"></div>
+                                <div class="fw-bold">{{ event.eventGroup.name }}</div>
+                            </a>
+                        </div>
+                    {% endif %}
                     {% if event.base64Image %}
-                        <img src="{{ event.base64Image }}" class="card-img-top object-fit-cover" height="150px"
+                        <img src="{{ event.base64Image }}"
+                             class="{{ event.eventGroup == null ? 'card-img-top' : '' }} object-fit-cover"
+                             height="150px"
                              alt="{{ event.title }}">
                     {% endif %}
                     {% if event.isInProgress('Europe/Prague') %}
@@ -117,17 +128,20 @@
                     <div class="list-group list-group-flush">
                         <div class="list-group-item">
                             <div class="fw-bold fs-4 {{ event.isComplete(regional.regionalSettingValueObject.timezone) or event.eventCancellation ? 'text-decoration-line-through' : '' }}">{{ event.title }}</div>
-                            <div class="d-flex justify-content-between lead">
-                                <div>{{ event.startAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-around align-items-center">
+                            <div class="d-flex justify-content-start align-items-center">
+                                <div class="mdi mdi-ray-start fs-4 me-2 text-muted"></div>
+                                <div>
+                                    {{ event.startAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}
+                                </div>
+                            </div>
+                            <div class="mdi mdi-ray-vertex fs-4 mx-1 text-muted"></div>
+                            <div class="d-flex justify-content-end align-items-center">
+                                <div>{{ event.endAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                <div class="mdi mdi-ray-end fs-4 ms-2 text-muted"></div>
                             </div>
                         </div>
-                        {% if event.eventGroup %}
-                            <a href="{{ path('event_group_show', {id: event.eventGroup.id}) }}"
-                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                <div class="bi bi-people-fill fs-4"></div>
-                                <div class="fw-bold">{{ event.eventGroup.name }}</div>
-                            </a>
-                        {% endif %}
                         <div class="list-group-item d-flex d-flex justify-content-between align-items-center"
                                 {{ stimulus_controller('clipboard', {
                                     successContent: "<span class='bi bi-check-lg text-success fs-4'></span>"
@@ -145,7 +159,7 @@
                             <div class="read-more-content" {{ stimulus_target('read-more', 'content') }}>{{ event.description|nl2br }}</div>
                             <a class="link-dark mt-2 text-center d-block" {{ stimulus_action('read-more', 'toggle', 'click') }} >{{ 'read-more'|trans }}</a>
                         </div>
-                        {% if not event.eventCancellation %}
+                        {% if app.user and app.user|has_event_permission(event, 'role.event.manager') or app.user|has_event_permission(event, 'role.event.admin') %}
                             <a href="{{ path('event_settings', {id: event.id}) }}"
                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                 <div>{{ 'event-settings'|trans }}</div>

@@ -121,7 +121,7 @@
                         </div>
                         {% for event in eventPagination %}
                             <div class="col-12 col-md-6">
-                                {{ eventMacro.card(event, true, true) }}
+                                {{ eventMacro.card(event, true, true, true) }}
                             </div>
                         {% else %}
                             <div class="text-center text-muted fw-bold mt-5">{{ 'no-events-found'|trans|upper }}</div>
