@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Entity\Contract\StaticEntityInterface;
 use App\Entity\Event\Event;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
-class Category implements \Stringable
+class Category implements Stringable, StaticEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -24,10 +26,10 @@ class Category implements \Stringable
     #[ORM\Column(length: 255)]
     private null|string $title = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'subcategories')]
-    private null|self $category = null;
+    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'subcategories')]
+    private Collection $categories;
 
-    #[ORM\OneToMany(mappedBy: 'category', targetEntity: self::class)]
+    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'categories', cascade: ['persist'])]
     private Collection $subcategories;
 
     #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'categories')]
@@ -35,6 +37,7 @@ class Category implements \Stringable
 
     public function __construct()
     {
+        $this->categories = new ArrayCollection();
         $this->subcategories = new ArrayCollection();
         $this->events = new ArrayCollection();
     }
@@ -61,18 +64,6 @@ class Category implements \Stringable
         return $this;
     }
 
-    public function getCategory(): ?self
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?self $category): static
-    {
-        $this->category = $category;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, self>
      */
@@ -81,11 +72,38 @@ class Category implements \Stringable
         return $this->subcategories;
     }
 
+    public function addSubcategory(self $subcategory): static
+    {
+        if (! $this->subcategories->contains($subcategory)) {
+            $this->subcategories->add($subcategory);
+            $subcategory->addCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubcategory(self $subcategory): static
+    {
+        if ($this->subcategories->removeElement($subcategory)) {
+            $subcategory->removeCategory($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
     public function addCategory(self $category): static
     {
-        if (! $this->subcategories->contains($category)) {
-            $this->subcategories->add($category);
-            $category->setCategory($this);
+        if (! $this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->addSubcategory($this); // Bidirectional: Add this category as a child for the parent category
         }
 
         return $this;
@@ -93,11 +111,8 @@ class Category implements \Stringable
 
     public function removeCategory(self $category): static
     {
-        if ($this->subcategories->removeElement($category)) {
-            // set the owning side to null (unless already changed)
-            if ($category->getCategory() === $this) {
-                $category->setCategory(null);
-            }
+        if ($this->categories->removeElement($category)) {
+            $category->removeSubcategory($this); // Bidirectional: Remove this category as a child for the parent category
         }
 
         return $this;

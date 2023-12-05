@@ -13,18 +13,22 @@ class UserFactory
     final public const PASSWORD_NOT_SET = 'PASSWORD_NOT_SET';
 
     public function __construct(
-        private readonly AvatarService $avatarService,
-        private readonly UserPasswordHasherInterface $userPasswordHasher
+        private readonly AvatarService               $avatarService,
+        private readonly UserPasswordHasherInterface $userPasswordHasher,
     ) {
     }
 
-    public function create(string $firstName, string $lastName, string $email, null|string $password): User
+    public function create(string $firstName, string $lastName, string $email, null|string $password, null|string $avatar = null): User
     {
         $user = new User();
         $user->setFirstName($firstName);
         $user->setLastName($lastName);
         $user->setEmail($email);
-        $user->setAvatar($this->avatarService->createAvatar($email));
+        if (! $avatar) {
+            $user->setAvatar($this->avatarService->createAvatar($email));
+        } else {
+            $user->setAvatar($avatar);
+        }
         if ($password) {
             $user->setPassword($this->userPasswordHasher->hashPassword($user, $password));
         }

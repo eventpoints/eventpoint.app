@@ -32,7 +32,10 @@ class EventGroupMember
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
-    #[ORM\OneToMany(mappedBy: 'eventGroupMember', targetEntity: EventGroupRole::class)]
+    #[ORM\JoinTable(name: 'event_group_member_roles')]
+    #[ORM\JoinColumn(name: 'event_organiser_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'event_role_id', referencedColumnName: 'id')]
+    #[ORM\ManyToMany(targetEntity: EventGroupRole::class)]
     private Collection $roles;
 
     #[ORM\Column]
@@ -85,6 +88,18 @@ class EventGroupMember
         return $this;
     }
 
+    public function isIsApproved(): ?bool
+    {
+        return $this->isApproved;
+    }
+
+    public function setIsApproved(bool $isApproved): static
+    {
+        $this->isApproved = $isApproved;
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, EventGroupRole>
      */
@@ -97,7 +112,6 @@ class EventGroupMember
     {
         if (! $this->roles->contains($role)) {
             $this->roles->add($role);
-            $role->setEventGroupMember($this);
         }
 
         return $this;
@@ -105,25 +119,7 @@ class EventGroupMember
 
     public function removeRole(EventGroupRole $role): static
     {
-        if ($this->roles->removeElement($role)) {
-            // set the owning side to null (unless already changed)
-            if ($role->getEventGroupMember() === $this) {
-                $role->setEventGroupMember(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function isIsApproved(): ?bool
-    {
-        return $this->isApproved;
-    }
-
-    public function setIsApproved(bool $isApproved): static
-    {
-        $this->isApproved = $isApproved;
-
+        $this->roles->removeElement($role);
         return $this;
     }
 }

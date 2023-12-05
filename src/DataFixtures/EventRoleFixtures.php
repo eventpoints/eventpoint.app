@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\DataFixtures;
 
 use App\Entity\Event\EventRole;
-use App\Enum\EventRoleEnum;
+use App\Enum\EventOrganiserRoleEnum;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -13,20 +13,11 @@ class EventRoleFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        foreach ($this->getAllCategories() as $name => $title) {
+        foreach (EventOrganiserRoleEnum::cases() as $eventOrganiserRoleEnum) {
             $eventRole = new EventRole();
-            $eventRole->setTitle($title);
-            $eventRole->setName($name);
+            $eventRole->setTitle($eventOrganiserRoleEnum);
             $manager->persist($eventRole);
-            $manager->flush();
         }
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getAllCategories(): array
-    {
-        return EventRoleEnum::getEventRoles();
+        $manager->flush();
     }
 }

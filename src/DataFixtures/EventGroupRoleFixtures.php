@@ -13,20 +13,11 @@ class EventGroupRoleFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        foreach ($this->getAllCategories() as $name => $title) {
+        foreach (EventGroupRoleEnum::cases() as $eventGroupRoleEnum) {
             $eventRole = new EventGroupRole();
-            $eventRole->setTitle($title);
-            $eventRole->setName($name);
+            $eventRole->setTitle($eventGroupRoleEnum);
             $manager->persist($eventRole);
-            $manager->flush();
         }
-    }
-
-    /**
-     * @return array<string,string>
-     */
-    public function getAllCategories(): array
-    {
-        return EventGroupRoleEnum::getGroupRoles();
+        $manager->flush();
     }
 }

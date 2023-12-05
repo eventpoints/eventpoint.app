@@ -8,8 +8,9 @@ use App\Entity\Category;
 use App\Entity\Event\Event;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User;
+use App\Form\Type\CategoryGroupType;
 use App\Form\Type\EntitySelectionGroupType;
-use Doctrine\ORM\EntityRepository;
+use App\Repository\Event\EventGroupRepository;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
@@ -33,10 +34,12 @@ class EventFormType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $event = $options['event'];
         $builder
             ->add('address', TextType::class)
             ->add('title', TextType::class)
             ->add('image', FileType::class, [
+                'required' => ! (($event instanceof Event && ! empty($event->getBase64Image()))),
                 'mapped' => false,
             ])
             ->add('description', TextareaType::class)
@@ -66,17 +69,13 @@ class EventFormType extends AbstractType
                     'data-calendar-target' => 'dateInput',
                 ],
             ])
-            ->add('categories', EntitySelectionGroupType::class, [
+            ->add('categories', CategoryGroupType::class, [
                 'expanded' => true,
+                'multiple' => true,
                 'searchable' => true,
                 'class' => Category::class,
                 'choice_label' => 'title',
-                'multiple' => true,
                 'label' => 'categories',
-                'query_builder' => function (EntityRepository $er): QueryBuilder {
-                    $qb = $er->createQueryBuilder('category');
-                    return $qb;
-                },
                 'choice_translation_domain' => true,
             ])
             ->add('isPrivate', CheckboxType::class, [
@@ -107,12 +106,10 @@ class EventFormType extends AbstractType
                 'label' => $this->translator->trans('add-event-group'),
                 'empty_message' => $this->translator->trans('no-groups-found'),
                 'class' => EventGroup::class,
-                'choice_label' => 'title',
+                'choice_label' => 'name',
                 'empty_data' => null,
-                'autocomplete' => true,
-                'query_builder' => function (EntityRepository $er) use ($currentUser): QueryBuilder {
+                'query_builder' => function (EventGroupRepository $er) use ($currentUser): QueryBuilder {
                     $qb = $er->createQueryBuilder('event_group');
-
                     $qb->andWhere(
                         $qb->expr()->eq('event_group.owner', ':owner')
                     )->setParameter('owner', $currentUser->getId());
@@ -131,6 +128,7 @@ class EventFormType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Event::class,
+            'event' => null,
         ]);
     }
 }

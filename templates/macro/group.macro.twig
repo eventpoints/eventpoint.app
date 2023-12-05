@@ -1,0 +1,47 @@
+{% macro comment(comment, hasHeader = false) %}
+    <div class="card mb-2">
+        <div class="list-group list-group-flush">
+            {% if hasHeader %}
+                <a href="{{ path('show_group_discussion', {id: comment.discussion.id, comment: comment.id}) }}"
+                   class="list-group-item fw-bold">{{ comment.discussion.agenda }}</a>
+            {% endif %}
+            <div class="list-group-item">{{ comment.content|nl2br }}</div>
+            <a href="{{ path('show_profile', {id: comment.owner.id}) }}"
+               class="list-group-item list-group-item-action">
+                <div class="d-flex justify-content-start align-items-center">
+                    <div>
+                        <img src="{{ comment.owner.avatar }}" class="rounded-circle border me-2"
+                             height="50"/>
+                    </div>
+                    <div>
+                        <div class="fw-bold">{{ comment.owner.fullName }}</div>
+                        <div>{{ comment.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endmacro %}
+
+
+{% macro discussion(discussion) %}
+    <div class="card mb-2">
+        <div class="list-group list-group-flush">
+            <a href="{{ path('show_group_discussion', {id: discussion.id }) }}"
+               class="list-group-item active fw-bold">{{ discussion.agenda }}</a>
+            <a href="{{ path('show_profile', {id: discussion.owner.id}) }}"
+               class="list-group-item list-group-item-action">
+                <div class="d-flex justify-content-start align-items-center">
+                    <div>
+                        <img src="{{ discussion.owner.avatar }}" class="rounded-circle border me-2"
+                             height="50"/>
+                    </div>
+                    <div>
+                        <div class="fw-bold">{{ discussion.owner.fullName }}</div>
+                        <div>{{ discussion.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endmacro %}

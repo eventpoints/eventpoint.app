@@ -7,6 +7,7 @@ namespace App\Repository\Event;
 use App\DataTransferObject\EventFilterDto;
 use App\Entity\Category;
 use App\Entity\Event\Event;
+use App\Entity\EventGroup\EventGroup;
 use App\Entity\User;
 use App\Service\ApplicationTimeService\ApplicationTimeService;
 use Carbon\Carbon;
@@ -140,6 +141,10 @@ class EventRepository extends ServiceEntityRepository
         }
 
         $qb->andWhere(
+            $qb->expr()->eq('event.isPublished', ':true')
+        )->setParameter('true', true);
+
+        $qb->andWhere(
             $qb->expr()->eq('event.isPrivate', ':false')
         )->setParameter('false', false);
 
@@ -234,6 +239,47 @@ class EventRepository extends ServiceEntityRepository
         $qb->andWhere(
             $qb->expr()->eq('event.owner', ':user')
         )->setParameter('user', $user);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return array<int, Event>
+     */
+    public function findPublishEvents(EventGroup $eventGroup): array
+    {
+        $qb = $this->createQueryBuilder('event');
+
+        $qb->andWhere(
+            $qb->expr()->eq('event.eventGroup', ':id')
+        )->setParameter('id', $eventGroup->getId());
+
+        $qb->andWhere(
+            $qb->expr()->eq('event.isPublished', ':true')
+        )->setParameter('true', true);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return array<int, Event>|Query
+     */
+    public function findByGroup(EventGroup $eventGroup, bool $isQuery = false): array|Query
+    {
+        $qb = $this->createQueryBuilder('event');
+        $qb->andWhere(
+            $qb->expr()->eq('event.eventGroup', ':group')
+        )->setParameter('group', $eventGroup->getId(), 'uuid');
+
+        $qb->andWhere(
+            $qb->expr()->eq('event.isPublished', ':true')
+        )->setParameter('true', true);
+
+        $qb->orderBy('event.createdAt', Criteria::DESC);
+
+        if ($isQuery) {
+            return $qb->getQuery();
+        }
 
         return $qb->getQuery()->getResult();
     }

@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\EventDiscussionComment;
+use App\Entity\EventGroup\EventGroup;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -23,28 +26,22 @@ class EventDiscussionCommentRepository extends ServiceEntityRepository
         parent::__construct($registry, EventDiscussionComment::class);
     }
 
-    //    /**
-    //     * @return EventDiscussionComment[] Returns an array of EventDiscussionComment objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @return array<int, EventDiscussionComment>|Query
+     */
+    public function findByGroup(EventGroup $eventGroup, bool $isQuery = false): array|Query
+    {
+        $qb = $this->createQueryBuilder('event_discussion_comment');
+        $qb->leftJoin('event_discussion_comment.discussion', 'discussion');
+        $qb->andWhere(
+            $qb->expr()->eq('discussion.eventGroup', ':group')
+        )->setParameter('group', $eventGroup->getId(), 'uuid');
+        $qb->orderBy('event_discussion_comment.createdAt', Criteria::DESC);
 
-    //    public function findOneBySomeField($value): ?EventDiscussionComment
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if ($isQuery) {
+            return $qb->getQuery();
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

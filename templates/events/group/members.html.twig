@@ -9,7 +9,7 @@
             <div class="col-12 col-md-8">
                 <div class="card">
                     <div class="list-group list-group-flush">
-                        {% for groupMember in eventGroup.eventGroupMaintainers %}
+                        {% for groupMember in eventGroup.eventGroupMembers %}
                             <div
                                     class="list-group-item d-flex justify-content-start">
                                 <div class="me-2">
@@ -20,7 +20,7 @@
                                 <div>
                                     <div>{{ groupMember.owner.fullName }}</div>
                                     {% for role in groupMember.roles %}
-                                        <span class="badge text-bg-primary">{{ role.name }}</span>
+                                        <span class="badge text-bg-primary">{{ role.title.value }}</span>
                                     {% endfor %}
                                 </div>
                             </div>

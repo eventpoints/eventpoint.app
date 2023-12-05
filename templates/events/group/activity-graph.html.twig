@@ -1,0 +1,8 @@
+<turbo-frame id="event-group-graph-frame">
+    <div>
+        <canvas height="100px" {{ stimulus_controller('event-group-chart', {
+            eventGroupAnalysis: eventGroupAnalysis|json_encode
+        }) }}></canvas>
+    </div>
+</turbo-frame>
+

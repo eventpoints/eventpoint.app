@@ -10,11 +10,11 @@ use App\Entity\User;
 final class EventGroupFactory
 {
     public function create(
-        string $title,
-        null|User $owner,
+        null|string $title = null,
+        null|User $owner = null,
     ): EventGroup {
         $eventGroup = new EventGroup();
-        $eventGroup->setTitle($title);
+        $eventGroup->setName($title);
         $eventGroup->setOwner($owner);
         return $eventGroup;
     }

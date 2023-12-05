@@ -1,41 +1,40 @@
-import {Controller} from '@hotwired/stimulus'
-import mapboxgl from 'mapbox-gl'
+import { Controller } from '@hotwired/stimulus';
+import mapboxgl from 'mapbox-gl';
 
 export default class extends Controller {
-
-    static targets = ['result', 'latitude', 'longitude', 'icon']
+    static targets = ['result', 'latitude', 'longitude', 'icon'];
     static values = {
-        token: String
-    }
+        token: String,
+        latitude: String,
+        longitude: String,
+    };
 
     connect() {
-        this.lat = 50.0755
-        this.lng = 14.4378
-        mapboxgl.accessToken = this.tokenValue
+        this.lat = this.latitudeValue || '50.0755';
+        this.lng = this.longitudeValue || '14.4378';
+
+        mapboxgl.accessToken = this.tokenValue;
         this.map = new mapboxgl.Map({
             container: this.resultTarget,
             style: 'mapbox://styles/mapbox/streets-v11',
             zoom: 10,
-            center: [14.4378, 50.0755]
+            center: [parseFloat(this.lng), parseFloat(this.lat)],
         });
-
 
         this.map.on('load', () => {
             this.marker = new mapboxgl.Marker({
                 color: '#000000',
-                draggable: true
+                draggable: true,
             })
-                .setLngLat([this.lng, this.lat])
-                .addTo(this.map)
+                .setLngLat([parseFloat(this.lng), parseFloat(this.lat)])
+                .addTo(this.map);
 
             this.marker.on('dragend', () => {
-                const lngLat = this.marker.getLngLat()
-                this.latitudeTarget.setAttribute('value', lngLat.lat)
-                this.longitudeTarget.setAttribute('value', lngLat.lng)
-            })
-
-        })
-
+                const lngLat = this.marker.getLngLat();
+                this.latitudeTarget.setAttribute('value', lngLat.lat);
+                this.longitudeTarget.setAttribute('value', lngLat.lng);
+            });
+        });
     }
 
     async getCurrentLocation(event) {
@@ -48,15 +47,15 @@ export default class extends Controller {
                 navigator.geolocation.getCurrentPosition(resolve, reject);
             });
 
-            const {latitude, longitude} = position.coords;
+            const { latitude, longitude } = position.coords;
             this.marker.setLngLat([longitude, latitude]);
-            this.latitudeTarget.setAttribute('value', latitude)
-            this.longitudeTarget.setAttribute('value', longitude)
+            this.latitudeTarget.setAttribute('value', latitude);
+            this.longitudeTarget.setAttribute('value', longitude);
             this.map.flyTo({
                 center: [longitude, latitude],
                 zoom: 15,
                 speed: 1.2,
-                curve: 1.4
+                curve: 1.4,
             });
         } catch (error) {
             // Handle error
@@ -65,5 +64,4 @@ export default class extends Controller {
             this.iconTarget.classList.replace('spinner-border-sm', 'bi-crosshair');
         }
     }
-
 }

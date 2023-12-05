@@ -43,7 +43,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private null|string $password = null;
 
     #[ORM\Column(type: 'boolean')]
@@ -115,6 +115,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventCancellation::class)]
     private Collection $eventCancellations;
 
+    /**
+     * @var Collection<int, SocialAuth>
+     */
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: SocialAuth::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
+    private Collection $socialAuths;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventOrganiserInvitation::class)]
+    private Collection $eventOrganiserInvitations;
+
     public function __construct()
     {
         $this->eventOrganisers = new ArrayCollection();
@@ -130,6 +140,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->authoredConversations = new ArrayCollection();
         $this->conversationUsers = new ArrayCollection();
         $this->eventCancellations = new ArrayCollection();
+        $this->socialAuths = new ArrayCollection();
+        $this->eventOrganiserInvitations = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -195,12 +207,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    public function getPassword(): string
+    public function getPassword(): null|string
     {
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword(null|string $password): static
     {
         $this->password = $password;
 
@@ -676,6 +688,64 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
             // set the owning side to null (unless already changed)
             if ($eventCancellation->getOwner() === $this) {
                 $eventCancellation->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SocialAuth>
+     */
+    public function getSocialAuths(): Collection
+    {
+        return $this->socialAuths;
+    }
+
+    public function addSocialAuth(SocialAuth $socialAuth): self
+    {
+        if (! $this->socialAuths->contains($socialAuth)) {
+            $this->socialAuths[] = $socialAuth;
+            $socialAuth->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSocialAuth(SocialAuth $socialAuth): self
+    {
+        // set the owning side to null (unless already changed)
+        if ($this->socialAuths->removeElement($socialAuth) && $socialAuth->getOwner() === $this) {
+            $socialAuth->setOwner(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventOrganiserInvitation>
+     */
+    public function getEventOrganiserInvitations(): Collection
+    {
+        return $this->eventOrganiserInvitations;
+    }
+
+    public function addEventOrganiserInvitation(EventOrganiserInvitation $eventOrganiserInvitation): static
+    {
+        if (! $this->eventOrganiserInvitations->contains($eventOrganiserInvitation)) {
+            $this->eventOrganiserInvitations->add($eventOrganiserInvitation);
+            $eventOrganiserInvitation->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventOrganiserInvitation(EventOrganiserInvitation $eventOrganiserInvitation): static
+    {
+        if ($this->eventOrganiserInvitations->removeElement($eventOrganiserInvitation)) {
+            // set the owning side to null (unless already changed)
+            if ($eventOrganiserInvitation->getOwner() === $this) {
+                $eventOrganiserInvitation->setOwner(null);
             }
         }
 

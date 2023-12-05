@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Entity\EventGroup;
 
+use App\Entity\Contract\StaticEntityInterface;
+use App\Enum\EventGroupRoleEnum;
 use App\Repository\EventGroupRoleRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EventGroupRoleRepository::class)]
-class EventGroupRole implements \Stringable
+class EventGroupRole implements Stringable, StaticEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -18,18 +21,12 @@ class EventGroupRole implements \Stringable
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
-    #[ORM\ManyToOne(inversedBy: 'roles')]
-    private ?EventGroupMember $eventGroupMember = null;
+    #[ORM\Column(length: 255, enumType: EventGroupRoleEnum::class)]
+    private null|EventGroupRoleEnum $title = null;
 
     public function __toString(): string
     {
-        return (string) $this->getTitle();
+        return $this->title->value;
     }
 
     public function getId(): null|Uuid
@@ -37,38 +34,14 @@ class EventGroupRole implements \Stringable
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): null|EventGroupRoleEnum
     {
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(null|EventGroupRoleEnum $title): static
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getEventGroupMember(): ?EventGroupMember
-    {
-        return $this->eventGroupMember;
-    }
-
-    public function setEventGroupMember(?EventGroupMember $eventGroupMember): static
-    {
-        $this->eventGroupMember = $eventGroupMember;
 
         return $this;
     }

@@ -10,12 +10,12 @@ use App\Entity\User;
 
 class EventGroupMemberFactory
 {
-    public function create(User $owner, EventGroup $eventGroup): EventGroupMember
+    public function create(null|User $owner = null, null|EventGroup $eventGroup = null, bool $isApproved = false): EventGroupMember
     {
         $eventGroupMember = new EventGroupMember();
         $eventGroupMember->setOwner($owner);
         $eventGroupMember->setEventGroup($eventGroup);
-
+        $eventGroupMember->setIsApproved($isApproved);
         return $eventGroupMember;
     }
 }

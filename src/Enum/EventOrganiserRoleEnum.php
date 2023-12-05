@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Enum;
 
-enum EventRoleEnum: string
+enum EventOrganiserRoleEnum: string
 {
     case ROLE_EVENT_MOD = 'role.event.mod';
     case ROLE_EVENT_MANAGER = 'role.event.manager';

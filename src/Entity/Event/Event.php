@@ -7,6 +7,7 @@ namespace App\Entity\Event;
 use App\Entity\Category;
 use App\Entity\EventCancellation;
 use App\Entity\EventGroup\EventGroup;
+use App\Entity\EventOrganiserInvitation;
 use App\Entity\Image;
 use App\Entity\ImageCollection;
 use App\Entity\User;
@@ -50,7 +51,7 @@ class Event implements Stringable
     private null|string $longitude = null;
 
     #[ORM\Column]
-    private null|bool $isOnline = false;
+    private null|bool $isPublished = false;
 
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'events')]
     private Collection $categories;
@@ -101,6 +102,7 @@ class Event implements Stringable
     private Collection $eventEmailInvitations;
 
     #[ORM\ManyToOne(inversedBy: 'events')]
+    #[ORM\JoinColumn(nullable: true)]
     private null|EventGroup $eventGroup = null;
 
     #[ORM\Column(length: 255)]
@@ -116,6 +118,9 @@ class Event implements Stringable
     #[ORM\OneToOne(mappedBy: 'event', cascade: ['persist', 'remove'])]
     private null|EventCancellation $eventCancellation = null;
 
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventOrganiserInvitation::class, cascade: ['persist'])]
+    private Collection $eventOrganiserInvitations;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -124,6 +129,7 @@ class Event implements Stringable
         $this->imageCollections = new ArrayCollection();
         $this->eventEmailInvitations = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
+        $this->eventOrganiserInvitations = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -184,14 +190,14 @@ class Event implements Stringable
         return $this;
     }
 
-    public function isIsOnline(): ?bool
+    public function getIsPublished(): ?bool
     {
-        return $this->isOnline;
+        return $this->isPublished;
     }
 
-    public function setIsOnline(bool $isOnline): static
+    public function setIsPublished(bool $isPublished): static
     {
-        $this->isOnline = $isOnline;
+        $this->isPublished = $isPublished;
 
         return $this;
     }
@@ -268,7 +274,7 @@ class Event implements Stringable
         return CarbonImmutable::now()->isAfter($this->getStartAt()) && CarbonImmutable::now()->isBefore($this->getEndAt());
     }
 
-    public function isComplete(): bool
+    public function getIsComplete(): bool
     {
         return CarbonImmutable::now()->isAfter($this->getEndAt());
     }
@@ -617,6 +623,36 @@ class Event implements Stringable
         }
 
         $this->eventCancellation = $eventCancellation;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventOrganiserInvitation>
+     */
+    public function getEventOrganiserInvitations(): Collection
+    {
+        return $this->eventOrganiserInvitations;
+    }
+
+    public function addEventOrganiserInvitation(EventOrganiserInvitation $eventOrganiserInvitation): static
+    {
+        if (! $this->eventOrganiserInvitations->contains($eventOrganiserInvitation)) {
+            $this->eventOrganiserInvitations->add($eventOrganiserInvitation);
+            $eventOrganiserInvitation->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventOrganiserInvitation(EventOrganiserInvitation $eventOrganiserInvitation): static
+    {
+        if ($this->eventOrganiserInvitations->removeElement($eventOrganiserInvitation)) {
+            // set the owning side to null (unless already changed)
+            if ($eventOrganiserInvitation->getEvent() === $this) {
+                $eventOrganiserInvitation->setEvent(null);
+            }
+        }
 
         return $this;
     }

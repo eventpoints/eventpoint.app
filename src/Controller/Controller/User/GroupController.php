@@ -21,7 +21,7 @@ class GroupController extends AbstractController
     }
 
     #[Route(path: '/groups', name: 'user_groups', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function create(Request $request, #[CurrentUser] User $currentUser): Response
+    public function index(Request $request, #[CurrentUser] User $currentUser): Response
     {
         $groups = $this->eventGroupRepository->findByUser($currentUser);
         return $this->render('user/groups.html.twig', [

@@ -4,44 +4,40 @@ declare(strict_types=1);
 
 namespace App\Form\Form;
 
-use App\Entity\Event\Event;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User;
-use App\Form\Type\EntitySelectionGroupType;
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EventGroupFormType extends AbstractType
 {
+    public function __construct(
+        private readonly TranslatorInterface $translator
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title', TextType::class, [
+            ->add('name', TextType::class, [
                 'row_attr' => [
                     'class' => 'form-floating mb-3',
                 ],
-            ])->add('events', EntitySelectionGroupType::class, [
-                'class' => Event::class,
-                'choice_label' => fn (Event $event): string => $event->getTitleAndDate(),
-                'searchable' => false,
-                'label' => 'add events',
-                'expanded' => true,
-                'multiple' => true,
-                'query_builder' => function (EntityRepository $er): QueryBuilder {
-                    $qb = $er->createQueryBuilder('event');
-
-                    $qb->andWhere(
-                        $qb->expr()->isNull('event.eventGroup')
-                    );
-
-                    $qb->orderBy('event.startAt', Criteria::DESC);
-                    return $qb;
-                },
+            ])
+            ->add('entityIdentificationNumber', TextType::class, [
+                'help' => $this->translator->trans('entity-identification-number-explainer'),
+                'row_attr' => [
+                    'class' => 'form-floating mb-3',
+                ],
+            ])
+            ->add('purpose', TextType::class, [
+                'label' => $this->translator->trans('group-purpose'),
+                'row_attr' => [
+                    'class' => 'form-floating mb-3',
+                ],
             ]);
     }
 

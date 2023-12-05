@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Entity\Event;
 
+use App\Entity\Contract\StaticEntityInterface;
+use App\Enum\EventOrganiserRoleEnum;
 use App\Repository\Event\EventRoleRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: EventRoleRepository::class)]
-
-class EventRole implements \Stringable
+class EventRole implements Stringable, StaticEntityInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -20,20 +22,14 @@ class EventRole implements \Stringable
     private Uuid $id;
 
     #[ORM\ManyToOne(inversedBy: 'roles')]
-    private ?EventParticipant $eventParticipant = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $title = null;
-
-    #[ORM\ManyToOne(inversedBy: 'roles')]
     private ?EventOrganiser $eventOrganiser = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[ORM\Column(length: 255, enumType: EventOrganiserRoleEnum::class)]
+    private null|EventOrganiserRoleEnum $title = null;
 
     public function __toString(): string
     {
-        return (string) $this->getTitle();
+        return $this->title->value;
     }
 
     public function getId(): Uuid
@@ -41,24 +37,12 @@ class EventRole implements \Stringable
         return $this->id;
     }
 
-    public function getEventParticipant(): ?EventParticipant
-    {
-        return $this->eventParticipant;
-    }
-
-    public function setEventParticipant(?EventParticipant $eventParticipant): static
-    {
-        $this->eventParticipant = $eventParticipant;
-
-        return $this;
-    }
-
-    public function getTitle(): ?string
+    public function getTitle(): null|EventOrganiserRoleEnum
     {
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(null|EventOrganiserRoleEnum $title): static
     {
         $this->title = $title;
 
@@ -73,18 +57,6 @@ class EventRole implements \Stringable
     public function setEventOrganiser(?EventOrganiser $eventOrganiser): static
     {
         $this->eventOrganiser = $eventOrganiser;
-
-        return $this;
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
 
         return $this;
     }

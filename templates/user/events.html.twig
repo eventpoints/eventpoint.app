@@ -23,9 +23,9 @@
                         <div class="col-12 col-md-6">
                             <div class="card rounded-0 position-relative" {{ stimulus_target('dynamic-map', 'event-card') }}>
                                 {% if event.eventGroup %}
-                                    <a href="{{ path('show_event_group', {id: event.eventGroup.id }) }}">
+                                    <a href="{{ path('event_group_show', {id: event.eventGroup.id }) }}">
                                         <div class="position-absolute top-0 mt-2 ms-2 badge rounded-pill bg-warning">
-                                            {{ event.eventGroup.title }}
+                                            {{ event.eventGroup.name }}
                                         </div>
                                     </a>
                                 {% endif %}

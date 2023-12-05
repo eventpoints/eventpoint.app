@@ -19,34 +19,37 @@
                     <div class="card-header bg-light fs-3">{{ eventGroupDiscussion.agenda }}</div>
                     <div class="list-group list-group-flush">
                         {% for comment in eventGroupDiscussion.eventDiscussionComments %}
-                            <div class="card-header shadow bg-white sticky-top d-flex justify-content-between align-items-center">
-                                <div class="d-flex justify-content-between align-items-center">
+                            <div {{ stimulus_controller('scroll-on-load', {id: app.request.get('comment')}) }}>
+                                <div class="card-header shadow bg-white sticky-top d-flex justify-content-between align-items-center">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <a href="{{ path('show_profile', {id: comment.owner.id}) }}">
+                                                <img src="{{ comment.owner.avatar }}" class="rounded-circle border me-2"
+                                                     height="50"/>
+                                            </a>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">{{ comment.owner.fullName }}</div>
+                                            <div>{{ comment.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                        </div>
+                                    </div>
                                     <div>
-                                        <a href="{{ path('show_profile', {id: comment.owner.id}) }}">
-                                            <img src="{{ comment.owner.avatar }}" class="rounded-circle border me-2"
-                                                 height="50"/>
+                                        <a class="btn btn-outline-success rounded-pill text-decoration-none"
+                                           href="{{ path('create_discussion_comment_vote', {id: comment.id, type: 'up'}) }}">
+                                            <i class="bi bi-caret-up-fill me-2"></i>
+                                            <span>{{ comment.upVotes.count|compact_notation }}</span>
+                                        </a>
+                                        <a class="btn btn-outline-danger rounded-pill text-decoration-none"
+                                           href="{{ path('create_discussion_comment_vote', {id: comment.id, type: 'down'}) }}">
+                                            <i class="bi bi-caret-down-fill me-2"></i>
+                                            <span>{{ comment.downVotes.count|compact_notation }}</span>
                                         </a>
                                     </div>
-                                    <div>
-                                        <div class="fw-bold">{{ comment.owner.fullName }}</div>
-                                        <div>{{ comment.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
-                                    </div>
                                 </div>
-                                <div>
-                                    <a class="btn btn-outline-success rounded-pill text-decoration-none"
-                                       href="{{ path('create_discussion_comment_vote', {id: comment.id, type: 'up'}) }}">
-                                        <i class="bi bi-caret-up-fill me-2"></i>
-                                        <span>{{ comment.upVotes.count|compact_notation }}</span>
-                                    </a>
-                                    <a class="btn btn-outline-danger rounded-pill text-decoration-none"
-                                       href="{{ path('create_discussion_comment_vote', {id: comment.id, type: 'down'}) }}">
-                                        <i class="bi bi-caret-down-fill me-2"></i>
-                                        <span>{{ comment.downVotes.count|compact_notation }}</span>
-                                    </a>
+                                <div class="list-group-item" {{ stimulus_target('scroll-on-load', 'comment') }}
+                                     id="comment-{{ comment.id }}">
+                                    {{ comment.content|nl2br }}
                                 </div>
-                            </div>
-                            <div class="list-group-item">
-                                {{ comment.content|nl2br }}
                             </div>
                         {% endfor %}
                         <div class="list-group-item">

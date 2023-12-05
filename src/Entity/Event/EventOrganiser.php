@@ -33,7 +33,10 @@ class EventOrganiser
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
-    #[ORM\OneToMany(mappedBy: 'eventOrganiser', targetEntity: EventRole::class)]
+    #[ORM\JoinTable(name: 'event_organiser_roles')]
+    #[ORM\JoinColumn(name: 'event_organiser_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'event_role_id', referencedColumnName: 'id')]
+    #[ORM\ManyToMany(targetEntity: EventRole::class)]
     private Collection $roles;
 
     public function __construct()
@@ -95,7 +98,6 @@ class EventOrganiser
     {
         if (! $this->roles->contains($role)) {
             $this->roles->add($role);
-            $role->setEventOrganiser($this);
         }
 
         return $this;
@@ -103,13 +105,7 @@ class EventOrganiser
 
     public function removeRole(EventRole $role): static
     {
-        if ($this->roles->removeElement($role)) {
-            // set the owning side to null (unless already changed)
-            if ($role->getEventOrganiser() === $this) {
-                $role->setEventOrganiser(null);
-            }
-        }
-
+        $this->roles->removeElement($role);
         return $this;
     }
 }

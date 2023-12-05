@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+{% import "macro/event.macro.twig" as eventMacro %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-4">
+                {{ eventMacro.card(event) }}
+                {{ include('partials/_event_settings_nav.html.twig') }}
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="text-end fs-4">{{ 'invite-event-organiser'|trans }}</div>
+                <hr/>
+                {{ form_start(eventOrganiserInvitationForm) }}
+                <div class="card">
+                    <div class="card-body">
+                        {{ form_row(eventOrganiserInvitationForm.email) }}
+                        {{ form_row(eventOrganiserInvitationForm.roles) }}
+                    </div>
+                    <div class="card-footer text-end">
+                        <button type="submit" class="btn btn-primary">{{ 'invite'|trans }}</button>
+                    </div>
+                </div>
+                {{ form_end(eventOrganiserInvitationForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

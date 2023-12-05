@@ -8,6 +8,7 @@ use App\Entity\Event\Event;
 use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventRole;
 use App\Entity\User;
+use App\Enum\EventOrganiserRoleEnum;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
@@ -22,8 +23,13 @@ class HasEventPermission extends AbstractExtension
 
     public function hasPermission(Event $event, string $role, null|User $user = null): null|bool
     {
-        $eventCrewMember = $event->getEventOrganisers()->findFirst(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $user);
+        $roleEnum = EventOrganiserRoleEnum::tryFrom($role);
+        $eventOrganiser = $event->getEventOrganisers()->findFirst(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $user);
 
-        return $eventCrewMember?->getRoles()->exists(fn (int $key, EventRole $eventRole) => $eventRole->getTitle() === $role);
+        if (! $eventOrganiser instanceof EventOrganiser) {
+            return false;
+        }
+
+        return $eventOrganiser->getRoles()->exists(fn (int $key, EventRole $eventRole) => $eventRole->getTitle() === $roleEnum);
     }
 }

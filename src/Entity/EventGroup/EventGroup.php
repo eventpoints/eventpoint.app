@@ -18,9 +18,11 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EventGroupRepository::class)]
-#[UniqueEntity(fields: ['title'], message: 'There is already a group with this title')]
+#[UniqueEntity(fields: ['name'], message: 'There is already a group with this name')]
+#[UniqueEntity(fields: ['entityIdentificationNumber'], message: 'There is already a group with this entity identification number')]
 class EventGroup
 {
     #[ORM\Id]
@@ -30,7 +32,13 @@ class EventGroup
     private Uuid $id;
 
     #[ORM\Column(length: 255)]
-    private string $title;
+    #[Assert\NotBlank]
+    private null|string $name = null;
+
+    #[ORM\Column(type: Types::STRING, length: 140)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 20, max: 140)]
+    private null|string $purpose = null;
 
     #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: Event::class, cascade: ['persist'])]
     #[ORM\OrderBy([
@@ -50,6 +58,10 @@ class EventGroup
     #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: EventGroupDiscussion::class)]
     private Collection $eventGroupDiscussions;
 
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    private null|string $entityIdentificationNumber = null;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -63,14 +75,14 @@ class EventGroup
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getName(): null|string
     {
-        return $this->title;
+        return $this->name;
     }
 
-    public function setTitle(string $title): static
+    public function setName(null|string $name): static
     {
-        $this->title = $title;
+        $this->name = $name;
 
         return $this;
     }
@@ -164,7 +176,7 @@ class EventGroup
      */
     public function getEventGroupMaintainers(): ArrayCollection
     {
-        return $this->eventGroupMembers->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER->name));
+        return $this->eventGroupMembers->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER));
     }
 
     /**
@@ -195,5 +207,37 @@ class EventGroup
         }
 
         return $this;
+    }
+
+    public function getEntityIdentificationNumber(): null|string
+    {
+        return $this->entityIdentificationNumber;
+    }
+
+    public function setEntityIdentificationNumber(null|string $entityIdentificationNumber): static
+    {
+        $this->entityIdentificationNumber = $entityIdentificationNumber;
+
+        return $this;
+    }
+
+    public function getPurpose(): null|string
+    {
+        return $this->purpose;
+    }
+
+    public function setPurpose(null|string $purpose): void
+    {
+        $this->purpose = $purpose;
+    }
+
+    public function getIsMember(User $user): bool
+    {
+        return $this->getEventGroupMembers()->exists(fn (int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user);
+    }
+
+    public function getMember(User $user): null|EventGroupMember
+    {
+        return $this->getEventGroupMembers()->findFirst(fn (int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user);
     }
 }

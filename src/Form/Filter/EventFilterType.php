@@ -28,7 +28,6 @@ class EventFilterType extends AbstractType
             ->add('title', TextType::class, [
                 'label' => $this->translator->trans('event-filter-title-placeholder'),
                 'attr' => [
-                    'placeholder' => $this->translator->trans('event-filter-title-placeholder'),
                 ],
                 'required' => false,
                 'row_attr' => [

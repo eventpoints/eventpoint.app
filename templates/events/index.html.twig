@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import "macro/event.macro.twig" as eventMacro %}
 
 {% block body %}
     <div {{ stimulus_controller('dynamic-map',{
@@ -6,23 +7,27 @@
         events: eventPagination.items|serialize(format = 'json'),
     }) }}>
 
-        <div class="offcanvas offcanvas-bottom vh-50" data-bs-scroll="true" tabindex="-1" id="map-offcanvas" aria-labelledby="map">
+        <div class="offcanvas offcanvas-bottom vh-50" data-bs-scroll="true" tabindex="-1" id="map-offcanvas"
+             aria-labelledby="map">
             <div class="map-big" id="map" {{ stimulus_target('dynamic-map', 'map') }}></div>
         </div>
 
-        <div class="container">
-            <div class="row g-3 mt-3">
+        <div class="container-fluid">
+            <div class="row justify-content-center mt-3">
                 <div class="col-12 col-md-4">
-                    {{ form_start(eventFilter) }}
-                    <div class="card mb-3">
+                    <div class="card sticky-top">
+                        <div class="card-header fw-bold">{{ 'filter'|trans|capitalize }}</div>
+                        {{ form_start(eventFilter) }}
                         <div class="list-group list-group-flush">
                             <div class="list-group-item">{{ form_row(eventFilter.title) }}</div>
                             <div class="list-group-item">{{ form_row(eventFilter.category) }}</div>
                             {{ form_row(eventFilter.period) }}
                         </div>
-                        <div class="card-footer d-flex justify-content-between">
-                            <a href="{{ path('events') }}" class="btn btn-secondary w-25">{{ 'clear'|trans }}</a>
-                            <button type="submit" class="btn btn-outline-primary w-25">{{ 'search'|trans }}</button>
+                        <div class="card-footer bg-white">
+                            <button type="button" href="{{ path('events') }}"
+                                    class="btn mb-3 w-100 btn-secondary">{{ 'clear'|trans }}</button>
+                            <button type="submit"
+                                    class="btn w-100 btn-outline-primary">{{ 'search'|trans }}</button>
                         </div>
                         {{ form_end(eventFilter) }}
                     </div>
@@ -116,74 +121,7 @@
                         </div>
                         {% for event in eventPagination %}
                             <div class="col-12 col-md-6">
-                                <div class="card position-relative" {{ stimulus_target('dynamic-map', 'event-card') }}>
-                                    {% if event.eventGroup %}
-                                        <a href="{{ path('event_group_show', {id: event.eventGroup.id }) }}">
-                                            <div class="position-absolute top-0 mt-2 ms-2 badge rounded-pill bg-warning">
-                                                {{ event.eventGroup.title }}
-                                            </div>
-                                        </a>
-                                    {% endif %}
-                                    {% if event.base64Image %}
-                                        <img src="{{ event.base64Image }}" class="card-img-top object-fit-cover"
-                                             height="150px"
-                                             alt="{{ event.title }}">
-                                    {% endif %}
-                                    <div class="card-body rounded-top">
-                                        <div class="fw-bold h5 {{ event.isComplete(regional.regionalSettingValueObject.timezone) ? 'text-decoration-line-through' : '' }}">{{ event.title }}</div>
-                                        <div class="d-flex justify-content-between">
-                                            <div class="me-1">{{ event.startAt|format_datetime(pattern=date_time_pattern,timezone=regional.regionalSettingValueObject.timezone) }}</div>
-                                            <div>{{ event.durationInHour }} {{ 'hours'|trans }}</div>
-                                        </div>
-                                        <div>
-                                            {{ event.address }}
-                                        </div>
-                                    </div>
-                                    {% if event.isInProgress(regional.regionalSettingValueObject.timezone) %}
-                                        <div {{ stimulus_controller('progress', {
-                                            elapsed: event.elapsedTimeInMinutes,
-                                            duration: event.durationInMinutes
-                                        }) }}>
-                                            <div class="progress rounded-0" style="height:5px" data-bs-toggle="tooltip"
-                                                 data-bs-placement="top"
-                                                 data-bs-title="{{ event.timeRemainingAsInterval }} {{ 'remaining'|trans }}">
-                                                <div {{ stimulus_target('progress', 'progressBar') }}
-                                                        class="progress-bar bg-success" role="progressbar"
-                                                        aria-valuenow="0"
-                                                        aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                        </div>
-                                    {% elseif event.isComplete(regional.regionalSettingValueObject.timezone) %}
-                                        <div class="progress rounded-0" style="height:3px" role="progressbar"
-                                             aria-label="Basic example" aria-valuenow="0" aria-valuemin="0"
-                                             aria-valuemax="100">
-                                            <div class="progress-bar bg-success" style="width: 100%"></div>
-                                        </div>
-                                    {% else %}
-                                        <div class="progress rounded-0" style="height:3px" role="progressbar"
-                                             aria-label="Basic example" aria-valuenow="0" aria-valuemin="0"
-                                             aria-valuemax="100">
-                                            <div class="progress-bar" style="width: 0"></div>
-                                        </div>
-                                    {% endif %}
-                                    <div class="card-body d-flex justify-content-start flex-wrap">
-                                        {% for category in event.categories %}
-                                            <span class="badge rounded-pill text-bg-light fs-6 me-1 mb-1">{{ category.title|trans }}</span>
-                                        {% endfor %}
-                                    </div>
-                                    <div class="card-footer d-flex justify-content-between">
-                                        <a class="btn btn-secondary" data-bs-toggle="offcanvas" data-bs-target="#map-offcanvas"
-                                           aria-controls="#map-offcanvas" {{ stimulus_action('dynamic-map', 'flyToAssetOnMap', 'click', {
-                                            id:  event.id,
-                                            longitude: event.longitude,
-                                            latitude: event.latitude
-                                        }) }}>
-                                            <span class="bi bi-crosshair"></span>
-                                        </a>
-                                        <a class="btn btn-outline-primary"
-                                           href="{{ path('show_event', {id: event.id}) }}">{{ 'view-event'|trans }}</a>
-                                    </div>
-                                </div>
+                                {{ eventMacro.card(event, true, true) }}
                             </div>
                         {% else %}
                             <div class="text-center text-muted fw-bold mt-5">{{ 'no-events-found'|trans|upper }}</div>

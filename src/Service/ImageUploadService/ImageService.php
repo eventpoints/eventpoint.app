@@ -8,7 +8,7 @@ use Intervention\Image\Image;
 use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-final class ImageUploadService
+final class ImageService
 {
     public function processAvatar(UploadedFile $file): Image
     {

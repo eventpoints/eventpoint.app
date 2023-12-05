@@ -10,8 +10,8 @@
             </div>
         {% endif %}
         {% for choice in choices %}
-            {% if choice.data.category is not null %}
-                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+            {% if choice.data.categories.count > 0 %}
+                <div class="list-group-item list-group-item-action {{ choice.data.categories.count == 0 ? 'bg-light' }} d-flex justify-content-between align-items-center"
                         {{ stimulus_target('list-group-search', 'item') }} >
                     <input style="-ms-transform: scale(2)!important;-webkit-transform: scale(2)!important;transform: scale(2)!important;"
                            type="{{ form.vars.multiple ? 'checkbox' : 'radio' }}" id="{{ id ~ '_' ~ choice.value }}"

@@ -7,8 +7,9 @@ namespace App\Controller\Controller\User;
 use App\Entity\User;
 use App\Enum\FlashEnum;
 use App\Form\Form\UserAccountFormType;
+use App\Form\Form\UserPasswordFormType;
 use App\Repository\UserRepository;
-use App\Service\ImageUploadService\ImageUploadService;
+use App\Service\ImageUploadService\ImageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,7 @@ class AccountController extends AbstractController
     public function __construct(
         private readonly UserRepository              $userRepository,
         private readonly UserPasswordHasherInterface $hasher,
-        private readonly ImageUploadService         $imageUploadService,
+        private readonly ImageService                $imageUploadService,
         private readonly TranslatorInterface         $translator,
     ) {
     }
@@ -53,6 +54,28 @@ class AccountController extends AbstractController
 
         return $this->render('user/account.html.twig', [
             'userAccountForm' => $userAccountForm,
+        ]);
+    }
+
+    #[Route(path: '/reset-password', name: 'reset_user_password', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function setPassword(Request $request, #[CurrentUser] User $currentUser): Response
+    {
+        $userPasswordForm = $this->createForm(UserPasswordFormType::class, $currentUser);
+        $userPasswordForm->handleRequest($request);
+        if ($userPasswordForm->isSubmitted() && $userPasswordForm->isValid()) {
+            $plainPassword = $userPasswordForm->get('password')->getData();
+            if (! empty($plainPassword)) {
+                $hashedPassword = $this->hasher->hashPassword($currentUser, $plainPassword);
+                $currentUser->setPassword($hashedPassword);
+            }
+
+            $this->userRepository->save($currentUser, true);
+            $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changed-saved'));
+            return $this->redirectToRoute('user_account');
+        }
+
+        return $this->render('user/reset-password.html.twig', [
+            'userPasswordForm' => $userPasswordForm,
         ]);
     }
 }

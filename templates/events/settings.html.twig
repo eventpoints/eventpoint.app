@@ -4,17 +4,97 @@
 {% block body %}
     <div class="container">
         <div class="row justify-content-center mt-3">
-            <div class="col-12 col-md-4">
-                {{ eventSettingsMacro.card(event) }}
-            </div>
-            <div class="col-12 col-md-8">
-                <div class="card">
-                    <div class="list-group list-group-flush">
 
+            {% if event.isComplete %}
+                <div class="col-12">
+                    <div class="alert alert-success rounded-0 rounded-top border-0 text-center mb-3" role="alert">
+                        {{ 'event-complete'|trans }}
                     </div>
                 </div>
+            {% endif %}
+
+            <div class="col-12 col-md-4">
+
+                {% if not event.isPublished and not event.isComplete %}
+                    <div class="card mb-3">
+                        <div class="card-body">{{ 'event-publish-warning'|trans }}</div>
+                        <div class="card-footer">
+                            <a class="btn btn-primary w-100"
+                               href="{{ path('publish_event', {id: event.id}) }}">{{ 'publish-event'|trans }}</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {{ eventSettingsMacro.card(event) }}
+                {{ include('partials/_event_settings_nav.html.twig') }}
+            </div>
+            <div class="col-12 col-md-8">
+                {% if not event.isPublished and not event.isComplete %}
+                    {{ form_start(eventForm) }}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            {{ form_label(eventForm.eventGroup) }}
+                        </div>
+                        {{ form_widget(eventForm.eventGroup) }}
+                    </div>
+                    <div class="card mb-3">
+                        <div class="" {{ stimulus_controller('location', {
+                            token: mapbox_token,
+                            latitude: event.latitude,
+                            longitude: event.longitude
+                        }) }}>
+                            <div class="map" id="map" {{ stimulus_target('location', 'result') }} ></div>
+                            {{ form_row(eventForm.latitude) }}
+                            {{ form_row(eventForm.longitude) }}
+                            <div class="card-body">
+                                <a class="btn btn-secondary" {{ stimulus_action('location', 'getCurrentLocation', 'click') }}>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <span class="me-2">{{ 'current-location'|trans }}</span>
+                                        <span {{ stimulus_target('location', 'icon') }} class="bi bi-crosshair"></span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item"> {{ form_row(eventForm.address) }}</div>
+                            <div class="list-group-item"> {{ form_row(eventForm.title) }}</div>
+                            <div class="list-group-item"> {{ form_row(eventForm.image) }}</div>
+                            <div class="list-group-item"> {{ form_row(eventForm.description) }}</div>
+                            <div class="list-group-item">
+                                <div class="row">
+                                    <div class="col-6">
+                                        {{ form_row(eventForm.startAt) }}
+                                    </div>
+                                    <div class="col-6">
+                                        {{ form_row(eventForm.endAt) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between"> {{ form_row(eventForm.isPrivate) }}</div>
+                            <div class="list-group-item">
+                                {{ 'event-term-and-condition'|trans({
+                                    path: path('create_index')
+                                })|raw }}
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-primary">{{ 'create'|trans }}</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            {{ form_label(eventForm.categories) }}
+                        </div>
+                        {{ form_widget(eventForm.categories) }}
+                    </div>
+                    {{ form_end(eventForm) }}
+                {% endif %}
             </div>
         </div>
+    </div>
     </div>
 {% endblock %}
 

@@ -8,7 +8,7 @@ use App\DataTransferObject\EventFilterDto;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventEmailInvitation;
 use App\Entity\User;
-use App\Enum\EventRoleEnum;
+use App\Enum\EventOrganiserRoleEnum;
 use App\Enum\FlashEnum;
 use App\Factory\Event\EventFactory;
 use App\Factory\Event\EventOrganiserFactory;
@@ -22,7 +22,8 @@ use App\Form\Form\ImageFormType;
 use App\Repository\Event\EventRepository;
 use App\Repository\Event\EventRoleRepository;
 use App\Repository\ImageCollectionRepository;
-use App\Service\ImageUploadService\ImageUploadService;
+use App\Security\Voter\EventVoter;
+use App\Service\ImageUploadService\ImageService;
 use Carbon\CarbonImmutable;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,7 +38,7 @@ class EventController extends AbstractController
 {
     public function __construct(
         private readonly EventRepository           $eventRepository,
-        private readonly ImageUploadService        $imageUploadService,
+        private readonly ImageService              $imageUploadService,
         private readonly ImageFactory              $imageFactory,
         private readonly ImageCollectionFactory    $imageCollectionFactory,
         private readonly ImageCollectionRepository $imageCollectionRepository,
@@ -94,13 +95,15 @@ class EventController extends AbstractController
             );
 
             $adminRole = $this->eventRoleRepository->findOneBy([
-                'name' => EventRoleEnum::ROLE_EVENT_MANAGER->value,
+                'title' => EventOrganiserRoleEnum::ROLE_EVENT_MANAGER,
             ]);
             $eventOrganiser = $this->eventCrewMemberFactory->create(owner: $currentUser, event: $event, roles: [$adminRole]);
             $event->addEventOrganiser($eventOrganiser);
 
             $this->eventRepository->save(entity: $eventForm->getData(), flush: true);
-            return $this->redirectToRoute('events');
+            return $this->redirectToRoute('show_event', [
+                'id' => $event->getId(),
+            ]);
         }
 
         return $this->render('events/create.html.twig', [
@@ -134,7 +137,28 @@ class EventController extends AbstractController
     #[Route(path: '/events/settings/{id}', name: 'event_settings')]
     public function settings(Event $event, Request $request, #[CurrentUser] User $currentUser): Response
     {
+        $eventForm = $this->createForm(EventFormType::class, $event, [
+            'event' => $event,
+        ]);
+        $eventForm->handleRequest($request);
+        if ($eventForm->isSubmitted() && $eventForm->isValid()) {
+            $image = $eventForm->get('image')->getData();
+            if (! empty($image)) {
+                /** @var Event $event */
+                $event = $eventForm->getData();
+                $event->setBase64Image(
+                    $this->imageUploadService->processPhoto($image)->getEncoded()
+                );
+            }
+
+            $this->eventRepository->save(entity: $eventForm->getData(), flush: true);
+            return $this->redirectToRoute('event_settings', [
+                'id' => $event->getId(),
+            ]);
+        }
+
         return $this->render('events/settings.html.twig', [
+            'eventForm' => $eventForm,
             'event' => $event,
         ]);
     }
@@ -161,6 +185,19 @@ class EventController extends AbstractController
         return $this->render('events/cancel.html.twig', [
             'eventCancellationForm' => $eventCancellationForm,
             'event' => $event,
+        ]);
+    }
+
+    #[Route(path: '/events/publish/{id}', name: 'publish_event')]
+    public function publish(Event $event, Request $request, #[CurrentUser] User $currentUser): Response
+    {
+        $this->isGranted(EventVoter::PUBLISH_EVENT, $event);
+
+        $event->setIsPublished(true);
+        $this->eventRepository->save($event, true);
+        $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('event-published'));
+        return $this->redirectToRoute('show_event', [
+            'id' => $event->getId(),
         ]);
     }
 
