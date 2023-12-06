@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row justify-content-center align-items-center g-3 min-vh-80">
+            <div class="col-12 col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="fw-bold fs-4">{{ 'about-us'|trans }}</div>
+                        <div class="my-3">{{ 'about-us-content'|trans }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block title %}
+    {{ 'terms'|trans|capitalize }}
+{% endblock %}
+

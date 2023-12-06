@@ -56,4 +56,6 @@ return [
     'event-not-published' => 'This event has not been published',
     'publish-event-journey-explainer' => 'Published your event in the event settings',
     'group-hidden-content' => 'join the group to see more',
+    'about-us' => 'about us',
+    'about-us-content' => 'Where simplicity meets affordability in event organizing. Frustrated by the complexity and high costs of existing solutions, we set out to create a user-friendly alternative. Our motivation stems from a genuine desire to make event planning accessible to everyone. [Your App Name] prioritizes ease of use without compromising on essential features. Join us in redefining the way events are organized – a straightforward approach without the hefty price tag.',
 ];
