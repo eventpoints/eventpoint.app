@@ -17,6 +17,7 @@ use App\Repository\Event\EventRepository;
 use App\Repository\EventDiscussionCommentRepository;
 use App\Repository\EventDiscussionRepository;
 use App\Repository\EventGroupRoleRepository;
+use App\Repository\PollRepository;
 use App\Service\EventGroupAnalyzer\EventGroupAnalyzer;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
@@ -37,6 +38,7 @@ class EventGroupController extends AbstractController
         private readonly EventGroupFactory         $eventGroupFactory,
         private readonly EventGroupMemberFactory   $eventGroupMemberFactory,
         private readonly EventGroupRoleRepository  $eventGroupRoleRepository,
+        private readonly PollRepository  $pollRepository,
         private readonly EventDiscussionRepository $eventDiscussionRepository,
         private readonly EventDiscussionCommentRepository $eventDiscussionCommentRepository,
         private readonly PaginatorInterface        $paginator,
@@ -55,8 +57,9 @@ class EventGroupController extends AbstractController
         $events = $this->eventRepository->findByGroup($eventGroup);
         $discussions = $this->eventDiscussionRepository->findByGroup($eventGroup);
         $discussionComments = $this->eventDiscussionCommentRepository->findByGroup($eventGroup);
+        $polls = $this->pollRepository->findByGroup($eventGroup);
 
-        $unorderedPosts = new ArrayCollection([...$events, ...$discussions, ...$discussionComments]);
+        $unorderedPosts = new ArrayCollection([...$events, ...$discussions, ...$discussionComments, ...$polls]);
         $posts = $unorderedPosts->matching(Criteria::create()->orderBy([
             'createdAt' => Criteria::DESC,
         ]));

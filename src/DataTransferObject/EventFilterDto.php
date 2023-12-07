@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\DataTransferObject;
 
 use App\Entity\Category;
+use App\Enum\EventFilterDateRangeEnum;
 
 class EventFilterDto
 {
     private null|string $title = null;
 
-    private null|string $period = 'today';
+    private null|EventFilterDateRangeEnum $period = EventFilterDateRangeEnum::TODAY;
 
     private null|Category $category = null;
 
@@ -24,12 +25,12 @@ class EventFilterDto
         $this->title = $title;
     }
 
-    public function getPeriod(): ?string
+    public function getPeriod(): null|EventFilterDateRangeEnum
     {
         return $this->period;
     }
 
-    public function setPeriod(?string $period): void
+    public function setPeriod(null|EventFilterDateRangeEnum $period): void
     {
         $this->period = $period;
     }

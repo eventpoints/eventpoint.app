@@ -36,6 +36,7 @@
         "bootstrap": "^5.3.2",
         "bootstrap-icons": "^1.11.1",
         "chartjs-adapter-date-fns": "^3.0.0",
+        "count-time-down": "^1.0.5",
         "date-fns": "^2.30.0",
         "mapbox-gl": "^2.8.2",
         "stimulus-calendar": "^1.2.3",

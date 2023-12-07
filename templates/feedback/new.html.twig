@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'feedback'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="container my-3">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                {{ form_start(feedbackForm) }}
+                <div class="card">
+                    <div class="card-header h5 fw-bold">{{ 'feedback'|trans|capitalize }}</div>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            {{ 'feedback-encourager'|trans|capitalize }}
+                        </div>
+                        <div class="list-group-item">
+                            {{ form_row(feedbackForm.type) }}
+                        </div>
+                        <div class="list-group-item">
+                            {{ form_row(feedbackForm.content) }}
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-outline-primary w-100">{{ 'send'|trans }}</button>
+                    </div>
+                </div>
+                {{ form_end(feedbackForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

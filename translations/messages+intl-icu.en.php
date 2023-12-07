@@ -58,4 +58,6 @@ return [
     'group-hidden-content' => 'join the group to see more',
     'about-us' => 'about us',
     'about-us-content' => 'Where simplicity meets affordability in event organizing. Frustrated by the complexity and high costs of existing solutions, we set out to create a user-friendly alternative. Our motivation stems from a genuine desire to make event planning accessible to everyone. [Your App Name] prioritizes ease of use without compromising on essential features. Join us in redefining the way events are organized – a straightforward approach without the hefty price tag.',
+    'feedback-encourager' => 'We genuinely welcome your feedback, be it positive or constructive. At Eventpoint, we\'re committed to listening and actively modifying features based on your input. Your insights drive our improvements – thank you for shaping Eventpoint with us.',
+    'poll-no-undo-explainer' => 'Please note, once you have voted you can change or remove your vote.',
 ];

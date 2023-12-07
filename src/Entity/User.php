@@ -10,6 +10,8 @@ use App\Entity\Event\EventInvitation;
 use App\Entity\Event\EventOrganiser;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventGroup\EventGroupMember;
+use App\Entity\Poll\Poll;
+use App\Entity\Poll\PollAnswer;
 use App\Repository\UserRepository;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -125,6 +127,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventOrganiserInvitation::class)]
     private Collection $eventOrganiserInvitations;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: PollAnswer::class)]
+    private Collection $pollAnswers;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Poll::class)]
+    private Collection $polls;
+
     public function __construct()
     {
         $this->eventOrganisers = new ArrayCollection();
@@ -142,6 +150,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->eventCancellations = new ArrayCollection();
         $this->socialAuths = new ArrayCollection();
         $this->eventOrganiserInvitations = new ArrayCollection();
+        $this->pollAnswers = new ArrayCollection();
+        $this->polls = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -746,6 +756,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
             // set the owning side to null (unless already changed)
             if ($eventOrganiserInvitation->getOwner() === $this) {
                 $eventOrganiserInvitation->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PollAnswer>
+     */
+    public function getPollAnswers(): Collection
+    {
+        return $this->pollAnswers;
+    }
+
+    public function addPollAnswer(PollAnswer $pollAnswer): static
+    {
+        if (! $this->pollAnswers->contains($pollAnswer)) {
+            $this->pollAnswers->add($pollAnswer);
+            $pollAnswer->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removePollAnswer(PollAnswer $pollAnswer): static
+    {
+        if ($this->pollAnswers->removeElement($pollAnswer)) {
+            // set the owning side to null (unless already changed)
+            if ($pollAnswer->getOwner() === $this) {
+                $pollAnswer->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Poll>
+     */
+    public function getPolls(): Collection
+    {
+        return $this->polls;
+    }
+
+    public function addPoll(Poll $poll): static
+    {
+        if (! $this->polls->contains($poll)) {
+            $this->polls->add($poll);
+            $poll->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removePoll(Poll $poll): static
+    {
+        if ($this->polls->removeElement($poll)) {
+            // set the owning side to null (unless already changed)
+            if ($poll->getOwner() === $this) {
+                $poll->setOwner(null);
             }
         }
 

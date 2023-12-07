@@ -239,6 +239,13 @@ class Event implements Stringable
         return round($this->startAt->diffInRealHours($this->getEndAt()) / 60, 2);
     }
 
+    public function getTimeRemainingInMilliseconds(): int
+    {
+        $currentTime = CarbonImmutable::now();
+        $endTime = $this->getEndAt();
+        return $currentTime->diffInRealMilliseconds($endTime);
+    }
+
     public function getElapsedTimeInMinutes(): int
     {
         return CarbonImmutable::now()->diffInRealMinutes($this->startAt);

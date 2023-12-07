@@ -1,24 +1,38 @@
 {% extends 'base.html.twig' %}
 {% import "macro/event.macro.twig" as eventMacro %}
 {% import "macro/group.macro.twig" as groupMacro %}
+{% import "macro/poll.macro.twig" as pollMacro %}
 
 {% block body %}
-    <div>
-        <turbo-frame id="event-group-graph-frame" src="{{ path('event_group_activity_graph', {id: eventGroup.id }) }}">
-            <div class="d-flex justify-content-center py-5">
-                <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        </turbo-frame>
-    </div>
 
     <div class="container">
-        <div class="row justify-content-center mt-3">
+        <div class="row justify-content-center mt-3 min-vh-60">
             <div class="col-12 col-md-4">
                 {{ include('partials/_event-group-navbar.html.twig') }}
             </div>
             <div class="col-12 col-md-6">
+
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="fw-bold text-muted small">{{ 'group-activity'|trans|upper }}</div>
+                        <turbo-frame id="event-group-graph-frame"
+                                     src="{{ path('event_group_activity_graph', {id: eventGroup.id }) }}">
+                            <div class="d-flex justify-content-center py-5">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </turbo-frame>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="row justify-content-center g-0">
+                        <div class="col-4 text-center">{{ 'create-event'|trans }}</div>
+                        <div class="col-4 text-center">{{ 'create-poll'|trans }}</div>
+                        <div class="col-4 text-center">{{ 'create-discustion'|trans }}</div>
+                    </div>
+                </div>
 
                 {% if app.user %}
                     {% if eventGroup.isMember(app.user) %}
@@ -31,6 +45,8 @@
                                         {{ groupMacro.discussion(post) }}
                                     {% elseif post|instanceof('App\\Entity\\EventDiscussionComment') %}
                                         {{ groupMacro.comment(post, true) }}
+                                    {% elseif post|instanceof('App\\Entity\\Poll\\Poll') %}
+                                        {{ pollMacro.poll(post) }}
                                     {% endif %}
                                 </div>
                             {% else %}

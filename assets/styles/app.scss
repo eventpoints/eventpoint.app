@@ -12,6 +12,14 @@ body{
   margin: 0;
 }
 
+.b-and-w {
+  filter: grayscale(100%);
+}
+
+.blur {
+  filter: blur(var(--value, .2rem))
+}
+
 .min-vh-10{
   min-height: 10vh;
 }
@@ -37,13 +45,6 @@ body{
 
 .min-vh-90{
   min-height: 90vh;
-}
-
-.event-group-activity-chart{
-  padding: 0!important;
-  margin: 0!important;
-  width: 100%!important;
-  height: 100px!important;
 }
 
 * {

@@ -1,0 +1,5 @@
+{% macro poll(poll) %}
+    <div class="card mb-2">
+        {{ component('poll_answer_form', { poll: poll }) }}
+    </div>
+{% endmacro %}

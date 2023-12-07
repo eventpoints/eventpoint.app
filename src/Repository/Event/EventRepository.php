@@ -9,6 +9,7 @@ use App\Entity\Category;
 use App\Entity\Event\Event;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User;
+use App\Enum\EventFilterDateRangeEnum;
 use App\Service\ApplicationTimeService\ApplicationTimeService;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
@@ -74,7 +75,7 @@ class EventRepository extends ServiceEntityRepository
     /**
      * @return array<int, Event>
      */
-    public function findByPeriod(mixed $period, null|QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    public function findByPeriod(EventFilterDateRangeEnum $period, null|QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
         if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('asset');
@@ -82,22 +83,22 @@ class EventRepository extends ServiceEntityRepository
         $result = $qb;
 
         $start = match ($period) {
-            'last-week' => $this->applicationTimeService->getNow()->subWeek()->startOfWeek()->startOfDay()->toImmutable(),
-            'tomorrow' => $this->applicationTimeService->getNow()->addDay()->startOfDay()->toImmutable(),
-            'this-week' => $this->applicationTimeService->getNow()->previous(Carbon::MONDAY)->startOfDay()->toImmutable(),
-            'this-weekend' => $this->applicationTimeService->getNow()->next(Carbon::SATURDAY)->startOfDay()->toImmutable(),
-            'next-week' => $this->applicationTimeService->getNow()->addWeek()->startOfDay()->toImmutable(),
-            'next-month' => $this->applicationTimeService->getNow()->addMonth()->startOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::RECENTLY => $this->applicationTimeService->getNow()->subDays(7)->startOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::TOMORROW => $this->applicationTimeService->getNow()->addDay()->startOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::THIS_WEEK => $this->applicationTimeService->getNow()->previous(Carbon::MONDAY)->startOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::THIS_WEEKEND => $this->applicationTimeService->getNow()->next(Carbon::SATURDAY)->startOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::NEXT_WEEK => $this->applicationTimeService->getNow()->addWeek()->startOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::NEXT_MONTH => $this->applicationTimeService->getNow()->addMonth()->startOfDay()->toImmutable(),
             default => $this->applicationTimeService->getNow()->startOfDay()->toImmutable(),
         };
 
         $end = match ($period) {
-            'last-week' => $this->applicationTimeService->getNow()->subWeek()->endOfWeek()->endOfDay()->toImmutable(),
-            'tomorrow' => $this->applicationTimeService->getNow()->addDay()->endOfDay()->toImmutable(),
-            'this-week' => $this->applicationTimeService->getNow()->next(Carbon::FRIDAY)->endOfDay()->toImmutable(),
-            'this-weekend' => $this->applicationTimeService->getNow()->next(Carbon::SUNDAY)->endOfDay()->toImmutable(),
-            'next-week' => $this->applicationTimeService->getNow()->addWeek()->endOfWeek()->endOfDay()->toImmutable(),
-            'next-month' => $this->applicationTimeService->getNow()->addMonth()->endOfMonth()->endOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::RECENTLY => $this->applicationTimeService->getNow()->endOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::TOMORROW => $this->applicationTimeService->getNow()->addDay()->endOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::THIS_WEEK => $this->applicationTimeService->getNow()->next(Carbon::FRIDAY)->endOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::THIS_WEEKEND => $this->applicationTimeService->getNow()->next(Carbon::SUNDAY)->endOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::NEXT_WEEK => $this->applicationTimeService->getNow()->addWeek()->endOfWeek()->endOfDay()->toImmutable(),
+            EventFilterDateRangeEnum::NEXT_MONTH => $this->applicationTimeService->getNow()->addMonth()->endOfMonth()->endOfDay()->toImmutable(),
             default => $this->applicationTimeService->getNow()->endOfDay()->toImmutable(),
         };
 
@@ -108,12 +109,6 @@ class EventRepository extends ServiceEntityRepository
         $qb->andWhere(
             $qb->expr()->lte('event.startAt', ':end')
         )->setParameter('end', $end, Types::DATETIME_IMMUTABLE);
-
-        if ($period !== 'last-week') {
-            $qb->andWhere(
-                $qb->expr()->gt('event.endAt', ':now')
-            )->setParameter('now', $this->applicationTimeService->getNow()->toImmutable(), Types::DATETIME_IMMUTABLE);
-        }
 
         if ($isQuery) {
             return $result->getQuery();
@@ -128,7 +123,7 @@ class EventRepository extends ServiceEntityRepository
     public function findByFilter(EventFilterDto $eventFilterDto, bool $isQuery = false): Query|array
     {
         $qb = $this->createQueryBuilder('event');
-        if (! empty($eventFilterDto->getPeriod())) {
+        if ($eventFilterDto->getPeriod() instanceof EventFilterDateRangeEnum) {
             $this->findByPeriod(period: $eventFilterDto->getPeriod(), qb: $qb);
         }
 

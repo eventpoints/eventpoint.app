@@ -6,6 +6,7 @@ namespace App\Entity\EventGroup;
 
 use App\Entity\Event\Event;
 use App\Entity\EventGroupDiscussion;
+use App\Entity\Poll\Poll;
 use App\Entity\User;
 use App\Enum\EventGroupRoleEnum;
 use App\Repository\Event\EventGroupRepository;
@@ -62,12 +63,16 @@ class EventGroup
     #[Assert\NotBlank]
     private null|string $entityIdentificationNumber = null;
 
+    #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: Poll::class)]
+    private Collection $polls;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
         $this->eventGroupMembers = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
         $this->eventGroupDiscussions = new ArrayCollection();
+        $this->polls = new ArrayCollection();
     }
 
     public function getId(): Uuid
@@ -239,5 +244,35 @@ class EventGroup
     public function getMember(User $user): null|EventGroupMember
     {
         return $this->getEventGroupMembers()->findFirst(fn (int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user);
+    }
+
+    /**
+     * @return Collection<int, Poll>
+     */
+    public function getPolls(): Collection
+    {
+        return $this->polls;
+    }
+
+    public function addPoll(Poll $poll): static
+    {
+        if (! $this->polls->contains($poll)) {
+            $this->polls->add($poll);
+            $poll->setEventGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removePoll(Poll $poll): static
+    {
+        if ($this->polls->removeElement($poll)) {
+            // set the owning side to null (unless already changed)
+            if ($poll->getEventGroup() === $this) {
+                $poll->setEventGroup(null);
+            }
+        }
+
+        return $this;
     }
 }

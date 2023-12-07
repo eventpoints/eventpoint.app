@@ -71,9 +71,16 @@ class EventController extends AbstractController
                 page: $request->query->getInt('page', 1),
                 limit: 3
             );
+
+            return $this->render('events/index.html.twig', [
+                'period' => $eventFilterDto->getPeriod(),
+                'eventFilter' => $eventFilter,
+                'eventPagination' => $eventPagination,
+            ]);
         }
 
         return $this->render('events/index.html.twig', [
+            'period' => $eventFilterDto->getPeriod(),
             'eventFilter' => $eventFilter,
             'eventPagination' => $eventPagination,
         ]);

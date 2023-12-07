@@ -21,8 +21,8 @@
                         <div class="list-group list-group-flush">
                             <div class="list-group-item">{{ form_row(eventFilter.title) }}</div>
                             <div class="list-group-item">{{ form_row(eventFilter.category) }}</div>
-                            {{ form_row(eventFilter.period) }}
                         </div>
+                        {{ form_row(eventFilter.period) }}
                         <div class="card-footer bg-white">
                             <button type="button" href="{{ path('events') }}"
                                     class="btn mb-3 w-100 btn-secondary">{{ 'clear'|trans }}</button>
@@ -36,19 +36,18 @@
                     <div class="row g-2">
                         <div class="col-12">
                             <div class="d-flex justify-content-between mb-2 fs-4">
-                                {% set period = app.request.get('event_filter').period|default("today") %}
                                 <div class="text-danger text-center">
-                                    {% if period == 'last-week' %}
-                                        <div class="fw-bold">{{ 'last-week'|trans|upper }}</div>
-                                    {% elseif period == 'today' %}
+                                    {% if period.value == 'recently' %}
+                                        <div class="fw-bold">{{ 'recently'|trans|upper }}</div>
+                                    {% elseif period.value == 'today' %}
                                         <div class="fw-bold">{{ 'today'|trans|upper }}</div>
-                                    {% elseif period == 'tomorrow' %}
+                                    {% elseif period.value == 'tomorrow' %}
                                         <div class="fw-bold">{{ 'tomorrow'|trans|upper }}</div>
-                                    {% elseif period == 'this-weekend' %}
+                                    {% elseif period.value == 'this-weekend' %}
                                         <div class="fw-bold">{{ 'this-weekend'|trans|upper }}</div>
-                                    {% elseif period == 'this-week' %}
+                                    {% elseif period.value == 'this-week' %}
                                         <div class="fw-bold">{{ 'this-week'|trans|upper }}</div>
-                                    {% elseif period == 'next-week' %}
+                                    {% elseif period.value == 'next-week' %}
                                         <div class="fw-bold">{{ 'next-week'|trans|upper }}</div>
                                     {% else %}
                                     {% endif %}
@@ -56,7 +55,7 @@
                                 <div class="text-end">
                                     <div class="d-flex justify-content-between">
                                         <div>
-                                            {% if period == 'last-week' %}
+                                            {% if period.value == 'recently' %}
                                                 <div class="fw-bold">
                                                     {{ app_time.now.subWeek.startOfWeek.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                     {{ app_time.now.subWeek.startOfWeek.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
@@ -66,7 +65,7 @@
                                                     {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                     {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                 </div>
-                                            {% elseif period == 'today' %}
+                                            {% elseif period.value == 'today' %}
                                                 <div class="fw-bold">
                                                     <div class="fw-bold">
                                                         {{ app_time.now.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
@@ -75,14 +74,14 @@
                                                         {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                     </div>
                                                 </div>
-                                            {% elseif period == 'tomorrow' %}
+                                            {% elseif period.value == 'tomorrow' %}
                                                 <div class="fw-bold">
                                                     {{ app_time.now.addDay.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                     {{ app_time.now.addDay.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                     {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                     {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                 </div>
-                                            {% elseif period == 'this-weekend' %}
+                                            {% elseif period.value == 'this-weekend' %}
                                                 <div class="fw-bold">
                                                     {{ app_time.now.next('SATURDAY').dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                     {{ app_time.now.next('SATURDAY').day|timezone_name(regional.regionalSettingValueObject.timezone) }}
@@ -92,7 +91,7 @@
                                                     {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                     {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                 </div>
-                                            {% elseif period == 'this-week' %}
+                                            {% elseif period.value == 'this-week' %}
                                                 <div class="fw-bold">
                                                     {{ app_time.now.previous('MONDAY').dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                     {{ app_time.now.previous('MONDAY').day|timezone_name(regional.regionalSettingValueObject.timezone) }}
@@ -102,7 +101,7 @@
                                                     {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                     {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                 </div>
-                                            {% elseif period == 'next-week' %}
+                                            {% elseif period.value == 'next-week' %}
                                                 <div class="fw-bold">
                                                     {{ app_time.now.addWeek.startOfWeek.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
                                                     {{ app_time.now.addWeek.startOfWeek.day|timezone_name(regional.regionalSettingValueObject.timezone) }}

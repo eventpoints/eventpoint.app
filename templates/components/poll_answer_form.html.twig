@@ -1,0 +1,52 @@
+<div {{ attributes }} class="list-group list-group-flush">
+    {% set userAnswer = poll.userAnswer(app.user) %}
+
+    <div class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="fw-bold">{{ poll.prompt }}</div>
+        {% if userAnswer %}
+            <div class="badge rounded-pill text-bg-primary">{{ poll.pollAnswers.count|compact_notation }}</div>
+        {% endif %}
+    </div>
+    {% if not poll.hasUserAnswered(app.user) %}
+        <div class="list-group-item d-flex list-group-item-info justify-content-between align-items-center">
+            <div class="bi bi-info-circle-fill fs-4 lh-1"></div>
+            <div>{{ 'poll-no-undo-explainer'|trans }}</div>
+        </div>
+    {% endif %}
+
+    {% if poll.hasUserAnswered(app.user) %}
+        {% set totalVotes = poll.pollAnswers.count %}
+        {% for pollOption in poll.pollOptions %}
+            <div class="list-group-item {{ userAnswer.pollOption == pollOption ? 'text-bg-light' }}">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div class="lead me-2">{{ pollOption.content }}</div>
+                        {% if userAnswer.pollOption == pollOption %}
+                            <img src="{{ app.user.avatar }}" class="rounded-circle border me-2" height="20"/>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div>{{ userAnswer.calculateOptionPercentages(pollOption) }}%</div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        {% for pollOption in poll.pollOptions %}
+            <a href="#" class="list-group-item list-group-item-action lead" data-action="live#action"
+               data-action-name="prevent|submit(id={{ pollOption.id }})">{{ pollOption.content }}</a>
+        {% endfor %}
+    {% endif %}
+
+    <a href="{{ path('show_profile', {id: poll.owner.id}) }}" class="list-group-item list-group-item-action">
+        <div class="d-flex justify-content-start align-items-center">
+            <div>
+                <img src="{{ poll.owner.avatar }}" class="rounded-circle border me-2" height="50"/>
+            </div>
+            <div>
+                <div class="fw-bold">{{ poll.owner.fullName }}</div>
+                <div>{{ poll.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone, pattern=date_time_pattern) }}</div>
+            </div>
+        </div>
+    </a>
+</div>

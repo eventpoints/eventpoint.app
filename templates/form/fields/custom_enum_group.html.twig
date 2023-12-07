@@ -1,0 +1,21 @@
+{% block custom_enum_group_label %}
+    <div class="list-group-item fw-bold">{{ form.vars.label|trans|capitalize }}</div>
+{% endblock %}
+{% block custom_enum_group_widget %}
+    <div class="list-group m-0 list-group-flush">
+        {% for choice in choices %}
+            <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <input style="accent-color:#00695c;-ms-transform: scale(2)!important;-webkit-transform: scale(2)!important;transform: scale(2)!important;"
+                       type="{{ form.vars.multiple ? 'checkbox' : 'radio' }}" id="{{ id ~ '_' ~ choice.value }}"
+                       name="{{ full_name ~ '[]' }}"
+                       value="{{ choice.value }}" {% if choice.value in value %}checked{% endif %}
+                >
+                <label for="{{ id ~ '_' ~ choice.value }}" class="fw-bold w-75 text-end">
+                    {{ choice.value|default(null)|trans({}, translation_domain) }}
+                </label>
+            </div>
+        {% else %}
+            <div class="list-group-item text-center text-muted">{{ form.vars.empty_message }}</div>
+        {% endfor %}
+    </div>
+{% endblock %}

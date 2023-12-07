@@ -23,6 +23,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             'form/fields/selection_group.html.twig',
             'form/fields/entity_selection_group.html.twig',
             'form/fields/category_group_type.html.twig',
+            'form/fields/custom_enum_group.html.twig',
         ],
     ]);
     if ($containerConfigurator->env() === 'test') {

@@ -6,7 +6,8 @@ namespace App\Form\Filter;
 
 use App\DataTransferObject\EventFilterDto;
 use App\Entity\Category;
-use App\Form\Type\SelectionGroupType;
+use App\Enum\EventFilterDateRangeEnum;
+use App\Form\Type\CustomEnumType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -34,20 +35,12 @@ class EventFilterType extends AbstractType
                     'class' => 'form-floating',
                 ],
             ])
-            ->add('period', SelectionGroupType::class, [
+            ->add('period', CustomEnumType::class, [
                 'label' => false,
+                'class' => EventFilterDateRangeEnum::class,
                 'row_attr' => [
                     'class' => 'form-floating',
                 ],
-                'choices' => [
-                    'last-week' => 'last-week',
-                    'today' => 'today',
-                    'tomorrow' => 'tomorrow',
-                    'this-week' => 'this-week',
-                    'this-weekend' => 'this-weekend',
-                    'next-week' => 'next-week',
-                ],
-                'searchable' => false,
                 'expanded' => true,
                 'multiple' => false,
             ])
