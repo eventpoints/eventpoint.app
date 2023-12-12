@@ -28,7 +28,7 @@ class SocialAuthenticationController extends AbstractController
             );
     }
 
-    #[Route(path: '/google/connect/check', name: 'connect_google_check')]
+    #[Route(path: '/google/connect/check', name: 'connect_google_check', schemes: ['https'])]
     public function checkGoogleAuth(): void
     {
     }
@@ -41,7 +41,7 @@ class SocialAuthenticationController extends AbstractController
             ->redirect(['public_profile', 'email'], []);
     }
 
-    #[Route(path: '/facebook/connect/check', name: 'connect_facebook_check')]
+    #[Route(path: '/facebook/connect/check', name: 'connect_facebook_check', schemes: ['https'])]
     public function checkFacebookAuth(): void
     {
     }
