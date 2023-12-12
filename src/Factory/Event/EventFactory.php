@@ -10,6 +10,7 @@ use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventParticipant;
 use App\Entity\Event\EventRejection;
 use App\Entity\Event\EventRequest;
+use App\Entity\EventGroup\EventGroup;
 use App\Entity\User;
 use Carbon\CarbonImmutable;
 
@@ -26,6 +27,7 @@ final class EventFactory
         null|string            $description = null,
         null|bool              $isPrivate = null,
         null|User              $owner = null,
+        null|EventGroup $eventGroup = null
     ): Event {
         $event = new Event();
         $event->setTitle($title);
@@ -38,6 +40,7 @@ final class EventFactory
         $event->setLongitude($longitude);
         $event->setIsPrivate($isPrivate);
         $event->setOwner($owner);
+        $event->setEventGroup($eventGroup);
         return $event;
     }
 

@@ -9,20 +9,20 @@ use App\Enum\EventFilterDateRangeEnum;
 
 class EventFilterDto
 {
-    private null|string $title = null;
+    private null|string $keyword = null;
 
     private null|EventFilterDateRangeEnum $period = EventFilterDateRangeEnum::TODAY;
 
     private null|Category $category = null;
 
-    public function getTitle(): ?string
+    public function getKeyword(): ?string
     {
-        return $this->title;
+        return $this->keyword;
     }
 
-    public function setTitle(?string $title): void
+    public function setKeyword(?string $keyword): void
     {
-        $this->title = $title;
+        $this->keyword = $keyword;
     }
 
     public function getPeriod(): null|EventFilterDateRangeEnum

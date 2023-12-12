@@ -31,7 +31,7 @@ class EventOrganiserInviationFormType extends AbstractType
                 'expanded' => true,
                 'searchable' => false,
                 'class' => EventRole::class,
-                'choice_label' => 'title',
+                'choice_label' => 'title.value',
                 'multiple' => true,
                 'choice_translation_domain' => true,
             ]);

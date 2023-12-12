@@ -1,11 +1,23 @@
 <div {{ attributes }}>
     {{ form_start(form) }}
     <div class="card mb-5">
-        <div class="card-header">{{ 'create-event-group'|trans }}</div>
+        <div class="card-header fs-5 fw-bold">{{ 'create-event-group'|trans|capitalize }}</div>
         <div class="list-group list-group-flush">
             <div class="list-group-item">{{ form_row(form.name) }}</div>
-            <div class="list-group-item">{{ form_row(form.entityIdentificationNumber) }}</div>
             <div class="list-group-item">{{ form_row(form.purpose) }}</div>
+            <div class="list-group-item">{{ form_row(form.image) }}</div>
+            <div class="list-group-item">{{ form_row(form.language) }}</div>
+            <div class="list-group-item">
+                <div class="row justify-content-between">
+                    <div class="col-6">
+                        {{ form_row(form.country) }}
+                    </div>
+                    <div class="col-6">
+                        {{ form_row(form.city) }}</div>
+                </div>
+            </div>
+            <div class="list-group-item">{{ form_row(form.entityIdentificationNumber) }}</div>
+            {{ form_row(form.categories) }}
             <div class="list-group-item text-muted text-center">{{ 'event-group-creation-disclaimer'|trans }}</div>
         </div>
         <div class="card-footer text-end">

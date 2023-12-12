@@ -18,7 +18,7 @@
             </li>
             {% if app.user %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('user_invitations') }}">
+                    <a class="nav-link" href="{{ path('user_event_invitations') }}">
                         <i class="bi bi-person-circle fs-2"></i>
                     </a>
                 </li>
@@ -35,11 +35,11 @@
 
 
 <div class="offcanvas offcanvas-end" data-bs-backdrop="menu" tabindex="-1" id="menu" aria-labelledby="menu">
-    <div class="offcanvas-header d-flex justify-content-between align-items-start">
+    <div class="offcanvas-header justify-content-between align-items-start">
         {% if app.user %}
             <div class="d-flex justify-content-start">
-                <div class="me-2">
-                    <img src="{{ app.user.avatar }}" height="50" class="rounded-circle"/>
+                <div class="me-3">
+                    <img src="{{ app.user.avatar }}" height="50" class="border rounded-circle"/>
                 </div>
                 <div>
                     <div class="fw-bold"> {{ app.user.fullName }}</div>
@@ -49,16 +49,48 @@
         {% endif %}
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
+    {% if app.user %}
+        <div class="row text-center g-0 justify-content-center align-items-center">
+            <div class="col-4">
+                <a href="{{ path('events') }}" class="btn btn-light w-100 rounded-0 text-center">
+                    <div class="bi bi-calendar-fill fs-4"></div>
+                    <div>{{ 'all-events'|trans }}</div>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{{ path('event_groups') }}" class="btn btn-light rounded-0 w-100 text-center">
+                    <div class="bi bi-people-fill fs-4"></div>
+                    <div>{{ 'all-groups'|trans }}</div>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{{ path('user_events') }}" class="btn btn-light rounded-0 w-100 text-center">
+                    <div class="bi bi-person-circle fs-4"></div>
+                    <div>{{ 'dashboard'|trans }}</div>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{{ path('create_event') }}" class="btn btn-light rounded-0 w-100 text-center">
+                    <div class="bi bi-calendar-plus-fill fs-4"></div>
+                    <div>{{ 'create-event'|trans }}</div>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{{ path('create_event_group') }}" class="btn btn-light rounded-0 w-100 text-center">
+                    <div class="bi bi-plus-circle-fill fs-4"></div>
+                    <div>{{ 'create-group'|trans }}</div>
+                </a>
+            </div>
+            <div class="col-4">
+                <a href="{{ path('app_logout') }}" class="btn btn-light text-danger rounded-0 w-100 text-center">
+                    <div class="bi bi-box-arrow-right fs-4"></div>
+                    <div>{{ 'logout'|trans }}</div>
+                </a>
+            </div>
+        </div>
+    {% endif %}
     <div class="list-group list-group-flush">
         {% if app.user %}
-            <a href="{{ path('create_event') }}"
-               class="list-group-item list-group-item-action">{{ 'create-event'|trans }}</a>
-            <a href="{{ path('create_event_group') }}"
-               class="list-group-item list-group-item-action">{{ 'create-group'|trans }}</a>
-            <a href="{{ path('user_events') }}"
-               class="list-group-item list-group-item-action">{{ 'dashboard'|trans }}</a>
-            <a href="{{ path('app_logout') }}"
-               class="list-group-item list-group-item-action text-danger">{{ 'logout'|trans }}</a>
         {% else %}
             <a href="{{ path('app_register') }}"
                class="list-group-item list-group-item-action">{{ 'register'|trans }}</a>

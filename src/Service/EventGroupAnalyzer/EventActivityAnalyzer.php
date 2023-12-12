@@ -9,7 +9,7 @@ namespace App\Service\EventGroupAnalyzer;
 use App\Entity\Event\Event;
 use Carbon\CarbonImmutable;
 
-final class EventGroupAnalyzer
+final class EventActivityAnalyzer
 {
     /**
      * @param array<int, Event> $events

@@ -3,7 +3,7 @@ import Chart from 'chart.js/auto';
 
 export default class extends Controller {
     static values = {
-        eventGroupAnalysis: String,
+        events: String,
     }
 
     connect() {
@@ -13,7 +13,7 @@ export default class extends Controller {
 
     loadChart() {
         const chartCanvas = this.element;
-        const dailyActivity = JSON.parse(this.eventGroupAnalysisValue);
+        const dailyActivity = JSON.parse(this.eventsValue);
 
         const ctx = chartCanvas.getContext('2d');
 

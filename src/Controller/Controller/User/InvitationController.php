@@ -19,15 +19,15 @@ class InvitationController extends AbstractController
     ) {
     }
 
-    #[Route(path: '/invitations', name: 'user_invitations')]
+    #[Route(path: '/event/invitations', name: 'user_event_invitations')]
     public function index(#[CurrentUser] User $currentUser): Response
     {
-        $invitations = $this->eventInvitationRepository->findBy([
+        $eventInvitations = $this->eventInvitationRepository->findBy([
             'owner' => $currentUser,
         ]);
 
         return $this->render('user/invitations.html.twig', [
-            'invitations' => $invitations,
+            'eventInvitations' => $eventInvitations,
         ]);
     }
 }

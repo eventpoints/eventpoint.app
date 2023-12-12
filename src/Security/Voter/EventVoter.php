@@ -14,20 +14,22 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EventVoter extends Voter
 {
+    final public const VIEW_EVENT = 'VIEW_EVENT';
+
     final public const EDIT_EVENT = 'EDIT_EVENT';
 
     final public const PUBLISH_EVENT = 'PUBLISH_EVENT';
 
     final public const CANCEL_EVENT = 'CANCEL_EVENT';
 
-    public function getCurrentUserEventOrgniser(Event $event, User $currentUser): null|EventOrganiser
+    public function getCurrentUserEventOrganiser(Event $event, User $currentUser): null|EventOrganiser
     {
         return $event->getEventOrganisers()->findFirst(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $currentUser);
     }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::EDIT_EVENT, self::PUBLISH_EVENT, self::CANCEL_EVENT], true)
+        return in_array($attribute, [self::VIEW_EVENT, self::EDIT_EVENT, self::PUBLISH_EVENT, self::CANCEL_EVENT], true)
             && $subject instanceof Event;
     }
 
@@ -42,6 +44,7 @@ class EventVoter extends Voter
         }
 
         return match ($attribute) {
+            self::VIEW_EVENT => $this->canViewEvent($subject, $currentUser),
             self::EDIT_EVENT => $this->canEditEvent($subject, $currentUser),
             self::PUBLISH_EVENT => $this->canPublishEvent($subject, $currentUser),
             self::CANCEL_EVENT => $this->canCancelEvent($subject, $currentUser),
@@ -55,7 +58,7 @@ class EventVoter extends Voter
             return true;
         }
 
-        $currentUserEventOrgniser = $this->getCurrentUserEventOrgniser($event, $currentUser);
+        $currentUserEventOrgniser = $this->getCurrentUserEventOrganiser($event, $currentUser);
         if (! $currentUserEventOrgniser instanceof EventOrganiser) {
             return false;
         }
@@ -76,7 +79,7 @@ class EventVoter extends Voter
             return true;
         }
 
-        $currentUserEventOrgniser = $this->getCurrentUserEventOrgniser($event, $currentUser);
+        $currentUserEventOrgniser = $this->getCurrentUserEventOrganiser($event, $currentUser);
         if (! $currentUserEventOrgniser instanceof EventOrganiser) {
             return false;
         }
@@ -97,7 +100,7 @@ class EventVoter extends Voter
             return true;
         }
 
-        $currentUserEventOrgniser = $this->getCurrentUserEventOrgniser($event, $currentUser);
+        $currentUserEventOrgniser = $this->getCurrentUserEventOrganiser($event, $currentUser);
         if (! $currentUserEventOrgniser instanceof EventOrganiser) {
             return false;
         }
@@ -106,6 +109,20 @@ class EventVoter extends Voter
             $eventRole->getTitle() === EventOrganiserRoleEnum::ROLE_EVENT_MANAGER);
 
         if (! $isPermited) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private function canViewEvent(Event $event, User $currentUser): bool
+    {
+        if (! $event->getIsPublished()) {
+            return false;
+        }
+
+        $currentUserEventOrganiser = $this->getCurrentUserEventOrganiser($event, $currentUser);
+        if (! $currentUserEventOrganiser instanceof EventOrganiser) {
             return false;
         }
 

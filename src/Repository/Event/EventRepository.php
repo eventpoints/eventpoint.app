@@ -131,8 +131,8 @@ class EventRepository extends ServiceEntityRepository
             $this->findByCategory(category: $eventFilterDto->getCategory(), qb: $qb);
         }
 
-        if (! empty($eventFilterDto->getTitle())) {
-            $this->findByTitle(title: $eventFilterDto->getTitle(), qb: $qb);
+        if (! empty($eventFilterDto->getKeyword())) {
+            $this->findByTitle(keyword: $eventFilterDto->getKeyword(), qb: $qb);
         }
 
         $qb->andWhere(
@@ -177,7 +177,7 @@ class EventRepository extends ServiceEntityRepository
     /**
      * @return Query|array<int, Event>
      */
-    public function findByTitle(string $title, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    public function findByTitle(string $keyword, QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
         if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event');
@@ -186,12 +186,12 @@ class EventRepository extends ServiceEntityRepository
 
         $qb->andWhere(
             $qb->expr()->like($qb->expr()->lower('event.title'), ':title')
-        )->setParameter('title', '%' . strtolower($title) . '%');
+        )->setParameter('title', '%' . strtolower($keyword) . '%');
 
         $qb->leftJoin('event.eventGroup', 'event_group');
         $qb->orWhere(
             $qb->expr()->like($qb->expr()->lower('event_group.title'), ':title')
-        )->setParameter('title', '%' . strtolower($title) . '%');
+        )->setParameter('title', '%' . strtolower($keyword) . '%');
 
         if ($isQuery) {
             return $result->getQuery();
@@ -227,12 +227,41 @@ class EventRepository extends ServiceEntityRepository
     /**
      * @return array<int, Event>
      */
-    public function findByUser(User $user): array
+    public function findOwnedByUser(User $user): array
     {
         $qb = $this->createQueryBuilder('event');
 
         $qb->andWhere(
             $qb->expr()->eq('event.owner', ':user')
+        )->setParameter('user', $user);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return array<int, Event>
+     */
+    public function findAssociatedByUser(User $user): array
+    {
+        $qb = $this->createQueryBuilder('event');
+
+        $qb->orWhere(
+            $qb->expr()->eq('event.owner', ':user')
+        )->setParameter('user', $user);
+
+        $qb->leftJoin('event.eventParticipants', 'participant');
+        $qb->orWhere(
+            $qb->expr()->eq('participant.owner', ':user')
+        )->setParameter('user', $user);
+
+        $qb->leftJoin('event.eventOrganisers', 'organiser');
+        $qb->orWhere(
+            $qb->expr()->eq('organiser.owner', ':user')
+        )->setParameter('user', $user);
+
+        $qb->leftJoin('event.eventInvitations', 'invitation');
+        $qb->orWhere(
+            $qb->expr()->eq('invitation.owner', ':user')
         )->setParameter('user', $user);
 
         return $qb->getQuery()->getResult();

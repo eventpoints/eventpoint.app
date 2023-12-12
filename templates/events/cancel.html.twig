@@ -9,28 +9,32 @@
                 {{ include('partials/_event_settings_nav.html.twig') }}
             </div>
             <div class="col-12 col-md-8">
-                {{ form_start(eventCancellationForm) }}
-                <div class="card border-danger">
-                    <div class="card-header text-bg-danger d-flex justify-content-between">
-                        <div class="fw-bold">{{ 'cancel-event'|trans }}</div>
-                        <div class="bi bi-x-octagon-fill"></div>
-                    </div>
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item">
-                            {{ form_row(eventCancellationForm.reason) }}
+                {% if not event.isComplete and event.isPublished %}
+                    {{ form_start(eventCancellationForm) }}
+                    <div class="card border-danger">
+                        <div class="card-header text-bg-danger d-flex justify-content-between">
+                            <div class="fw-bold">{{ 'cancel-event'|trans }}</div>
+                            <div class="bi bi-x-octagon-fill"></div>
                         </div>
-                        <div class="list-group-item">
-                            {{ form_row(eventCancellationForm.notice) }}
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item">
+                                {{ form_row(eventCancellationForm.reason) }}
+                            </div>
+                            <div class="list-group-item">
+                                {{ form_row(eventCancellationForm.notice) }}
+                            </div>
+                            <div class="list-group-item">
+                                {{ 'cancellation-warning '|trans }}
+                            </div>
                         </div>
-                        <div class="list-group-item">
-                            {{ 'cancellation-warning '|trans }}
+                        <div class="card-footer text-end">
+                            <button type="submit" class="btn btn-outline-danger">{{ 'cancel-event'|trans }}</button>
                         </div>
                     </div>
-                    <div class="card-footer text-end">
-                        <button type="submit" class="btn btn-outline-danger">{{ 'cancel-event'|trans }}</button>
-                    </div>
-                </div>
-                {{ form_end(eventCancellationForm) }}
+                    {{ form_end(eventCancellationForm) }}
+                {% else %}
+                    <div class="text-center">{{ 'can-not-cancel-unpublished-event'|trans }}</div>
+                {% endif %}
             </div>
         </div>
     </div>

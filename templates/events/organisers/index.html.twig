@@ -24,13 +24,14 @@
                         {{ 'event-organisers'|trans|upper }}
                     </div>
                     {% for organiser in event.eventOrganisers %}
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div class="d-flex justify-content-start">
-                                <div class="me-2">
-                                    <img height="50" class="rounded-circle" src="{{ organiser.owner.avatar }}"/>
+                                <div class="me-3">
+                                    <img height="50" class="rounded-circle border" src="{{ organiser.owner.avatar }}"/>
                                 </div>
                                 <div>
                                     <div>{{ organiser.owner.fullName }}</div>
+                                    <div class="text-muted"> {{ organiser.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
                                     {% for role in organiser.roles %}
                                         <span class="badge text-bg-primary">{{ role.title.value|trans }}</span>
                                     {% endfor %}
@@ -39,8 +40,8 @@
                             <div>
                                 <div class="btn-group" role="group" aria-label="Basic example">
                                     <a href="{{ path('remove_event_organiser', {event: organiser.event.id, id: organiser.id}) }}"
-                                       class="btn btn-primary">
-                                        <span class="bi bi-trash fs-4"></span>
+                                       class="btn btn-light">
+                                        <span class="bi bi-trash text-danger fs-4"></span>
                                     </a>
                                 </div>
                             </div>
@@ -53,50 +54,56 @@
                 <div class="list-group list-group-flush">
                     <div class="list-group list-group-flush">
                         <div class="list-group-item fs-4 fw-bold">
-                            {{ 'event-organiser-inviations-sent'|trans|upper }}
+                            {{ 'sent-event-organiser-inviations'|trans|upper }}
                         </div>
                         {% for inviation in event.eventOrganiserInvitations %}
                             {% if inviation.owner is not null %}
                                 <div class="list-group-item d-flex justify-content-between">
                                     <div>
-                                        <div class="d-flex justify-content-start align-items-center">
+                                        <div class="d-flex justify-content-start align-items-start">
                                             <div>
                                                 <a href="{{ path('show_profile', {id: inviation.owner.id}) }}">
-                                                    <img class="rounded-circle border me-2"
+                                                    <img class="rounded-circle border me-3"
                                                          src="{{ inviation.owner.avatar }}"
                                                          height="50"/>
                                                 </a>
                                             </div>
                                             <div>
                                                 <div>{{ inviation.owner.fullName }}</div>
-                                                <div>{{ inviation.createdAt|format_datetime }}</div>
+                                                <div class="text-muted"> {{ inviation.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                                <div>
+                                                    {% for role in inviation.roles %}
+                                                        <span class="badge badge-pill text-bg-primary">{{ role.title.value|trans }}</span>
+                                                    {% endfor %}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div>
-                                        {% for role in inviation.roles %}
-                                            <span class="badge badge-pill text-bg-primary">{{ role.title|trans }}</span>
-                                        {% endfor %}
+                                        delete
                                     </div>
                                 </div>
                             {% else %}
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div class="list-group-item d-flex justify-content-between align-items-start">
                                     <div>
-                                        <div class="d-flex justify-content-start align-items-center">
+                                        <div class="d-flex justify-content-start align-items-start">
                                             <div>
-                                                <span class="bi bi-person-fill-exclamation fs-1 me-2"></span>
+                                                <span class="bi bi-person-fill-exclamation fs-1 me-3"></span>
                                             </div>
                                             <div>
                                                 <div> {{ inviation.email }}</div>
-                                                <div> {{ inviation.createdAt|format_datetime }}</div>
+                                                <div class="text-muted"> {{ inviation.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                                {% for role in inviation.roles %}
+                                                    <span class="badge badge-pill text-bg-primary">{{ role.title.value|trans }}</span>
+                                                {% endfor %}
                                             </div>
                                         </div>
                                     </div>
                                     <div>
                                         <div>
-                                            {% for role in inviation.roles %}
-                                                <span class="badge badge-pill text-bg-primary">{{ role.title|trans }}</span>
-                                            {% endfor %}
+                                            <a class="btn btn-light" href="{{ path('remove_invite_event_organiser', {id: inviation.id}) }}">
+                                                <div class="bi bi-trash fs-4 text-danger"></div>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

@@ -26,7 +26,7 @@ class PollController extends AbstractController
     ) {
     }
 
-    #[Route('/groups/poll/create/{id}', name: 'create_event_poll', methods: ['GET', 'POST'])]
+    #[Route('/groups/poll/create/{id}', name: 'create_group_event_poll', methods: ['GET', 'POST'])]
     public function create(EventGroup $eventGroup, Request $request, #[CurrentUser] User $currentUser): Response
     {
         $poll = $this->pollFactory->create(eventGroup: $eventGroup, owner: $currentUser);

@@ -31,12 +31,10 @@ class UserAccountFormType extends AbstractType
         $builder
             ->add('firstName', TextType::class, [
                 'row_attr' => [
-                    'class' => 'w-50',
                 ],
             ])
             ->add('lastName', TextType::class, [
                 'row_attr' => [
-                    'class' => 'w-50',
                 ],
             ])
             ->add('email', EmailType::class)

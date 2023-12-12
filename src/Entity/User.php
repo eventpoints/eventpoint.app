@@ -12,6 +12,7 @@ use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventGroup\EventGroupMember;
 use App\Entity\Poll\Poll;
 use App\Entity\Poll\PollAnswer;
+use App\Enum\RegionalEnum;
 use App\Repository\UserRepository;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -79,7 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     private Collection $eventGroupMembers;
 
     #[ORM\Column(length: 255)]
-    private ?string $timezone = 'UTC';
+    private null|string $timezone = RegionalEnum::REGIONAL_TIMEZONE->value;
 
     #[ORM\Column(length: 3, nullable: true)]
     private ?string $locale = 'en';
@@ -133,6 +134,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Poll::class)]
     private Collection $polls;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: PhoneNumber::class, cascade: ['persist'])]
+    private Collection $phoneNumbers;
+
+    #[ORM\ManyToOne(cascade: ['persist'])]
+    private null|PhoneNumber $phoneNumber = null;
+
     public function __construct()
     {
         $this->eventOrganisers = new ArrayCollection();
@@ -152,6 +159,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->eventOrganiserInvitations = new ArrayCollection();
         $this->pollAnswers = new ArrayCollection();
         $this->polls = new ArrayCollection();
+        $this->phoneNumbers = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -818,6 +826,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
                 $poll->setOwner(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PhoneNumber>
+     */
+    public function getPhoneNumbers(): Collection
+    {
+        return $this->phoneNumbers;
+    }
+
+    public function addPhoneNumber(PhoneNumber $phoneNumber): static
+    {
+        if (! $this->phoneNumbers->contains($phoneNumber)) {
+            $this->phoneNumbers->add($phoneNumber);
+            $phoneNumber->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhoneNumber(PhoneNumber $phoneNumber): static
+    {
+        if ($this->phoneNumbers->removeElement($phoneNumber)) {
+            // set the owning side to null (unless already changed)
+            if ($phoneNumber->getOwner() === $this) {
+                $phoneNumber->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): ?PhoneNumber
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(?PhoneNumber $phoneNumber): static
+    {
+        $this->phoneNumber = $phoneNumber;
 
         return $this;
     }

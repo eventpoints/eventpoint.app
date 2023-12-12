@@ -39,7 +39,7 @@
             {% if event.eventGroup and hasHeader %}
                 <a href="{{ path('event_group_show', {id: event.eventGroup.id}) }}"
                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                    <div class="bi bi-people-fill"></div>
+                    <div class="bi bi-people-fill fs-4 lh-1 text-muted"></div>
                     <div>{{ event.eventGroup.name }}</div>
                 </a>
             {% endif %}
@@ -67,6 +67,17 @@
                     {% endfor %}
                 </div>
             {% endif %}
+            <a href="{{ path('show_profile', {id: event.owner.id}) }}"
+               class="list-group-item list-group-item-action d-flex justify-content-start align-items-start">
+                <div>
+                    <img src="{{ event.owner.avatar }}" class="rounded-circle border me-2"
+                         height="50"/>
+                </div>
+                <div>
+                    <div>{{ event.owner.fullName }}</div>
+                    <div class="text-muted">{{ event.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                </div>
+            </a>
         </div>
         {% if not event.isComplete and not event.eventCancellation %}
             <div class="card-footer d-flex justify-content-between">

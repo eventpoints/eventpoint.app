@@ -9,9 +9,9 @@
         <div>{{ 'manage-event-orgnisers'|trans }}</div>
         <div class="bi bi-people fs-4"></div>
     </a>
-    <a class="{{ app.request.get('_route') == 'cancel_event' ? 'active' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-       href="{{ path('cancel_event', {id: event.id}) }}">
-        <div>{{ 'cancel-event'|trans }}</div>
-        <div class="bi bi-x-octagon-fill fs-4"></div>
-    </a>
+        <a class="{{ app.request.get('_route') == 'cancel_event' ? 'active' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+           href="{{ path('cancel_event', {id: event.id}) }}">
+            <div>{{ 'cancel-event'|trans }}</div>
+            <div class="bi bi-x-octagon-fill fs-4"></div>
+        </a>
 </div>

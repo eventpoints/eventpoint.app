@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\EventGroup;
 
+use App\Entity\Category;
 use App\Entity\Event\Event;
 use App\Entity\EventGroupDiscussion;
 use App\Entity\Poll\Poll;
@@ -22,7 +23,7 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EventGroupRepository::class)]
-#[UniqueEntity(fields: ['name'], message: 'There is already a group with this name')]
+#[UniqueEntity(fields: ['name'], message: 'There\'s already a group with this name')]
 #[UniqueEntity(fields: ['entityIdentificationNumber'], message: 'There is already a group with this entity identification number')]
 class EventGroup
 {
@@ -66,6 +67,23 @@ class EventGroup
     #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: Poll::class)]
     private Collection $polls;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private null|string $base64Image = null;
+
+    #[ORM\ManyToMany(targetEntity: Category::class)]
+    private Collection $categories;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank]
+    #[Assert\Country]
+    private null|string $country = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private null|string $city = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private null|string $language = null;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -73,6 +91,7 @@ class EventGroup
         $this->createdAt = new CarbonImmutable();
         $this->eventGroupDiscussions = new ArrayCollection();
         $this->polls = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): Uuid
@@ -274,5 +293,82 @@ class EventGroup
         }
 
         return $this;
+    }
+
+    public function getBase64Image(): null|string
+    {
+        return $this->base64Image;
+    }
+
+    public function setBase64Image(null|string $base64Image): static
+    {
+        $this->base64Image = $base64Image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (! $this->categories->contains($category)) {
+            $this->categories->add($category);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    public function getCountry(): null|string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(null|string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getCity(): null|string
+    {
+        return $this->city;
+    }
+
+    public function setCity(null|string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getLanguage(): null|string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(null|string $language): static
+    {
+        $this->language = $language;
+
+        return $this;
+    }
+
+    public function createdAgo(): string
+    {
+        return $this->createdAt->diffForHumans();
     }
 }

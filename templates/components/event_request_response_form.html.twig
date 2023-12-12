@@ -1,0 +1,28 @@
+<div {{ attributes }} class="list-group list-group-flush list-group-horizontal">
+    {% if eventRequest.event.isAttending(eventRequest.owner) %}
+        <div class="list-group-item border-0 rounded-0 text-center w-100">
+            <div class="bi bi-check-circle text-success fs-4"></div>
+            <div>{{ 'response-sent'|trans }}</div>
+        </div>
+    {% else %}
+        <div class="list-group-item border-0 rounded-0 d-flex justify-content-start align-items-start w-50">
+            <div class="me-3">
+                <img src="{{ eventRequest.owner.avatar }}" class="rounded-circle border" height="50"/>
+            </div>
+            <div>
+                <div>{{ eventRequest.owner.fullName }}</div>
+                <div>{{ eventRequest.createdAt|format_datetime }}</div>
+            </div>
+        </div>
+        <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)"
+           class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
+            <div class="bi bi-check-circle fs-4 text-primary"></div>
+            <div>{{ 'accept-request'|trans }}</div>
+        </a>
+        <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)"
+           class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
+            <div class="bi bi-x-circle fs-4 text-danger"></div>
+            <div>{{ 'decline-request'|trans }}</div>
+        </a>
+    {% endif %}
+</div>

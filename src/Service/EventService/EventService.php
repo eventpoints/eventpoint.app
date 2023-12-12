@@ -35,6 +35,10 @@ class EventService
 
     public function sendInvitation(User $user, Event $event): void
     {
+        if ($event->getIsAttending($user) or $event->hasRequestedToAttend($user)) {
+            return;
+        }
+
         $invitation = $this->eventInvitationFactory->create(owner: $user, event: $event);
         $event->addEventInvitation($invitation);
     }

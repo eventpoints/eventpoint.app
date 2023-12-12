@@ -8,7 +8,7 @@
                     {{ include('partials/_account-navbar.html.twig') }}
                 </div>
             </div>
-            <div class="col-12 col-md-8">
+            <div class="col-12 col-md-6">
                 <div class="fs-3 fw-bold text-end">{{ 'account'|trans|upper }}</div>
                 <hr class="mt-0"/>
 
@@ -16,9 +16,9 @@
                 <div class="card mb-5">
                     <div class="list-group list-group-flush">
                         <div class="list-group-item">
-                            <div class="input-group">
-                                {{ form_row(userAccountForm.firstName) }}
-                                {{ form_row(userAccountForm.lastName) }}
+                            <div class="row justify-content-between align-items-center">
+                                <div class="col-6">{{ form_row(userAccountForm.firstName) }}</div>
+                                <div class="col-6">{{ form_row(userAccountForm.lastName) }}</div>
                             </div>
                         </div>
                         <div class="list-group-item">
@@ -48,8 +48,28 @@
                         <button type="submit" class="btn btn-primary w-100">{{ 'save'|trans }}</button>
                     </div>
                 </div>
+                {{ form_end(userAccountForm) }}
+
+
+                {{ form_start(phoneNumberForm) }}
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">{{ 'phone-numbers'|trans|capitalize }}</div>
+                    <div class="list-group list-group-flush">
+                        <a href="{{ path('create_user_phone_number') }}"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div>{{ 'add-phone-number'|trans }}</div>
+                            <div class="bi bi-plus-circle fs-4"></div>
+                        </a>
+                    </div>
+                    {{ form_row(phoneNumberForm.phoneNumber) }}
+                    <div class="card-footer d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary w-100">{{ 'save'|trans }}</button>
+                    </div>
+                </div>
+                {{ form_end(phoneNumberForm) }}
+
+
             </div>
-            {{ form_end(userAccountForm) }}
         </div>
     </div>
     </div>

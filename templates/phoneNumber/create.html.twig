@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'feedback'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="container my-3">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                {{ form_start(phoneNumberForm) }}
+                <div class="card">
+                    <div class="card-header h5 fw-bold">{{ 'add-phone-number'|trans|capitalize }}</div>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            <div class="input-group">
+                                {{ form_row(phoneNumberForm.code) }}
+                                {{ form_row(phoneNumberForm.number) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit"
+                                class="btn btn-outline-primary w-100">{{ 'add-phone-number'|trans }}</button>
+                    </div>
+                </div>
+                {{ form_end(phoneNumberForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -19,6 +19,7 @@ use App\Form\Filter\EventFilterType;
 use App\Form\Form\EventCancellationFormType;
 use App\Form\Form\EventFormType;
 use App\Form\Form\ImageFormType;
+use App\Repository\Event\EventGroupRepository;
 use App\Repository\Event\EventRepository;
 use App\Repository\Event\EventRoleRepository;
 use App\Repository\ImageCollectionRepository;
@@ -47,7 +48,8 @@ class EventController extends AbstractController
         private readonly EventRoleRepository       $eventRoleRepository,
         private readonly EventFactory              $eventFactory,
         private readonly EventCancellationFactory  $eventCancellationFactory,
-        private readonly TranslatorInterface       $translator
+        private readonly TranslatorInterface       $translator,
+        private readonly EventGroupRepository      $eventGroupRepository
     ) {
     }
 
@@ -58,24 +60,21 @@ class EventController extends AbstractController
         $eventFilter = $this->createForm(EventFilterType::class, $eventFilterDto);
         $eventFilter->handleRequest($request);
         $events = $this->eventRepository->findByFilter(eventFilterDto: $eventFilterDto, isQuery: true);
-        $eventPagination = $this->paginator->paginate(
-            target: $events,
-            page: $request->query->getInt('page', 1),
-            limit: 3
-        );
+        $groups = $this->eventGroupRepository->findByEventFilter(eventFilterDto: $eventFilterDto, isQuery: true);
+        $eventPagination = $this->paginator->paginate(target: $events, page: $request->query->getInt('events', 1), limit: 3);
+        $eventGroupPagination = $this->paginator->paginate(target: $groups, page: $request->query->getInt('groups', 1), limit: 3);
 
         if ($eventFilter->isSubmitted() && $eventFilter->isValid()) {
             $events = $this->eventRepository->findByFilter(eventFilterDto: $eventFilterDto, isQuery: true);
-            $eventPagination = $this->paginator->paginate(
-                target: $events,
-                page: $request->query->getInt('page', 1),
-                limit: 3
-            );
+            $groups = $this->eventGroupRepository->findByEventFilter(eventFilterDto: $eventFilterDto, isQuery: true);
+            $eventPagination = $this->paginator->paginate(target: $events, page: $request->query->getInt('page', 1), limit: 3);
+            $eventGroupPagination = $this->paginator->paginate(target: $groups, page: $request->query->getInt('groups', 1), limit: 3);
 
             return $this->render('events/index.html.twig', [
                 'period' => $eventFilterDto->getPeriod(),
                 'eventFilter' => $eventFilter,
                 'eventPagination' => $eventPagination,
+                'eventGroupPagination' => $eventGroupPagination,
             ]);
         }
 
@@ -83,13 +82,19 @@ class EventController extends AbstractController
             'period' => $eventFilterDto->getPeriod(),
             'eventFilter' => $eventFilter,
             'eventPagination' => $eventPagination,
+            'eventGroupPagination' => $eventGroupPagination,
         ]);
     }
 
     #[Route(path: '/events/create', name: 'create_event')]
     public function create(Request $request, #[CurrentUser] User $currentUser): Response
     {
-        $event = $this->eventFactory->create(owner: $currentUser);
+        $eventGroupId = $request->get('eventGroup');
+        $eventGroup = null;
+        if (! empty($eventGroupId)) {
+            $eventGroup = $this->eventGroupRepository->find($eventGroupId);
+        }
+        $event = $this->eventFactory->create(owner: $currentUser, eventGroup: $eventGroup);
         $eventForm = $this->createForm(EventFormType::class, $event);
         $eventForm->handleRequest($request);
         if ($eventForm->isSubmitted() && $eventForm->isValid()) {
@@ -121,6 +126,8 @@ class EventController extends AbstractController
     #[Route(path: '/events/{id}', name: 'show_event')]
     public function show(Request $request, Event $event, #[CurrentUser] null|User $currentUser): Response
     {
+        $this->isGranted(EventVoter::VIEW_EVENT, $event);
+
         $imageForm = $this->createForm(ImageFormType::class);
         $imageForm->handleRequest($request);
         if ($imageForm->isSubmitted() && $imageForm->isValid()) {

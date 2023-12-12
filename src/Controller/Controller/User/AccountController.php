@@ -6,6 +6,7 @@ namespace App\Controller\Controller\User;
 
 use App\Entity\User;
 use App\Enum\FlashEnum;
+use App\Form\Form\DefaultPhoneNumberFormType;
 use App\Form\Form\UserAccountFormType;
 use App\Form\Form\UserPasswordFormType;
 use App\Repository\UserRepository;
@@ -41,19 +42,25 @@ class AccountController extends AbstractController
                 $currentUser->setAvatar($avatar->getEncoded());
             }
 
-            $plainPassword = $userAccountForm->get('password')->getData();
-            if (! empty($plainPassword)) {
-                $hashedPassword = $this->hasher->hashPassword($currentUser, $plainPassword);
-                $currentUser->setPassword($hashedPassword);
-            }
-
             $this->userRepository->save($currentUser, true);
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changes-saved'));
             return $this->redirectToRoute('user_account');
         }
 
+        $phoneNumberForm = $this->createForm(DefaultPhoneNumberFormType::class);
+
+        $phoneNumberForm->handleRequest($request);
+        if ($phoneNumberForm->isSubmitted() && $phoneNumberForm->isValid()) {
+            $phoneNumber = $phoneNumberForm->get('phoneNumber')->getData();
+            $currentUser->setPhoneNumber($phoneNumber);
+            $this->userRepository->save($currentUser, true);
+            $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('phone-number-added'));
+            return $this->redirectToRoute('user_account');
+        }
+
         return $this->render('user/account.html.twig', [
             'userAccountForm' => $userAccountForm,
+            'phoneNumberForm' => $phoneNumberForm,
         ]);
     }
 

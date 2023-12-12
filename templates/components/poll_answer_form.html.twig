@@ -22,7 +22,7 @@
                     <div class="d-flex align-items-center">
                         <div class="lead me-2">{{ pollOption.content }}</div>
                         {% if userAnswer.pollOption == pollOption %}
-                            <img src="{{ app.user.avatar }}" class="rounded-circle border me-2" height="20"/>
+                            <img src="{{ app.user.avatar }}" class="rounded-circle border me-2" height="20"  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{ userAnswer.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone, pattern=date_time_pattern) }}"/>
                         {% endif %}
                     </div>
                     <div>

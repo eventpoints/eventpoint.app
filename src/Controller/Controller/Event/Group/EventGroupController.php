@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller\Event\Group;
 
+use App\DataTransferObject\EventGroupFilterDto;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventGroup\EventGroupMember;
 use App\Entity\User;
@@ -11,6 +12,7 @@ use App\Enum\EventGroupRoleEnum;
 use App\Enum\FlashEnum;
 use App\Factory\EventGroup\EventGroupFactory;
 use App\Factory\EventGroup\EventGroupMemberFactory;
+use App\Form\Filter\EventGroupFilterType;
 use App\Form\Form\EventGroupFormType;
 use App\Repository\Event\EventGroupRepository;
 use App\Repository\Event\EventRepository;
@@ -18,7 +20,8 @@ use App\Repository\EventDiscussionCommentRepository;
 use App\Repository\EventDiscussionRepository;
 use App\Repository\EventGroupRoleRepository;
 use App\Repository\PollRepository;
-use App\Service\EventGroupAnalyzer\EventGroupAnalyzer;
+use App\Service\EventGroupAnalyzer\EventActivityAnalyzer;
+use App\Service\ImageUploadService\ImageService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Knp\Component\Pager\PaginatorInterface;
@@ -33,23 +36,20 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class EventGroupController extends AbstractController
 {
     public function __construct(
-        private readonly EventGroupRepository      $eventGroupRepository,
-        private readonly EventRepository      $eventRepository,
-        private readonly EventGroupFactory         $eventGroupFactory,
-        private readonly EventGroupMemberFactory   $eventGroupMemberFactory,
-        private readonly EventGroupRoleRepository  $eventGroupRoleRepository,
-        private readonly PollRepository  $pollRepository,
-        private readonly EventDiscussionRepository $eventDiscussionRepository,
+        private readonly EventGroupRepository             $eventGroupRepository,
+        private readonly EventRepository                  $eventRepository,
+        private readonly EventGroupFactory                $eventGroupFactory,
+        private readonly EventGroupMemberFactory          $eventGroupMemberFactory,
+        private readonly EventGroupRoleRepository         $eventGroupRoleRepository,
+        private readonly PollRepository                   $pollRepository,
+        private readonly EventDiscussionRepository        $eventDiscussionRepository,
         private readonly EventDiscussionCommentRepository $eventDiscussionCommentRepository,
-        private readonly PaginatorInterface        $paginator,
-        private readonly TranslatorInterface       $translator,
-        private readonly EventGroupAnalyzer        $eventGroupAnalyzer,
+        private readonly PaginatorInterface               $paginator,
+        private readonly TranslatorInterface              $translator,
+        private readonly EventActivityAnalyzer            $eventGroupAnalyzer,
+        private readonly ImageService                     $imageUploadService
     ) {
     }
-
-    /**
-     * @throws \Exception
-     */
 
     #[Route('/show/{id}', name: 'event_group_show', methods: ['GET', 'POST'])]
     public function show(EventGroup $eventGroup): Response
@@ -67,6 +67,38 @@ class EventGroupController extends AbstractController
         return $this->render('events/group/show.html.twig', [
             'eventGroup' => $eventGroup,
             'posts' => $posts,
+        ]);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    #[Route('/', name: 'event_groups', methods: ['GET', 'POST'])]
+    public function index(Request $request): Response
+    {
+        $eventFilterDto = new EventGroupFilterDto();
+        $eventGroupFilter = $this->createForm(EventGroupFilterType::class, $eventFilterDto);
+        $eventGroups = $this->eventGroupRepository->findByGroupFilter($eventFilterDto, true);
+        $eventGroupPagination = $this->paginator->paginate(target: $eventGroups, page: $request->query->getInt('groups-page', 1), limit: 3, options: [
+            'pageParameterName' => 'groups-page',
+        ]);
+
+        $eventGroupFilter->handleRequest($request);
+        if ($eventGroupFilter->isSubmitted() && $eventGroupFilter->isValid()) {
+            $eventGroups = $this->eventGroupRepository->findByGroupFilter($eventFilterDto, true);
+            $eventGroupPagination = $this->paginator->paginate(target: $eventGroups, page: $request->query->getInt('groups-page', 1), limit: 3, options: [
+                'pageParameterName' => 'groups-page',
+            ]);
+
+            return $this->render('events/group/index.html.twig', [
+                'eventGroupPagination' => $eventGroupPagination,
+                'eventGroupFilter' => $eventGroupFilter,
+            ]);
+        }
+
+        return $this->render('events/group/index.html.twig', [
+            'eventGroupPagination' => $eventGroupPagination,
+            'eventGroupFilter' => $eventGroupFilter,
         ]);
     }
 
@@ -109,6 +141,8 @@ class EventGroupController extends AbstractController
         $eventGroupForm = $this->createForm(EventGroupFormType::class, $eventGroup);
         $eventGroupForm->handleRequest($request);
         if ($eventGroupForm->isSubmitted() && $eventGroupForm->isValid()) {
+            $image = $eventGroupForm->get('image')->getData();
+            $eventGroup->setBase64Image($this->imageUploadService->processAvatar($image)->getEncoded());
             $eventGroupMember = $this->eventGroupMemberFactory->create(owner: $currentUser, eventGroup: $eventGroup, isApproved: true);
             $eventGroupMaintainerRole = $this->eventGroupRoleRepository->findOneBy([
                 'title' => EventGroupRoleEnum::ROLE_GROUP_MAINTAINER,
