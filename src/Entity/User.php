@@ -83,13 +83,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     private null|string $timezone = RegionalEnum::REGIONAL_TIMEZONE->value;
 
     #[ORM\Column(length: 3, nullable: true)]
-    private ?string $locale = 'en';
+    private ?string $locale = RegionalEnum::REGIONAL_LOCALE->value;
 
     #[ORM\Column(length: 3, nullable: true)]
-    private ?string $currency = 'CZK';
+    private ?string $currency = RegionalEnum::REGIONAL_CURRECNY->value;
 
     #[ORM\Column(length: 3, nullable: true)]
-    private ?string $country = null;
+    private ?string $country = RegionalEnum::REGIONAL_REGION->value;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $eventInvitations;
@@ -164,7 +164,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function __toString(): string
     {
-        return (string) $this->getEmail();
+        return (string)$this->getEmail();
     }
 
     public function getId(): null|Uuid
@@ -196,7 +196,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
@@ -304,7 +304,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventOrganiser(EventOrganiser $eventOrganiser): static
     {
-        if (! $this->eventOrganisers->contains($eventOrganiser)) {
+        if (!$this->eventOrganisers->contains($eventOrganiser)) {
             $this->eventOrganisers->add($eventOrganiser);
             $eventOrganiser->setOwner($this);
         }
@@ -346,7 +346,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addImageCollection(ImageCollection $imageCollection): static
     {
-        if (! $this->imageCollections->contains($imageCollection)) {
+        if (!$this->imageCollections->contains($imageCollection)) {
             $this->imageCollections->add($imageCollection);
             $imageCollection->setOwner($this);
         }
@@ -376,7 +376,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventGroup(EventGroup $eventGroup): static
     {
-        if (! $this->eventGroups->contains($eventGroup)) {
+        if (!$this->eventGroups->contains($eventGroup)) {
             $this->eventGroups->add($eventGroup);
             $eventGroup->setOwner($this);
         }
@@ -406,7 +406,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventGroupMember(EventGroupMember $eventGroupMember): static
     {
-        if (! $this->eventGroupMembers->contains($eventGroupMember)) {
+        if (!$this->eventGroupMembers->contains($eventGroupMember)) {
             $this->eventGroupMembers->add($eventGroupMember);
             $eventGroupMember->setOwner($this);
         }
@@ -494,7 +494,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventInvitation(EventInvitation $eventInvitation): self
     {
-        if (! $this->eventInvitations->contains($eventInvitation)) {
+        if (!$this->eventInvitations->contains($eventInvitation)) {
             $this->eventInvitations[] = $eventInvitation;
             $eventInvitation->setOwner($this);
         }
@@ -542,7 +542,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addAuthouredEvent(Event $authouredEvent): static
     {
-        if (! $this->authoredEvents->contains($authouredEvent)) {
+        if (!$this->authoredEvents->contains($authouredEvent)) {
             $this->authoredEvents->add($authouredEvent);
             $authouredEvent->setOwner($this);
         }
@@ -572,7 +572,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventDiscussionComment(EventDiscussionComment $eventDiscussionComment): static
     {
-        if (! $this->eventDiscussionComments->contains($eventDiscussionComment)) {
+        if (!$this->eventDiscussionComments->contains($eventDiscussionComment)) {
             $this->eventDiscussionComments->add($eventDiscussionComment);
             $eventDiscussionComment->setOwner($this);
         }
@@ -602,7 +602,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventDiscussionCommentVote(EventDiscussionCommentVote $eventDiscussionCommentVote): static
     {
-        if (! $this->eventDiscussionCommentVotes->contains($eventDiscussionCommentVote)) {
+        if (!$this->eventDiscussionCommentVotes->contains($eventDiscussionCommentVote)) {
             $this->eventDiscussionCommentVotes->add($eventDiscussionCommentVote);
             $eventDiscussionCommentVote->setOwner($this);
         }
@@ -632,7 +632,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addAuthoredConversation(Conversation $authoredConversation): static
     {
-        if (! $this->authoredConversations->contains($authoredConversation)) {
+        if (!$this->authoredConversations->contains($authoredConversation)) {
             $this->authoredConversations->add($authoredConversation);
             $authoredConversation->setOwner($this);
         }
@@ -662,7 +662,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addConversationUser(ConversationParticipant $conversationUser): static
     {
-        if (! $this->conversationUsers->contains($conversationUser)) {
+        if (!$this->conversationUsers->contains($conversationUser)) {
             $this->conversationUsers->add($conversationUser);
             $conversationUser->setOwner($this);
         }
@@ -692,7 +692,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventCancellation(EventCancellation $eventCancellation): static
     {
-        if (! $this->eventCancellations->contains($eventCancellation)) {
+        if (!$this->eventCancellations->contains($eventCancellation)) {
             $this->eventCancellations->add($eventCancellation);
             $eventCancellation->setOwner($this);
         }
@@ -722,7 +722,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addSocialAuth(SocialAuth $socialAuth): self
     {
-        if (! $this->socialAuths->contains($socialAuth)) {
+        if (!$this->socialAuths->contains($socialAuth)) {
             $this->socialAuths[] = $socialAuth;
             $socialAuth->setOwner($this);
         }
@@ -750,7 +750,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventOrganiserInvitation(EventOrganiserInvitation $eventOrganiserInvitation): static
     {
-        if (! $this->eventOrganiserInvitations->contains($eventOrganiserInvitation)) {
+        if (!$this->eventOrganiserInvitations->contains($eventOrganiserInvitation)) {
             $this->eventOrganiserInvitations->add($eventOrganiserInvitation);
             $eventOrganiserInvitation->setOwner($this);
         }
@@ -780,7 +780,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addPollAnswer(PollAnswer $pollAnswer): static
     {
-        if (! $this->pollAnswers->contains($pollAnswer)) {
+        if (!$this->pollAnswers->contains($pollAnswer)) {
             $this->pollAnswers->add($pollAnswer);
             $pollAnswer->setOwner($this);
         }
@@ -810,7 +810,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addPoll(Poll $poll): static
     {
-        if (! $this->polls->contains($poll)) {
+        if (!$this->polls->contains($poll)) {
             $this->polls->add($poll);
             $poll->setOwner($this);
         }
@@ -840,7 +840,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addPhoneNumber(PhoneNumber $phoneNumber): static
     {
-        if (! $this->phoneNumbers->contains($phoneNumber)) {
+        if (!$this->phoneNumbers->contains($phoneNumber)) {
             $this->phoneNumbers->add($phoneNumber);
             $phoneNumber->setOwner($this);
         }
