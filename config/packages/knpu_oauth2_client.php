@@ -13,7 +13,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 'client_secret' => '%env(OAUTH_FACEBOOK_SECRET)%',
                 'redirect_route' => 'connect_facebook_check',
                 'redirect_params' => [],
-                'graph_api_version' => 'v18.0',
+                'graph_api_version' => 'v2.12',
             ],
             'google' => [
                 'type' => 'google',
