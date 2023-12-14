@@ -1,11 +1,14 @@
 {% macro minCard(eventGroup) %}
     <div class="card h-100">
         <div class="card-body text-center">
-                {% if eventGroup.base64Image %}
-                    <img class="border rounded-circle object-fit-cover mb-3" height="50" width="50"
-                         src="{{ eventGroup.base64Image }}"/>
-                {% endif %}
-                <div class="fw-bold">{{ eventGroup.name }}</div>
+            {% if eventGroup.base64Image %}
+                <img class="border rounded-circle object-fit-cover mb-2" height="50" width="50"
+                     src="{{ eventGroup.base64Image }}"/>
+            {% endif %}
+            <div class="fw-bold">{{ eventGroup.name }}</div>
+        </div>
+        <div class="card-body border-top text-center p-2">
+            {{ eventGroup.purpose }}
         </div>
         <a class="stretched-link"
            href="{{ path('event_group_show', {id: eventGroup.id}) }}"></a>
