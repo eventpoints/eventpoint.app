@@ -71,11 +71,11 @@
                class="list-group-item list-group-item-action d-flex justify-content-start align-items-start">
                 <div>
                     <img src="{{ event.owner.avatar }}" class="rounded-circle border me-2"
-                         height="50"/>
+                         height="35"/>
                 </div>
                 <div>
-                    <div>{{ event.owner.fullName }}</div>
-                    <div class="text-muted">{{ event.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                    <div class="lh-1">{{ event.owner.fullName }}</div>
+                    <div class="text-muted small">{{ event.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
                 </div>
             </a>
         </div>

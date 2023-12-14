@@ -162,7 +162,7 @@
                 {% if app.user and event.unansweredInvitation(app.user) %}
                     {% set invitation = event.unansweredInvitation(app.user) %}
                     <div class="col-12">
-                        {{ component('event_invitation_response_form', {
+                        {{ component('event_invitation_response_banner_form', {
                             eventInvitation: invitation
                         }) }}
                     </div>

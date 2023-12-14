@@ -1,0 +1,23 @@
+<div {{ attributes }} class="card mb-3">
+    <div class="card-body px-5">
+        {% if app.user and eventInvitation.event.unansweredInvitation(app.user) %}
+            <div>
+                <div class="fw-bold fs-3">{{ 'you-are-invited'|trans|capitalize }}</div>
+                <div>
+                    {{ 'invitation-banner-text'|trans|capitalize }}
+                </div>
+            </div>
+            <hr/>
+            <div>
+                <a href="#" class="btn btn-outline-danger mb-3 w-100" data-action="live#action"
+                   data-action-name="prevent|submit(isAttending=false)">{{ 'decline-invitation'|trans }}</a>
+                <a href="#" class="btn btn-outline-primary w-100" data-action="live#action"
+                   data-action-name="prevent|submit(isAttending=true)">{{ 'accept-invitation'|trans }}</a>
+            </div>
+        {% else %}
+            <div class="text-center">
+                <div class="bi bi-check2-circle text-success fs-2 my-3"></div>
+            </div>
+        {% endif %}
+    </div>
+</div>

@@ -1,23 +1,37 @@
-<div {{ attributes }} class="card mb-3">
-    <div class="card-body px-5">
-        {% if app.user and eventInvitation.event.unansweredInvitation(app.user) %}
+<div {{ attributes }} class="list-group list-group-flush list-group-horizontal">
+    {% if eventInvitation.event.isAttending(eventInvitation.owner) %}
+        <div class="list-group-item border-0 rounded-0 text-center w-100">
+            <div class="bi bi-check-circle text-success fs-4"></div>
+            <div>{{ 'response-sent'|trans }}</div>
+        </div>
+    {% else %}
+        <a href="{{ path('show_event', {id: eventInvitation.event.id}) }}"
+           class="list-group-item list-group-item-action border-0 rounded-0 d-flex justify-content-start align-items-center w-75">
+            <div class="me-3">
+                <img src="{{ eventInvitation.event.base64Image }}"
+                     class="rounded-circle object-fit-cover border"
+                     height="50" width="50"/>
+            </div>
             <div>
-                <div class="fw-bold fs-3">{{ 'you-are-invited'|trans|capitalize }}</div>
-                <div>
-                    {{ 'invitation-banner-text'|trans|capitalize }}
+                <div class="fw-bold">{{ eventInvitation.event.title }}</div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="mdi mdi-ray-start fs-4 text-muted"></div>
+                    <div>{{ eventInvitation.event.startAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                    <div class="mdi mdi-ray-vertex fs-4 text-muted"></div>
+                    <div>{{ eventInvitation.event.endAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                    <div class="mdi mdi-ray-end fs-4 text-muted"></div>
                 </div>
             </div>
-            <hr/>
-            <div>
-                <a href="#" class="btn btn-outline-danger mb-3 w-100" data-action="live#action"
-                   data-action-name="prevent|submit(isAttending=false)">{{ 'decline-invitation'|trans }}</a>
-                <a href="#" class="btn btn-outline-primary w-100" data-action="live#action"
-                   data-action-name="prevent|submit(isAttending=true)">{{ 'accept-invitation'|trans }}</a>
-            </div>
-        {% else %}
-            <div class="text-center">
-                <div class="bi bi-check2-circle text-success fs-2 my-3"></div>
-            </div>
-        {% endif %}
-    </div>
+        </a>
+        <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)"
+           class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
+            <div class="bi bi-check-circle fs-4 text-primary"></div>
+            <div>{{ 'accept-invitation'|trans }}</div>
+        </a>
+        <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)"
+           class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
+            <div class="bi bi-x-circle fs-4 text-danger"></div>
+            <div>{{ 'decline-invitation'|trans }}</div>
+        </a>
+    {% endif %}
 </div>

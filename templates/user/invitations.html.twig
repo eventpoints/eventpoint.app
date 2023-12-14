@@ -12,77 +12,19 @@
                 <div class="row justify-content-start my-3">
                     <div class="fs-3 fw-bold text-end">{{ 'invitations'|trans|upper }}</div>
                     <hr/>
-                    {% for invitation in eventInvitations %}
-                        <div class="col-12 col-md-6">
-                            <div class="card position-relative" {{ stimulus_target('dynamic-map', 'event-card') }}>
-                                {% if invitation.event.base64Image %}
-                                    <img src="{{ invitation.event.base64Image }}" class="card-img-top object-fit-cover"
-                                         height="150px"
-                                         alt="{{ invitation.event.title }}">
-                                {% endif %}
-                                <div class="list-group list-group-flush">
-                                    <a href="{{ path('show_event', {id: invitation.event.id}) }}"
-                                       class="list-group-item list-group-item-action d-flex justify-content-between">
-                                        <div class="fw-bold">{{ invitation.event.title }}</div>
-                                    </a>
-                                    {% if invitation.event.eventGroup %}
-                                        <a href="{{ path('event_group_show', {id: invitation.event.eventGroup.id}) }}"
-                                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                            <div class="bi bi-people-fill fs-4 lh-1 text-muted"></div>
-                                            <div>{{ invitation.event.eventGroup.name }}</div>
-                                        </a>
-                                    {% endif %}
-                                    {% if not invitation.event.isComplete and not invitation.event.eventCancellation %}
-                                        <div class="list-group-item d-flex justify-content-around align-items-center">
-                                            <div class="mdi mdi-ray-start fs-4 text-muted"></div>
-                                            <div>{{ invitation.event.startAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
-                                            <div class="mdi mdi-ray-vertex fs-4 text-muted"></div>
-                                            <div>{{ invitation.event.endAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
-                                            <div class="mdi mdi-ray-end fs-4 text-muted"></div>
-                                        </div>
-                                        <div class="list-group-item d-flex d-flex justify-content-between align-items-center"
-                                                {{ stimulus_controller('clipboard', {
-                                                    successContent: "<span class='bi bi-check-lg text-success fs-4'></span>"
-                                                }) }}
-                                        >
-                                            <div value="{{ invitation.event.address }}" {{ stimulus_target('clipboard', 'source') }} >{{ invitation.event.address }}</div>
-                                            <a href="#" {{ stimulus_action('clipboard', 'copy', 'click') }} {{ stimulus_target('clipboard', 'button') }} >
-                                                <span class="bi bi-copy fs-4"></span>
-                                            </a>
-                                        </div>
-                                        <div class="list-group-item d-flex justify-content-start flex-nowrap overflow-y-hidden overflow-x-scroll">
-                                            {% for category in invitation.event.categories %}
-                                                <span class="badge rounded-pill text-bg-light fw-light fs-6 me-1 mb-1">{{ category.title|trans }}</span>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                    <a href="{{ path('show_profile', {id: invitation.event.owner.id}) }}"
-                                       class="list-group-item list-group-item-action d-flex justify-content-start align-items-start">
-                                        <div>
-                                            <img src="{{ invitation.event.owner.avatar }}" class="rounded-circle border me-2"
-                                                 height="50"/>
-                                        </div>
-                                        <div>
-                                            <div>{{ invitation.event.owner.fullName }}</div>
-                                            <div class="text-muted">{{ invitation.event.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
-                                        </div>
-                                    </a>
-                                </div>
-
-                                <div class="card-footer">
-                                    <turbo-frame id="event-invitation-response-form-{{ invitation.id }}"
-                                                 src="{{ path('invitation_response', {id: invitation.id }) }}"
-                                                 turbo-debug>
-                                        <div class="d-flex justify-content-center">
-                                            <div class="spinner-border" role="status">
-                                                <span class="visually-hidden">Loading...</span>
-                                            </div>
-                                        </div>
-                                    </turbo-frame>
-                                </div>
+                    <div class="col-12">
+                        <div class="card mb-3">
+                            <div class="list-group list-group-flush">
+                                {% for invitation in eventInvitations %}
+                                    {{ component('event_invitation_response_form', {
+                                        eventInvitation:  invitation
+                                    }) }}
+                                {% else %}
+                                    <div class="list-group-item text-center text-muted fw-bold">{{ 'no-invitations-found'|trans|upper }}</div>
+                                {% endfor %}
                             </div>
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>

@@ -28,6 +28,8 @@
                             </div>
                             <div class="text-muted w-50">{{ conversationUser.conversation.messages.last.content|slice(0, 50) }}...</div>
                         </a>
+                    {% else %}
+                        <div class="list-group-item text-center text-muted fw-bold">{{ 'no-conversation-found'|trans|upper }}</div>
                     {% endfor %}
                 </div>
 

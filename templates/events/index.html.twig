@@ -33,7 +33,7 @@
                         {{ form_end(eventFilter) }}
                     </div>
                 </div>
-                <div class="col-12 col-md-8">
+                <div class="col-12 col-md-5">
                     <div class="row mb-2 g-0">
                         <div class="col-12">
                             <div class="d-flex justify-content-between fs-4">
@@ -122,52 +122,53 @@
                     </div>
 
                     {% if eventGroupPagination.count > 0 %}
-                        <div class="row mb-2 justify-content-between align-items-center g-1" {{ stimulus_controller('card-slider') }}>
-                            <div class="col-1 text-center">
-                                <a {{ stimulus_action('card-slider', 'prev', 'click') }} class="btn btn-light">
-                                    <div class="bi bi-caret-left-fill fs-4"></div>
-                                </a>
+                        <div class="slider-container mb-3" {{ stimulus_controller('slider') }}>
+                            <div class="slider-controls btn-group">
+                                <a {{ stimulus_action('slider', 'previous', 'click') }}
+                                        class="btn btn-light previous bi bi-chevron-left fs-4"></a>
+                                <a {{ stimulus_action('slider', 'next', 'click') }}
+                                        class="btn btn-light next bi bi-chevron-right fs-4"></a>
                             </div>
-                            {% for eventGroup in eventGroupPagination %}
-                                <div class="col-3" {{ stimulus_target('card-slider', 'card') }}>
-                                    {{ eventGroupMacro.minCard(eventGroup) }}
-                                </div>
-                            {% endfor %}
-                            <div class="col-3">
-                                <div class="card">
-                                    <div class="row card-body p-1 d-flex justify-content-between align-items-center">
-                                        <div class="col-4 text-center">
-                                            <div class="bi bi-compass fs-2"></div>
-                                        </div>
-                                        <div class="col-8">
+
+                            <div class="slider"
+                                    {{ stimulus_target('slider', 'slider') }}
+                                    {{ stimulus_action('slider', 'start', 'swipe') }}
+                                    {{ stimulus_action('slider', 'move', 'swipe') }}
+                            >
+                                {% for eventGroup in eventGroupPagination %}
+                                    <div class="slider-slide" {{ stimulus_target('slider', 'slide') }}>
+                                        {{ eventGroupMacro.minCard(eventGroup) }}
+                                    </div>
+                                {% endfor %}
+
+                                <div class="col-4">
+                                    <div class="card shadow-lg h-100">
+                                        <div class="card-body text-center">
+                                            <div class="bi bi-compass fs-1 mb-3"></div>
                                             <div>{{ 'explore-all-groups'|trans }}</div>
+                                            <a class="stretched-link" href="{{ path('event_groups') }}"></a>
                                         </div>
                                     </div>
-                                    <a class="stretched-link" href="{{ path('event_groups') }}"></a>
                                 </div>
-                            </div>
-                            <div class="col-1 text-center">
-                                <a {{ stimulus_action('card-slider', 'next', 'click') }} class="btn btn-light">
-                                    <div class="bi bi-caret-right-fill fs-4"></div>
-                                </a>
                             </div>
                         </div>
                     {% endif %}
 
-                    <div class="row mb-3 g-2">
+                    <div class="row mb-3">
                         {% for event in eventPagination %}
-                            <div class="col-12 col-md-6">
+                            <div class="col-12">
                                 {{ eventMacro.card(event, true, true, true) }}
                             </div>
                         {% else %}
                             <div class="text-center text-muted fw-bold mt-5">{{ 'no-events-found'|trans|upper }}</div>
                         {% endfor %}
-                        <div class="my-5">
-                            {{ knp_pagination_render(eventPagination, viewParams={align: 'center', size: 'large'}) }}
-                        </div>
+                    </div>
+                    <div class="my-5">
+                        {{ knp_pagination_render(eventPagination, viewParams={align: 'center', size: 'large'}) }}
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 {% endblock %}

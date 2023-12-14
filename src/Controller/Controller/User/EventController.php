@@ -23,7 +23,7 @@ class EventController extends AbstractController
     #[Route(path: '/events', name: 'user_events', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(#[CurrentUser] User $currentUser): Response
     {
-        $events = $this->eventRepository->findOwnedByUser($currentUser);
+        $events = $this->eventRepository->findAssociatedByUser($currentUser);
         return $this->render('user/events.html.twig', [
             'events' => $events,
         ]);

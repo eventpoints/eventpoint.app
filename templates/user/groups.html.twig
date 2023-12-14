@@ -31,6 +31,8 @@
                                     </div>
                                 </div>
                             </a>
+                        {% else %}
+                            <div class="list-group-item text-center text-muted fw-bold">{{ 'no-groups-found'|trans|upper }}</div>
                         {% endfor %}
                     </div>
                 </div>

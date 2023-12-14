@@ -61,14 +61,14 @@ class EventController extends AbstractController
         $eventFilter->handleRequest($request);
         $events = $this->eventRepository->findByFilter(eventFilterDto: $eventFilterDto, isQuery: true);
         $groups = $this->eventGroupRepository->findByEventFilter(eventFilterDto: $eventFilterDto, isQuery: true);
-        $eventPagination = $this->paginator->paginate(target: $events, page: $request->query->getInt('events', 1), limit: 3);
-        $eventGroupPagination = $this->paginator->paginate(target: $groups, page: $request->query->getInt('groups', 1), limit: 3);
+        $eventPagination = $this->paginator->paginate(target: $events, page: $request->query->getInt('events', 1), limit: 30);
+        $eventGroupPagination = $this->paginator->paginate(target: $groups, page: $request->query->getInt('groups', 1), limit: 30);
 
         if ($eventFilter->isSubmitted() && $eventFilter->isValid()) {
             $events = $this->eventRepository->findByFilter(eventFilterDto: $eventFilterDto, isQuery: true);
             $groups = $this->eventGroupRepository->findByEventFilter(eventFilterDto: $eventFilterDto, isQuery: true);
-            $eventPagination = $this->paginator->paginate(target: $events, page: $request->query->getInt('page', 1), limit: 3);
-            $eventGroupPagination = $this->paginator->paginate(target: $groups, page: $request->query->getInt('groups', 1), limit: 3);
+            $eventPagination = $this->paginator->paginate(target: $events, page: $request->query->getInt('page', 1), limit: 30);
+            $eventGroupPagination = $this->paginator->paginate(target: $groups, page: $request->query->getInt('groups', 1), limit: 30);
 
             return $this->render('events/index.html.twig', [
                 'period' => $eventFilterDto->getPeriod(),

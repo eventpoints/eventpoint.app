@@ -1,0 +1,49 @@
+/* Add this CSS to your stylesheet or style tag */
+
+.slider-container {
+    overflow: hidden;
+}
+
+.slider {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    position: relative;
+}
+
+.slider-slide {
+    flex: 0 0 30%;
+    box-sizing: border-box;
+    margin-right: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.slider-controls {
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    margin-bottom: 10px;
+    position: absolute;
+    transform: translateY(0%);
+    width: 100%;
+}
+
+.slider-controls .previous,
+.slider-controls .next {
+    font-size: 24px;
+    color: #00695c; /* Default primary color */
+    cursor: pointer;
+}
+
+.slider-controls .previous:hover,
+.slider-controls .next:hover {
+    color: #00423a; /* Darker shade on hover */
+}
+
+/* Media Query for smaller screens */
+@media (max-width: 768px) {
+    .slider-slide {
+        flex: 0 0 50%;
+    }
+}

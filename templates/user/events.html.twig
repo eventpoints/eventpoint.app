@@ -22,9 +22,11 @@
                 </div>
                 <div class="row justify-content-between">
                     {% for event in events %}
-                        <div class="col-12 col-md-6">
+                        <div class="col-12">
                             {{ eventMacro.card(event) }}
                         </div>
+                    {% else %}
+                        <div class="list-group-item text-center text-muted fw-bold">{{ 'no-events-found'|trans|upper }}</div>
                     {% endfor %}
                 </div>
             </div>
