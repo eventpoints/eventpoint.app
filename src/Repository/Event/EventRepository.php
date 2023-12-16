@@ -78,7 +78,7 @@ class EventRepository extends ServiceEntityRepository
     public function findByPeriod(EventFilterDateRangeEnum $period, null|QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
         if (! $qb instanceof QueryBuilder) {
-            $qb = $this->createQueryBuilder('asset');
+            $qb = $this->createQueryBuilder('event');
         }
         $result = $qb;
 

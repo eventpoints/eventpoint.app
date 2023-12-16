@@ -74,4 +74,7 @@ return [
     Symfony\UX\Chartjs\ChartjsBundle::class => [
         'all' => true,
     ],
+    Nelmio\CorsBundle\NelmioCorsBundle::class => [
+        'all' => true,
+    ],
 ];

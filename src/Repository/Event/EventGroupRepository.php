@@ -74,6 +74,8 @@ class EventGroupRepository extends ServiceEntityRepository
     public function findByEventFilter(EventFilterDto $eventFilterDto, bool $isQuery = false): Query|array
     {
         $qb = $this->createQueryBuilder('event_group');
+        $qb->leftJoin('event_group.events', 'event');
+
         if ($eventFilterDto->getPeriod() instanceof EventFilterDateRangeEnum) {
             $this->findByPeriod(period: $eventFilterDto->getPeriod(), qb: $qb);
         }
@@ -81,6 +83,10 @@ class EventGroupRepository extends ServiceEntityRepository
         if (! empty($eventFilterDto->getKeyword())) {
             $this->findByName(keyword: $eventFilterDto->getKeyword(), qb: $qb);
         }
+
+        $qb->andWhere(
+            $qb->expr()->eq('event.isPublished', ':true')
+        )->setParameter('true', true);
 
         if ($isQuery) {
             return $qb->getQuery();
@@ -98,8 +104,6 @@ class EventGroupRepository extends ServiceEntityRepository
             $qb = $this->createQueryBuilder('event_group');
         }
         $result = $qb;
-
-        $qb->leftJoin('event_group.events', 'event');
 
         $start = match ($period) {
             EventFilterDateRangeEnum::RECENTLY => $this->applicationTimeService->getNow()->subDays(7)->startOfDay()->toImmutable(),

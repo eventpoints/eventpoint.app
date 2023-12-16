@@ -135,7 +135,7 @@
                                     </div>
                                 {% endfor %}
                                 <div class="col-4 p-2">
-                                    <div class="card h-100">
+                                    <div class="card card-hover h-100 d-flex justify-content-center align-items-center">
                                         <div class="card-body text-center">
                                             <div class="bi bi-compass fs-1 mb-2"></div>
                                             <div>{{ 'explore-all-groups'|trans }}</div>
@@ -147,9 +147,9 @@
                             <div class="card-footer bg-white p-0">
                                 <div class="btn-group w-100">
                                     <a {{ stimulus_action('slider', 'previous', 'click') }}
-                                            class="btn w-100 btn-light rounded-0 previous bi bi-chevron-left fs-4"></a>
+                                            class="btn w-100 btn-light bg-white rounded-0 previous bi bi-chevron-left fs-4"></a>
                                     <a {{ stimulus_action('slider', 'next', 'click') }}
-                                            class="btn w-100 btn-light rounded-0 next bi bi-chevron-right fs-4"></a>
+                                            class="btn w-100 btn-light bg-white rounded-0 next bi bi-chevron-right fs-4"></a>
                                 </div>
                             </div>
                         </div>

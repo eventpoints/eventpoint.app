@@ -30,8 +30,10 @@
     flex: 0 0 30%;
 }
 
-.slider-slide:hover {
-    background-color: rgba(0,0,0, 0.05);
+.card.card-hover:hover {
+    -webkit-box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.3);
+    transition: all 0.3s ease-in-out;
 }
 
 .slider-controls {
