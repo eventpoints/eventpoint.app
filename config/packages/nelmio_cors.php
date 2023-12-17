@@ -7,10 +7,8 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 return static function (ContainerConfigurator $containerConfigurator): void {
     $containerConfigurator->extension('nelmio_cors', [
         'defaults' => [
-            'origin_regex' => true,
-            'allow_origin' => [
-                '%env(CORS_ALLOW_ORIGIN)%',
-            ],
+            'origin_regex' => false,
+            'allow_origin' => explode(',', (string) $_ENV['CORS_ALLOW_ORIGIN']),
             'allow_methods' => [
                 'GET',
                 'OPTIONS',
