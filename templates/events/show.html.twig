@@ -82,7 +82,7 @@
                                 <div class="fw-bold">{{ event.eventGroup.name }}</div>
                             </a>
                         {% endif %}
-                        <div class="list-group-item">
+                        <div class="list-group-item d-flex">
                             <div>{{ event.startAt|format_date(timezone=regional.regionalSettingValueObject.timezone,pattern=day_date_pattern) }}</div>
                             <div>{{ event.startAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }}
                                 - {{ event.endAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }}</div>
@@ -92,11 +92,26 @@
                                     successContent: "<span class='bi bi-check-lg text-success fs-4'></span>"
                                 }) }}
                         >
-                            <div value="{{ event.address }}" {{ stimulus_target('clipboard', 'source') }} >{{ event.address }}</div>
-                            <a href="#" {{ stimulus_action('clipboard', 'copy', 'click') }} {{ stimulus_target('clipboard', 'button') }} >
+                            <div class="w-75" value="{{ event.address }}" {{ stimulus_target('clipboard', 'source') }} >{{ event.address }}</div>
+                            <a class="me-2" href="#" {{ stimulus_action('clipboard', 'copy', 'click') }} {{ stimulus_target('clipboard', 'button') }} >
                                 <span class="bi bi-copy fs-4"></span>
                             </a>
+                            <div class="dropdown">
+                                <a class="link-primary" type="button" data-bs-toggle="dropdown"
+                                        aria-expanded="false">
+                                    <i class="bi bi-map fs-4"></i>
+                                </a>
+                                <ul class=" dropdown-menu">
+                                    <li><a class="dropdown-item"
+                                           href="https://www.google.com/maps?q={{ event.address }}" target="_blank">Open
+                                            in Google Maps</a></li>
+                                    <li><a class="dropdown-item"
+                                           href="http://maps.apple.com/?q={{ event.address }}" target="_blank">Open in
+                                            Apple Maps</a></li>
+                                </ul>
+                            </div>
                         </div>
+
                         <div {{ stimulus_controller('read-more', {
                             moreText: 'read-more'|trans,
                             lessText: 'read-less'|trans,
@@ -250,7 +265,8 @@
                                             <a href="{{ path('show_profile', {id: invitation.owner.id}) }}"
                                                class="list-group-item list-group-item-action d-flex justify-content-start align-items-start">
                                                 <div>
-                                                    <img src="{{ invitation.owner.avatar }}" class="rounded-circle border me-2"
+                                                    <img src="{{ invitation.owner.avatar }}"
+                                                         class="rounded-circle border me-2"
                                                          height="50"/>
                                                 </div>
                                                 <div>
