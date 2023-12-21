@@ -3,7 +3,7 @@
         <input name="{{ form.vars.full_name }}" value="{{ form.vars.value }}" id="{{ form.vars.id }}"
                {% if form.vars.checked %}checked{% endif %} class="form-check-input fs-3" type="checkbox"
                role="switch">
-        <label class="form-check-label w-75" for="{{ form.vars.id }}">
+        <label class="form-check-label w-75 text-end" for="{{ form.vars.id }}">
             {{ form.vars.label|default(null)|trans({}, translation_domain) }}
         </label>
     </div>

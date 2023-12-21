@@ -47,7 +47,7 @@ return [
     'event-term-and-condition' => 'by submitting an event on the Event Point platform, you acknowledge that you have read, understood, and agreed to these <a href="{path}">terms and conditions.</a>',
     'upcoming-events' => 'upcoming events',
     'event-filter-title-placeholder' => 'party, Road trip, Baking group, Live Music',
-    'is-event-private' => 'private event',
+    'is-event-private' => 'This is a private private event',
     'accept-invitation' => 'yes, I\'m going',
     'decline-invitation' => 'no, can\'t make it',
     'entity-identification-number-explainer' => 'Please enter your official company, sole trader, or charity registration number, as applicable, to facilitate accurate and transparent financial transactions and ensure compliance with relevant regulations.',
