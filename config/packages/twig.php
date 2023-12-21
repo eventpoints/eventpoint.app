@@ -14,8 +14,10 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             'regional' => service(RegionalSettingsService::class),
             'supported_locales' => explode(',', (string) $_ENV['SUPPORTED_LOCALES']),
             'app_time' => service(ApplicationTimeService::class),
-            'date_pattern' => 'dd.MM.yy',
-            'date_time_pattern' => 'dd.MM.yy HH:mm',
+            'date_pattern' => 'dd MM yy',
+            'date_time_pattern' => 'dd MM yy HH:mm',
+            'time_pattern' => 'HH:mm',
+            'day_date_pattern' => 'EEEE, dd MMMM yyyy',
             'mapbox_token' => $_ENV['MAPBOX_TOKEN'],
         ],
         'form_themes' => [
@@ -24,6 +26,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             'form/fields/entity_selection_group.html.twig',
             'form/fields/category_group_type.html.twig',
             'form/fields/custom_enum_group.html.twig',
+            'form/fields/custom_checkbox.html.twig',
         ],
     ]);
     if ($containerConfigurator->env() === 'test') {

@@ -20,7 +20,7 @@
                             <div>{{ discussion.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
                         </a>
                     {% endfor %}
-                    {% if discussionPagination.totalItemCount ? discussionPagination.itemNumberPerPage() %}
+                    {% if discussionPagination.getTotalItemCount() > discussionPagination.getItemNumberPerPage() %}
                         <div class="list-group-item">
                             {{ knp_pagination_render(discussionPagination, viewParams={align: 'center', size: 'medium'}) }}
                         </div>

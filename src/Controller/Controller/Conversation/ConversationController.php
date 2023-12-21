@@ -25,7 +25,7 @@ class ConversationController extends AbstractController
     public function __construct(
         private readonly ConversationFactory            $conversationFactory,
         private readonly ConversationParticipantFactory $conversationParticipantFactory,
-        private readonly ConversationRepository         $conversationRepository
+        private readonly ConversationRepository         $conversationRepository,
     ) {
     }
 

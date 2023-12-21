@@ -1,6 +1,17 @@
 {% block entity_selection_group_label %}
     <div class="list-group-item fw-bold">{{ form.vars.label|trans|capitalize }}</div>
 {% endblock %}
+
+{% block entity_selection_group_errors %}
+    {% if errors|length > 0 %}
+        <div class="list-group-item text-center text-danger">
+            {% for error in errors %}
+                {{ error.messageTemplate|trans(error.messageParameters, 'validators') }}<br>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
+
 {% block entity_selection_group_widget %}
     <div class="list-group m-0 list-group-flush" {{ stimulus_controller('list-group-search') }}>
         {% if searchable %}
@@ -30,3 +41,4 @@
         {% endfor %}
     </div>
 {% endblock %}
+

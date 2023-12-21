@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3 min-vh-60">
+            <div class="col-12 col-md-4">
+                {{ include('partials/_event-group-navbar.html.twig') }}
+            </div>
+            <div class="col-12 col-md-6">
+                {{ form_start(eventGroupSettingForm) }}
+                <div class="card mb-5">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            {{ form_row(eventGroupSettingForm.name) }}
+                        </div>
+                        <div class="list-group-item">{{ form_row(eventGroupSettingForm.purpose) }}</div>
+                        <div class="list-group-item">{{ form_row(eventGroupSettingForm.image) }}</div>
+                        <div class="list-group-item">{{ form_row(eventGroupSettingForm.language) }}</div>
+                        <div class="list-group-item">
+                            <div class="row justify-content-between">
+                                <div class="col-6">
+                                    {{ form_row(eventGroupSettingForm.country) }}
+                                </div>
+                                <div class="col-6">
+                                    {{ form_row(eventGroupSettingForm.city) }}</div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">{{ form_row(eventGroupSettingForm.isPrivate) }}</div>
+                        <div class="list-group-item">{{ form_row(eventGroupSettingForm.entityIdentificationNumber) }}</div>
+                        {{ form_row(eventGroupSettingForm.categories) }}
+                        <div class="list-group-item"></div>
+                        <div class="list-group-item"></div>
+                    </div>
+                    <div class="card-footer text-bg-light sticky-bottom z-90001 text-end">
+                        <button type="submit" class="btn btn-primary">{{ 'save'|trans }}</button>
+                    </div>
+                </div>
+                {{ form_end(eventGroupSettingForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

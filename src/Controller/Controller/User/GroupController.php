@@ -20,11 +20,32 @@ class GroupController extends AbstractController
     ) {
     }
 
-    #[Route(path: '/groups', name: 'user_groups', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function index(Request $request, #[CurrentUser] User $currentUser): Response
+    #[Route(path: '/groups/memberships', name: 'user_group_memberships', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function showUserGroupMemberships(Request $request, #[CurrentUser] User $currentUser): Response
     {
-        $groups = $this->eventGroupRepository->findAssociatedByUser($currentUser);
-        return $this->render('user/groups.html.twig', [
+        return $this->render('user/group-memberships.html.twig');
+    }
+
+    #[Route(path: '/groups/managed', name: 'user_group_managed', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function showUserManagedGroups(Request $request, #[CurrentUser] User $currentUser): Response
+    {
+        return $this->render('user/managed-groups.html.twig');
+    }
+
+    #[Route(path: '/groups/invitations', name: 'user_group_invitations', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function showUserGroupInvitations(Request $request, #[CurrentUser] User $currentUser): Response
+    {
+        $groups = $this->eventGroupRepository->findByGroupsManaged($currentUser);
+        return $this->render('user/group-invitations.html.twig', [
+            'groups' => $groups,
+        ]);
+    }
+
+    #[Route(path: '/groups/join/requests', name: 'user_group_join_requests', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    public function showUserGroupJoinRequests(Request $request, #[CurrentUser] User $currentUser): Response
+    {
+        $groups = $this->eventGroupRepository->findByGroupsManaged($currentUser);
+        return $this->render('user/group-requests.html.twig', [
             'groups' => $groups,
         ]);
     }

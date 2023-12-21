@@ -96,14 +96,20 @@ $input-group-addon-bg: $gray-100 !default;
 $border-width: 1px !default;
 
 // Navs
-$nav-link-hover-color: $secondary;
 $nav-link-color: $body-color !default;
+$nav-link-disabled-color: $secondary !default;
+$nav-link-hover-color: $dark !default;
+
+.nav .nav-link:hover, .nav .nav-link:focus {
+  background-color: $light;
+}
 
 $nav-tabs-border-radius: 1rem !default;
 $nav-tabs-link-active-color: $primary !default;
 
 $nav-link-padding-x: 1rem !default;
-$nav-link-padding-y: 0.75rem !default;;
+$nav-link-padding-y: 0.75rem !default;
+;
 $nav-tab: 0.75rem !default;
 $nav-pills-border-radius: 0.25rem !default;
 
@@ -178,3 +184,11 @@ $breadcrumb-padding-x: 1rem !default;
 $breadcrumb-divider: quote(">") !default;
 
 $border-radius: 0rem !default;
+
+
+// Accordion
+
+$accordion-button-active-bg: $primary !default;
+$accordion-button-active-color: $white !default;
+$accordion-icon-active-color: $white !default;
+$accordion-icon-width: 1.75rem !default;

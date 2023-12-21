@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity\EventGroup;
 
 use App\Entity\User;
+use App\Enum\EventGroupRoleEnum;
 use App\Repository\EventGroupMemberRepository;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -121,5 +122,12 @@ class EventGroupMember
     {
         $this->roles->removeElement($role);
         return $this;
+    }
+
+    public function isGroupAdmin(): bool
+    {
+        return $this->getRoles()->contains(fn (EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MANAGER ||
+            $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_CREATOR ||
+            $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER);
     }
 }

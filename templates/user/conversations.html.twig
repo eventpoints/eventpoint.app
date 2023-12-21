@@ -13,24 +13,32 @@
                 <hr class="mt-0"/>
 
                 <div class="list-group mb-3">
-                    {% for conversationUser in app.user.conversationUsers %}
-                        <a href="{{ path('show_conversation', {id: conversationUser.conversation.id}) }}"
+                    {% for conversation in conversationPagination %}
+                        <a href="{{ path('show_conversation', {id: conversation.id}) }}"
                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             <div class="d-flex justify-content-start align-items-center">
                                 <div>
-                                    <img src="{{ conversationUser.owner.avatar }}" height="50"
+                                    <img src="{{ conversation.owner.avatar }}" height="50"
                                          class="border rounded-circle me-2"/>
                                 </div>
                                 <div>
-                                    <div class="fw-bold lh-1">{{ conversationUser.owner.fullName }}</div>
-                                    <div>{{ conversationUser.conversation.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                    <div class="fw-bold lh-1">{{ conversation.owner.fullName }}</div>
+                                    <div>{{ conversation.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
                                 </div>
                             </div>
-                            <div class="text-muted w-50">{{ conversationUser.conversation.messages.last.content|slice(0, 50) }}...</div>
+                            <div class="text-muted w-50">{{ conversation.messages.last.content|slice(0, 50) }}
+                                ...
+                            </div>
                         </a>
                     {% else %}
                         <div class="list-group-item text-center text-muted fw-bold">{{ 'no-conversation-found'|trans|upper }}</div>
                     {% endfor %}
+
+                    {% if conversationPagination.getTotalItemCount() > conversationPagination.getItemNumberPerPage() %}
+                        <div class="list-group-item">
+                            {{ knp_pagination_render(conversationPagination, viewParams={align: 'center', size: 'medium'}) }}
+                        </div>
+                    {% endif %}
                 </div>
 
             </div>

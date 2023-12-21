@@ -8,10 +8,15 @@ use App\Entity\Contract\UpdatedAtInterface;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventInvitation;
 use App\Entity\Event\EventOrganiser;
+use App\Entity\Event\EventRequest;
 use App\Entity\EventGroup\EventGroup;
+use App\Entity\EventGroup\EventGroupInvitation;
+use App\Entity\EventGroup\EventGroupJoinRequest;
 use App\Entity\EventGroup\EventGroupMember;
+use App\Entity\EventGroup\EventGroupRole;
 use App\Entity\Poll\Poll;
 use App\Entity\Poll\PollAnswer;
+use App\Enum\EventGroupRoleEnum;
 use App\Enum\RegionalEnum;
 use App\Repository\UserRepository;
 use Carbon\CarbonImmutable;
@@ -79,6 +84,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventGroupMember::class)]
     private Collection $eventGroupMembers;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventRequest::class)]
+    private Collection $eventRequests;
+
     #[ORM\Column(length: 255)]
     private null|string $timezone = RegionalEnum::REGIONAL_TIMEZONE->value;
 
@@ -140,8 +148,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\ManyToOne(cascade: ['persist'])]
     private null|PhoneNumber $phoneNumber = null;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventGroupInvitation::class)]
+    private Collection $eventGroupInvitations;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventGroupJoinRequest::class)]
+    private Collection $eventGroupJoinRequests;
+
     public function __construct()
     {
+        $this->eventRequests = new ArrayCollection();
         $this->eventOrganisers = new ArrayCollection();
         $this->imageCollections = new ArrayCollection();
         $this->eventGroups = new ArrayCollection();
@@ -160,6 +175,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->pollAnswers = new ArrayCollection();
         $this->polls = new ArrayCollection();
         $this->phoneNumbers = new ArrayCollection();
+        $this->eventGroupInvitations = new ArrayCollection();
+        $this->eventGroupJoinRequests = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -423,6 +440,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
             }
         }
 
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventRequest>
+     */
+    public function getEventRequests(): Collection
+    {
+        return $this->eventRequests;
+    }
+
+    public function addEventRequest(EventRequest $eventRequest): static
+    {
+        if (! $this->eventRequests->contains($eventRequest)) {
+            $this->eventRequests->add($eventRequest);
+            $eventRequest->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventRequest(EventRequest $eventRequest): static
+    {
+        $this->eventRequests->removeElement($eventRequest);
         return $this;
     }
 
@@ -870,5 +911,103 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->phoneNumber = $phoneNumber;
 
         return $this;
+    }
+
+    public function groupMemberships(self $user): Collection
+    {
+        return $this->eventGroupMembers->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && ! $eventGroupMember->isGroupAdmin());
+    }
+
+    public function groupsYouManage(self $user): Collection
+    {
+        return $this->eventGroupMembers->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->isGroupAdmin());
+    }
+
+    /**
+     * @return Collection<int, EventGroupInvitation>
+     */
+    public function getEventGroupInvitations(): Collection
+    {
+        return $this->eventGroupInvitations;
+    }
+
+    public function addEventGroupInvitation(EventGroupInvitation $eventGroupInvitation): static
+    {
+        if (! $this->eventGroupInvitations->contains($eventGroupInvitation)) {
+            $this->eventGroupInvitations->add($eventGroupInvitation);
+            $eventGroupInvitation->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventGroupInvitation(EventGroupInvitation $eventGroupInvitation): static
+    {
+        if ($this->eventGroupInvitations->removeElement($eventGroupInvitation)) {
+            // set the owning side to null (unless already changed)
+            if ($eventGroupInvitation->getOwner() === $this) {
+                $eventGroupInvitation->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventGroupJoinRequest>
+     */
+    public function getEventGroupJoinRequests(): Collection
+    {
+        return $this->eventGroupJoinRequests;
+    }
+
+    public function addEventGroupJoinRequest(EventGroupJoinRequest $eventGroupJoinRequest): static
+    {
+        if (! $this->eventGroupJoinRequests->contains($eventGroupJoinRequest)) {
+            $this->eventGroupJoinRequests->add($eventGroupJoinRequest);
+            $eventGroupJoinRequest->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventGroupJoinRequest(EventGroupJoinRequest $eventGroupJoinRequest): static
+    {
+        if ($this->eventGroupJoinRequests->removeElement($eventGroupJoinRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($eventGroupJoinRequest->getOwner() === $this) {
+                $eventGroupJoinRequest->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getUserEventGroupRequests(): Collection
+    {
+        $user = $this;
+        return $this->eventGroupJoinRequests->filter(fn (EventGroupJoinRequest $eventGroupJoinRequest) => $eventGroupJoinRequest->getOwner() === $user);
+    }
+
+    public function getUserUnansweredEventGroupInvitations(): Collection
+    {
+        $user = $this;
+        return $this->eventGroupInvitations->filter(fn (EventGroupInvitation $eventGroupInvitation) => $eventGroupInvitation->getOwner() === $user && $eventGroupInvitation->getApprovedAt() === null);
+    }
+
+    /**
+     * @return Collection<int, EventGroup|null>
+     */
+    public function getUserManagedGroups(): Collection
+    {
+        return $this->getEventGroupMembers()->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER))->map(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getEventGroup());
+    }
+
+    /**
+     * @return Collection<int, EventGroup|null>
+     */
+    public function getUserGroupMemberships(): Collection
+    {
+        return $this->getEventGroupMembers()->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MEMBER))->map(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getEventGroup());
     }
 }

@@ -7,6 +7,8 @@ namespace App\Repository;
 use App\Entity\Conversation;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -55,5 +57,27 @@ class ConversationRepository extends ServiceEntityRepository
         )->setParameter('user', $user->getId(), 'uuid');
 
         return $qb->getQuery()->getOneOrNullResult();
+    }
+
+    /**
+     * @return array<int, Conversation>|Query
+     */
+    public function findByUser(User $user, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    {
+        if (! $qb instanceof QueryBuilder) {
+            $qb = $this->createQueryBuilder('conversation');
+        }
+        $result = $qb;
+
+        $qb->leftJoin('conversation.conversationParticipants', 'conversationParticipant');
+        $qb->andWhere(
+            $qb->expr()->eq('conversationParticipant.owner', ':owner')
+        )->setParameter('owner', $user);
+
+        if ($isQuery) {
+            return $result->getQuery();
+        }
+
+        return $result->getQuery()->getResult();
     }
 }

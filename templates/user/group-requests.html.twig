@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-4">
+                <div class="card">
+                    {{ include('partials/_account-navbar.html.twig') }}
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="fs-3 fw-bold text-end">{{ 'group-requests'|trans|upper }}</div>
+                <hr class="mt-0"/>
+                <div class="card">
+                    <div class="list-group list-group-flush">
+                        {% for joinRequest in app.user.eventGroupJoinRequests %}
+                            <a href="{{ path('event_group_show', {id: group.id }) }}"
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+                                <div>
+                                    <div class="fw-bold">{{ joinRequest.eventGroup.name|title }}</div>
+                                </div>
+                                <div>
+                                    <div class="badge rounded-pill text-bg-primary fs-5 d-flex justify-content-between align-items-center">
+                                        <span class="bi bi-people me-3"></span>
+                                        <span>{{ joinRequest.eventGroup.eventGroupMembers.count }}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        {% else %}
+                            <div class="list-group-item text-center text-muted fw-bold">{{ 'no-requests-found'|trans|upper }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
