@@ -11,7 +11,7 @@ use Symfony\Component\Mime\Address;
 
 final readonly class EmailService
 {
-    private const SENDER_EMAIL_ADDRESS = 'notification@eventpoint.app';
+    private const SENDER_EMAIL_ADDRESS = 'from@example.com';
 
     public function __construct(
         private MailerInterface $mailer

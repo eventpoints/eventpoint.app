@@ -37,7 +37,13 @@ class EventService
 
     public function sendInvitation(User $user, Event $event): void
     {
-        if ($event->getIsAttending($user) or $event->hasRequestedToAttend($user)) {
+        if ($event->hasRequestedToAttend($user)) {
+            // TODO: accept user's request to join
+            return;
+        }
+
+        if ($event->getIsAttending($user)) {
+            // TODO: send invitation for user with an existing account
             return;
         }
 
@@ -52,6 +58,11 @@ class EventService
     {
         $emailInvitation = $this->eventEmailInvitationFactory->create(email: $email);
         $event->addEmailInvitation($emailInvitation);
-        $this->emailService->sendInviteToUserWithoutAccount(recipientEmailAddress: $email);
+        $this->emailService->sendInviteToUserWithoutAccount(
+            recipientEmailAddress: $email,
+            context: [
+                'event' => $event,
+            ]
+        );
     }
 }

@@ -7,7 +7,6 @@
         token: mapbox_token,
         events: eventPagination.items|serialize(format = 'json'),
     }) }}>
-
         <div class="offcanvas offcanvas-bottom vh-50" data-bs-scroll="true" tabindex="-1" id="map-offcanvas"
              aria-labelledby="map">
             <div class="map-big" id="map" {{ stimulus_target('dynamic-map', 'map') }}></div>

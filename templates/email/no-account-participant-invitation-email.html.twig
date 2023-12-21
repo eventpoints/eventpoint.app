@@ -1,0 +1,10 @@
+{% extends 'email/base-email.html.twig' %}
+
+{% block body %}
+    <div>
+        <div>You have been invited to {{ event.title }}</div>
+        <div>click on the link below to respond to the invitation</div>
+        <a target="_blank" href="{{ url('show_event', {id: event.id}) }}">{{ 'show-event'|trans }}</a>
+    </div>
+{% endblock %}
+
