@@ -213,7 +213,7 @@
                                                 </div>
                                                 <div>
                                                     <div class="fw-bold lh-1">{{ organiser.owner.fullName|title }}</div>
-                                                    <div>{{ organiser.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                                    <div>{{ organiser.createdAt|time_ago }}</div>
                                                 </div>
                                             </div>
                                             <div>
@@ -235,7 +235,7 @@
                                             </div>
                                             <div>
                                                 <div>{{ participant.owner.fullName|title }}</div>
-                                                <div>{{ participant.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                                <div>{{ participant.createdAt|time_ago }}</div>
                                             </div>
                                         </a>
                                     {% endfor %}
@@ -255,7 +255,7 @@
                                                 </div>
                                                 <div>
                                                     <div>{{ invitation.owner.fullName|title }}</div>
-                                                    <div>{{ invitation.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                                    <div>{{ invitation.createdAt|time_ago }}</div>
                                                 </div>
                                             </a>
                                         {% endfor %}
@@ -316,7 +316,7 @@
                                                  height="40"/>
                                             <div>
                                                 <div class="fw-bold lh-1">{{ imageCollection.owner.fullName|title }}</div>
-                                                <div>{{ imageCollection.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                                <div>{{ imageCollection.createdAt|time_ago }}</div>
                                             </div>
                                         </div>
                                     </div>

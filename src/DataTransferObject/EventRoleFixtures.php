@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\DataFixtures;
+namespace App\DataTransferObject;
 
 use App\Entity\Event\EventRole;
 use App\Enum\EventOrganiserRoleEnum;
