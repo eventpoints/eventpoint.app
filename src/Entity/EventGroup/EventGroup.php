@@ -74,7 +74,6 @@ class EventGroup
     private Collection $categories;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\NotBlank]
     #[Assert\Country]
     private null|string $country = null;
 
@@ -84,6 +83,15 @@ class EventGroup
     #[ORM\Column(length: 255, nullable: true)]
     private null|string $language = null;
 
+    #[ORM\Column(nullable: true)]
+    private null|bool $isPrivate = false;
+
+    #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: EventGroupInvitation::class)]
+    private Collection $eventGroupInvitations;
+
+    #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: EventGroupJoinRequest::class)]
+    private Collection $eventGroupJoinRequests;
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -92,6 +100,8 @@ class EventGroup
         $this->eventGroupDiscussions = new ArrayCollection();
         $this->polls = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->eventGroupInvitations = new ArrayCollection();
+        $this->eventGroupJoinRequests = new ArrayCollection();
     }
 
     public function getId(): Uuid
@@ -257,7 +267,12 @@ class EventGroup
 
     public function getIsMember(User $user): bool
     {
-        return $this->getEventGroupMembers()->exists(fn (int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user);
+        return $this->getEventGroupMembers()->exists(fn (int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MEMBER));
+    }
+
+    public function getIsMaintainer(User $user): bool
+    {
+        return $this->getEventGroupMembers()->exists(fn (int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER));
     }
 
     public function getMember(User $user): null|EventGroupMember
@@ -370,5 +385,92 @@ class EventGroup
     public function createdAgo(): string
     {
         return $this->createdAt->diffForHumans();
+    }
+
+    public function getIsPrivate(): null|bool
+    {
+        return $this->isPrivate;
+    }
+
+    public function setIsPrivate(null|bool $isPrivate): static
+    {
+        $this->isPrivate = $isPrivate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventGroupInvitation>
+     */
+    public function getEventGroupInvitations(): Collection
+    {
+        return $this->eventGroupInvitations;
+    }
+
+    public function addEventGroupInvitation(EventGroupInvitation $eventGroupInvitation): static
+    {
+        if (! $this->eventGroupInvitations->contains($eventGroupInvitation)) {
+            $this->eventGroupInvitations->add($eventGroupInvitation);
+            $eventGroupInvitation->setEventGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventGroupInvitation(EventGroupInvitation $eventGroupInvitation): static
+    {
+        if ($this->eventGroupInvitations->removeElement($eventGroupInvitation)) {
+            // set the owning side to null (unless already changed)
+            if ($eventGroupInvitation->getEventGroup() === $this) {
+                $eventGroupInvitation->setEventGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventGroupJoinRequest>
+     */
+    public function getEventGroupJoinRequests(): Collection
+    {
+        return $this->eventGroupJoinRequests;
+    }
+
+    public function addEventGroupJoinRequest(EventGroupJoinRequest $eventGroupJoinRequest): static
+    {
+        if (! $this->eventGroupJoinRequests->contains($eventGroupJoinRequest)) {
+            $this->eventGroupJoinRequests->add($eventGroupJoinRequest);
+            $eventGroupJoinRequest->setEventGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventGroupJoinRequest(EventGroupJoinRequest $eventGroupJoinRequest): static
+    {
+        if ($this->eventGroupJoinRequests->removeElement($eventGroupJoinRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($eventGroupJoinRequest->getEventGroup() === $this) {
+                $eventGroupJoinRequest->setEventGroup(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function hasUserSentJoinRequest(User $user): bool
+    {
+        return $this->eventGroupJoinRequests->exists(fn (int $key, EventGroupJoinRequest $eventGroupJoinRequest) => $eventGroupJoinRequest->getOwner() === $user);
+    }
+
+    public function getUserJoinRequest(User $user): null|EventGroupJoinRequest
+    {
+        return $this->eventGroupJoinRequests->findFirst(fn (int $key, EventGroupJoinRequest $eventGroupJoinRequest) => $eventGroupJoinRequest->getOwner() === $user);
+    }
+
+    public function isUserAdmin(User $user): bool
+    {
+        return $this->getEventGroupMembers()->exists(fn (int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MANAGER || $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_CREATOR));
     }
 }

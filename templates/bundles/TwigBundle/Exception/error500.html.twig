@@ -1,0 +1,27 @@
+{# templates/bundles/TwigBundle/Exception/error404.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block navbar %}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+
+{% block body %}
+    <div style="background-image: url('{{ asset('images/error-1.gif') }}');background-size: cover;">
+        <div class="container">
+            <div class="row justify-content-center text-center align-items-center min-vh-100">
+                <div class="col-12 col-md-6">
+                    <div class="card border-0 text-white bg-transparent">
+                        <div class="card-body">
+                            <span style="font-size: 100px" class="m-0 mdi mdi-alert"></span>
+                            <div class="display-3 fw-bold">{{ 'something-went-wrong-on-our-side'|trans }}</div>
+                            <hr/>
+                            <a href="{{ path('events') }}" class="btn mt-2 btn-primary btn-lg">{{ 'go-to-home-page'|trans }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -10,6 +10,7 @@ use App\Entity\Category;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User;
 use App\Enum\EventFilterDateRangeEnum;
+use App\Enum\EventGroupRoleEnum;
 use App\Service\ApplicationTimeService\ApplicationTimeService;
 use Carbon\Carbon;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -87,6 +88,10 @@ class EventGroupRepository extends ServiceEntityRepository
         $qb->andWhere(
             $qb->expr()->eq('event.isPublished', ':true')
         )->setParameter('true', true);
+
+        $qb->andWhere(
+            $qb->expr()->eq('event_group.isPrivate', ':false')
+        )->setParameter('false', false);
 
         if ($isQuery) {
             return $qb->getQuery();
@@ -168,6 +173,10 @@ class EventGroupRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('event_group');
 
+        $qb->andWhere(
+            $qb->expr()->eq('event_group.isPrivate', ':false')
+        )->setParameter('false', false);
+
         if (! empty($eventFilterDto->getKeyword())) {
             $this->findByName(keyword: $eventFilterDto->getKeyword(), qb: $qb, isQuery: true);
 
@@ -201,6 +210,66 @@ class EventGroupRepository extends ServiceEntityRepository
         $qb->andWhere(
             $qb->expr()->eq('category.id', ':category')
         )->setParameter('category', $category->getId(), 'uuid');
+
+        if ($isQuery) {
+            return $result->getQuery();
+        }
+
+        return $result->getQuery()->getResult();
+    }
+
+    /**
+     * @return Query|array<int, EventGroup>
+     */
+    public function findByMembership(User $user, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    {
+        if (! $qb instanceof QueryBuilder) {
+            $qb = $this->createQueryBuilder('event_group');
+        }
+        $result = $qb;
+
+        $qb->leftJoin('event_group.eventGroupMembers', 'event_group_member');
+        $qb->leftJoin('event_group_member.roles', 'role');
+
+        $qb->andWhere(
+            $qb->expr()->eq('role.title', ':role_member')
+        )->setParameter('role_member', EventGroupRoleEnum::ROLE_GROUP_MEMBER);
+
+        if ($isQuery) {
+            return $qb->getQuery();
+        }
+
+        return $result->getQuery()->getResult();
+    }
+
+    /**
+     * @return Query|array<int, EventGroup>
+     */
+    public function findByGroupsManaged(User $user, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    {
+        if (! $qb instanceof QueryBuilder) {
+            $qb = $this->createQueryBuilder('event_group');
+        }
+        $result = $qb;
+
+        $qb->leftJoin('event_group.eventGroupMembers', 'event_group_member');
+        $qb->leftJoin('event_group_member.roles', 'role');
+
+        $qb->andWhere(
+            $qb->expr()->eq('event_group_member.owner', ':user')
+        )->setParameter('user', $user);
+
+        $qb->andWhere(
+            $qb->expr()->eq('role.title', ':role_manager')
+        )->setParameter('role_manager', EventGroupRoleEnum::ROLE_GROUP_MANAGER);
+
+        $qb->andWhere(
+            $qb->expr()->eq('role.title', ':role_creator')
+        )->setParameter('role_creator', EventGroupRoleEnum::ROLE_GROUP_CREATOR);
+
+        $qb->andWhere(
+            $qb->expr()->eq('role.title', ':role_maintainer')
+        )->setParameter('role_maintainer', EventGroupRoleEnum::ROLE_GROUP_MAINTAINER);
 
         if ($isQuery) {
             return $result->getQuery();

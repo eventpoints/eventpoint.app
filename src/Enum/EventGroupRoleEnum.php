@@ -12,4 +12,5 @@ enum EventGroupRoleEnum: string
     case ROLE_GROUP_CREATOR = 'role.group.creator';
     case ROLE_GROUP_PROMOTER = 'role.group.promoter';
     case ROLE_GROUP_SPONSOR = 'role.group.sponsor';
+    case ROLE_GROUP_MEMBER = 'role.group.member';
 }

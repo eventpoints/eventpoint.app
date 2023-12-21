@@ -135,6 +135,11 @@ class EventRepository extends ServiceEntityRepository
             $this->findByTitle(keyword: $eventFilterDto->getKeyword(), qb: $qb);
         }
 
+        $qb->leftJoin('event.eventGroup', 'event_group');
+        $qb->andWhere(
+            $qb->expr()->eq('event_group.isPrivate', ':false')
+        )->setParameter('false', false);
+
         $qb->andWhere(
             $qb->expr()->eq('event.isPublished', ':true')
         )->setParameter('true', true);
@@ -259,9 +264,9 @@ class EventRepository extends ServiceEntityRepository
             $qb->expr()->eq('organiser.owner', ':user')
         )->setParameter('user', $user);
 
-        $qb->leftJoin('event.eventInvitations', 'invitation');
+        $qb->leftJoin('event.eventRequests', 'event_requests');
         $qb->orWhere(
-            $qb->expr()->eq('invitation.owner', ':user')
+            $qb->expr()->eq('event_requests.owner', ':user')
         )->setParameter('user', $user);
 
         return $qb->getQuery()->getResult();
@@ -300,6 +305,52 @@ class EventRepository extends ServiceEntityRepository
         )->setParameter('true', true);
 
         $qb->orderBy('event.createdAt', Criteria::DESC);
+
+        if ($isQuery) {
+            return $qb->getQuery();
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return array<int, Event>|Query
+     */
+    public function findFutureAssociatedByUser(User $currentUser, bool $isQuery = false): array|Query
+    {
+        $qb = $this->createQueryBuilder('event');
+
+        $qb->andWhere(
+            $qb->expr()->eq('event.isPublished', ':true')
+        )->setParameter('true', true);
+
+        $now = CarbonImmutable::now();
+        $qb->andWhere(
+            $qb->expr()->lt('event.startAt', ':now')
+        )->setParameter('now', $now);
+
+        if ($isQuery) {
+            return $qb->getQuery();
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return array<int, Event>|Query
+     */
+    public function findPastAssociatedByUser(User $currentUser, bool $isQuery = false): array|Query
+    {
+        $qb = $this->createQueryBuilder('event');
+
+        $qb->andWhere(
+            $qb->expr()->eq('event.isPublished', ':true')
+        )->setParameter('true', true);
+
+        $now = CarbonImmutable::now();
+        $qb->andWhere(
+            $qb->expr()->gt('event.endAt', ':now')
+        )->setParameter('now', $now);
 
         if ($isQuery) {
             return $qb->getQuery();

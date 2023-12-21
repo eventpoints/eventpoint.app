@@ -11,21 +11,23 @@
                 {{ include('partials/_event-group-navbar.html.twig') }}
             </div>
             <div class="col-12 col-md-6">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <div class="fw-bold text-muted small">{{ 'group-activity'|trans|upper }}</div>
-                        <turbo-frame id="event-group-graph-frame"
-                                     src="{{ path('event_group_activity_graph', {id: eventGroup.id }) }}">
-                            <div class="d-flex justify-content-center py-5">
-                                <div class="spinner-border" role="status">
-                                    <span class="visually-hidden">Loading...</span>
+                {% if not eventGroup.isPrivate and eventGroup.isMember(app.user) or eventGroup.isMaintainer(app.user) %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="fw-bold text-muted small">{{ 'group-activity'|trans|upper }}</div>
+                            <turbo-frame id="event-group-graph-frame"
+                                         src="{{ path('event_group_activity_graph', {id: eventGroup.id }) }}">
+                                <div class="d-flex justify-content-center py-5">
+                                    <div class="spinner-border" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </turbo-frame>
+                            </turbo-frame>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
 
-                {% if app.user and eventGroup.isMember(app.user) and app.user|has_group_permission(eventGroup, 'role.group.maintainer') or app.user|has_group_permission(eventGroup, 'role.group.manager') %}
+                {% if app.user and eventGroup.isMember(app.user) or eventGroup.isMaintainer(app.user)  %}
                     <div class="list-group mb-3 list-group-horizontal d-flex justify-content-between">
                         <a href="{{ path('create_event', {eventGroup: eventGroup.id}) }}"
                            class="list-group-item list-group-item-action text-center">
@@ -46,7 +48,7 @@
                 {% endif %}
 
                 {% if app.user %}
-                    {% if eventGroup.isMember(app.user) %}
+                    {% if eventGroup.isMember(app.user) or eventGroup.isMaintainer(app.user) %}
                         <div class="row g-3">
                             {% for post in posts %}
                                 <div class="col-12">
@@ -67,10 +69,10 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <div class="text-center text-muted">{{ 'group-hidden-content'|trans }}</div>
+                        <div class="text-center text-muted">{{ 'group-hidden-content'|trans|upper }}</div>
                     {% endif %}
                 {% else %}
-                    <div class="text-center text-muted">{{ 'create-account-to-join-group'|trans }}</div>
+                    <div class="text-center text-muted">{{ 'create-account-to-join-group'|trans|upper }}</div>
                 {% endif %}
             </div>
         </div>

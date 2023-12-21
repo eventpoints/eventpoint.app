@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-4">
+                {{ include('partials/_event-group-navbar.html.twig', {
+                    eventGroup: eventGroupMember.eventGroup
+                }) }}
+            </div>
+            <div class="col-12 col-md-6">
+                {{ form_start(eventGroupMemberRoleForm) }}
+                <div class="card">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">{{ form_row(eventGroupMemberRoleForm.owner) }}</div>
+                    </div>
+                    {{ form_row(eventGroupMemberRoleForm.roles) }}
+                    <div class="card-footer text-bg-light sticky-bottom z-90001 text-end">
+                        <button type="submit" class="btn btn-primary">{{ 'save'|trans }}</button>
+                    </div>
+                </div>
+                {{ form_end(eventGroupMemberRoleForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

@@ -7,11 +7,15 @@
 @import 'https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,700;1,300&display=swap';
 @import 'mapbox-gl/src/css/mapbox-gl.css';
 
+
 body{
   padding: 0;
   margin: 0;
 }
 
+.z-90001{
+  z-index: 90001 !important;
+}
 
 .b-and-w {
   filter: grayscale(100%);

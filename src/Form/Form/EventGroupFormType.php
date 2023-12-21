@@ -9,6 +9,7 @@ use App\Entity\EventGroup\EventGroup;
 use App\Entity\User;
 use App\Form\Type\CategoryGroupType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\LanguageType;
@@ -82,6 +83,12 @@ class EventGroupFormType extends AbstractType
                 'label' => $this->translator->trans('group-purpose'),
                 'row_attr' => [
                     'class' => 'form-floating',
+                ],
+            ])
+            ->add('isPrivate', CheckboxType::class, [
+                'label' => $this->translator->trans('is-private-group-input-label'),
+                'label_attr' => [
+                    'class' => 'checkbox-switch',
                 ],
             ])
             ->add('categories', CategoryGroupType::class, [

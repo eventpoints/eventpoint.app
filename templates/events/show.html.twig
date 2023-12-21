@@ -82,18 +82,10 @@
                                 <div class="fw-bold">{{ event.eventGroup.name }}</div>
                             </a>
                         {% endif %}
-                        <div class="list-group-item d-flex justify-content-around align-items-center">
-                            <div class="d-flex justify-content-start align-items-center">
-                                <div class="mdi mdi-ray-start fs-4 me-2 text-muted"></div>
-                                <div>
-                                    {{ event.startAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}
-                                </div>
-                            </div>
-                            <div class="mdi mdi-ray-vertex fs-4 mx-1 text-muted"></div>
-                            <div class="d-flex justify-content-end align-items-center">
-                                <div>{{ event.endAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
-                                <div class="mdi mdi-ray-end fs-4 ms-2 text-muted"></div>
-                            </div>
+                        <div class="list-group-item">
+                            <div>{{ event.startAt|format_date(timezone=regional.regionalSettingValueObject.timezone,pattern=day_date_pattern) }}</div>
+                            <div>{{ event.startAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }}
+                                - {{ event.endAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }}</div>
                         </div>
                         <div class="list-group-item d-flex d-flex justify-content-between align-items-center"
                                 {{ stimulus_controller('clipboard', {
@@ -178,8 +170,8 @@
                                             id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#going"
                                             type="button" role="tab" aria-controls="pills-home"
                                             aria-selected="true">
-                                        <span class="fw-bold">{{ event.isComplete ? 'went'|trans|capitalize : 'going'|trans|capitalize }}</span>
-                                        <span class="fw-bold badge badge-pill text-bg-dark">{{ event.eventOrganisers.count + event.eventParticipants.count|compact_notation }}</span>
+                                        <span class="fw-bold me-3">{{ event.isComplete ? 'went'|trans|capitalize : 'going'|trans|capitalize }}</span>
+                                        <span class="fw-bold badge rounded-pill text-bg-dark">{{ event.eventOrganisers.count + event.eventParticipants.count|compact_notation }}</span>
                                     </button>
                                 </div>
                                 {% if not event.isComplete %}
@@ -189,8 +181,8 @@
                                                 data-bs-toggle="pill" data-bs-target="#invited"
                                                 type="button" role="tab" aria-controls="pills-invited"
                                                 aria-selected="true">
-                                            <span class="fw-bold">{{ 'invited'|trans|capitalize }}</span>
-                                            <span class="fw-bold badge badge-pill text-bg-dark">{{ event.eventEmailInvitations.count + event.eventInvitations.count|compact_notation }}</span>
+                                            <span class="fw-bold me-3">{{ 'invited'|trans|capitalize }}</span>
+                                            <span class="fw-bold badge rounded-pill text-bg-dark">{{ event.eventEmailInvitations.count + event.eventInvitations.count|compact_notation }}</span>
                                         </button>
                                     </div>
                                     <div class="nav-item" role="presentation">
@@ -199,8 +191,8 @@
                                                 data-bs-target="#requested"
                                                 type="button" role="tab" aria-controls="pills-requested"
                                                 aria-selected="true">
-                                            <span class="fw-bold">{{ 'requested'|trans|capitalize }}</span>
-                                            <span class="fw-bold badge badge-pill text-bg-dark">{{ event.eventRequests.count|compact_notation }}</span>
+                                            <span class="fw-bold me-3">{{ 'requested'|trans|capitalize }}</span>
+                                            <span class="fw-bold badge rounded-pill text-bg-dark">{{ event.eventRequests.count|compact_notation }}</span>
                                         </button>
                                     </div>
                                 {% endif %}
@@ -220,7 +212,7 @@
                                                          src="{{ organiser.owner.avatar }}"/>
                                                 </div>
                                                 <div>
-                                                    <div class="fw-bold lh-1">{{ organiser.owner.fullName }}</div>
+                                                    <div class="fw-bold lh-1">{{ organiser.owner.fullName|title }}</div>
                                                     <div>{{ organiser.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
                                                 </div>
                                             </div>
@@ -242,7 +234,7 @@
                                                      src="{{ participant.owner.avatar }}"/>
                                             </div>
                                             <div>
-                                                <div>{{ participant.owner.fullName }}</div>
+                                                <div>{{ participant.owner.fullName|title }}</div>
                                                 <div>{{ participant.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
                                             </div>
                                         </a>
@@ -255,7 +247,17 @@
                                      tabindex="0">
                                     <div class="list-group list-group-flush">
                                         {% for invitation in event.eventInvitations %}
-                                            <div class="list-group-item">{{ invitation.owner.firstName }}</div>
+                                            <a href="{{ path('show_profile', {id: invitation.owner.id}) }}"
+                                               class="list-group-item list-group-item-action d-flex justify-content-start align-items-start">
+                                                <div>
+                                                    <img src="{{ invitation.owner.avatar }}" class="rounded-circle border me-2"
+                                                         height="50"/>
+                                                </div>
+                                                <div>
+                                                    <div>{{ invitation.owner.fullName|title }}</div>
+                                                    <div>{{ invitation.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                                </div>
+                                            </a>
                                         {% endfor %}
                                         <div class="list-group-item text-center">
                                             <span class="me-2">{{ event.eventEmailInvitations.count|compact_notation }}</span>
@@ -313,7 +315,7 @@
                                                  width="40"
                                                  height="40"/>
                                             <div>
-                                                <div class="fw-bold lh-1">{{ imageCollection.owner.fullName }}</div>
+                                                <div class="fw-bold lh-1">{{ imageCollection.owner.fullName|title }}</div>
                                                 <div>{{ imageCollection.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
                                             </div>
                                         </div>
