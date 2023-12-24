@@ -131,7 +131,7 @@ class EventController extends AbstractController
         $imageForm = $this->createForm(ImageFormType::class);
         $imageForm->handleRequest($request);
         if ($imageForm->isSubmitted() && $imageForm->isValid()) {
-            $this->handleEventImageUploadForm(imageForm: $imageForm, currentUser: $currentUser, event: $event);
+            return $this->handleEventImageUploadForm(imageForm: $imageForm, currentUser: $currentUser, event: $event);
         }
 
         return $this->render('events/show.html.twig', [
@@ -215,11 +215,8 @@ class EventController extends AbstractController
         ]);
     }
 
-    private function handleEventImageUploadForm(
-        FormInterface $imageForm,
-        User          $currentUser,
-        Event         $event
-    ): Response {
+    private function handleEventImageUploadForm(FormInterface $imageForm, null|User $currentUser, Event $event): Response
+    {
         $UploadedImageFiles = $imageForm->get('images')->getData();
         $images = [];
         foreach ($UploadedImageFiles as $img) {
@@ -229,6 +226,7 @@ class EventController extends AbstractController
         }
         $imageCollection = $this->imageCollectionFactory->create(images: $images, owner: $currentUser, event: $event);
         $this->imageCollectionRepository->save($imageCollection, true);
+
         $this->addFlash('message', 'images uploaded');
         return $this->redirectToRoute('show_event', [
             'id' => $event->getId(),

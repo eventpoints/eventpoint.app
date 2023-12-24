@@ -27,6 +27,7 @@ class ImageCollection
     private Collection $images;
 
     #[ORM\ManyToOne(inversedBy: 'imageCollections')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?User $owner = null;
 
     #[ORM\ManyToOne(inversedBy: 'imageCollections')]
