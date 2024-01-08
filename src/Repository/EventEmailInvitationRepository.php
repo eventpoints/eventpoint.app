@@ -22,4 +22,26 @@ class EventEmailInvitationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, EventEmailInvitation::class);
     }
+
+    public function save(EventEmailInvitation $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()
+            ->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()
+                ->flush();
+        }
+    }
+
+    public function remove(EventEmailInvitation $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()
+            ->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()
+                ->flush();
+        }
+    }
 }

@@ -31,10 +31,13 @@ class EventService
         if ($user instanceof User) {
             $this->sendInvitation(user: $user, event: $event);
         } else {
-            $this->sendEmailInvitation(email: $email, event: $event);
+            $this->sendEmailInvitationToUserWithoutAccount(email: $email, event: $event);
         }
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function sendInvitation(User $user, Event $event): void
     {
         if ($event->hasRequestedToAttend($user)) {
@@ -48,13 +51,20 @@ class EventService
         }
 
         $invitation = $this->eventInvitationFactory->create(owner: $user, event: $event);
+        $this->emailService->sendInviteToUserWithAccount(
+            recipientEmailAddress: $user->getEmail(),
+            context: [
+                'event' => $event,
+                'user' => $user,
+            ]
+        );
         $event->addEventInvitation($invitation);
     }
 
     /**
      * @throws TransportExceptionInterface
      */
-    public function sendEmailInvitation(string $email, Event $event): void
+    public function sendEmailInvitationToUserWithoutAccount(string $email, Event $event): void
     {
         $emailInvitation = $this->eventEmailInvitationFactory->create(email: $email);
         $event->addEmailInvitation($emailInvitation);

@@ -36,7 +36,11 @@ class EventFormType extends AbstractType
     {
         $event = $options['event'];
         $builder
-            ->add('address', TextType::class)
+            ->add('address', TextType::class, [
+                'attr' => [
+                    'data-location-target' => 'address',
+                ],
+            ])
             ->add('title', TextType::class)
             ->add('image', FileType::class, [
                 'required' => ! (($event instanceof Event && ! empty($event->getBase64Image()))),

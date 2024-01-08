@@ -92,13 +92,15 @@
                                     successContent: "<span class='bi bi-check-lg text-success fs-4'></span>"
                                 }) }}
                         >
-                            <div class="w-75" value="{{ event.address }}" {{ stimulus_target('clipboard', 'source') }} >{{ event.address }}</div>
-                            <a class="me-2" href="#" {{ stimulus_action('clipboard', 'copy', 'click') }} {{ stimulus_target('clipboard', 'button') }} >
+                            <div class="w-75"
+                                 value="{{ event.address }}" {{ stimulus_target('clipboard', 'source') }} >{{ event.address }}</div>
+                            <a class="me-2"
+                               href="#" {{ stimulus_action('clipboard', 'copy', 'click') }} {{ stimulus_target('clipboard', 'button') }} >
                                 <span class="bi bi-copy fs-4"></span>
                             </a>
                             <div class="dropdown">
                                 <a class="link-primary" type="button" data-bs-toggle="dropdown"
-                                        aria-expanded="false">
+                                   aria-expanded="false">
                                     <i class="bi bi-map fs-4"></i>
                                 </a>
                                 <ul class=" dropdown-menu">
@@ -275,10 +277,18 @@
                                                 </div>
                                             </a>
                                         {% endfor %}
-                                        <div class="list-group-item text-center">
-                                            <span class="me-2">{{ event.eventEmailInvitations.count|compact_notation }}</span>
-                                            {{ 'invited-by-email'|trans() }}
-                                        </div>
+                                        {% if app.user and app.user|has_event_permission(event, 'role.event.manager') or app.user|has_event_permission(event, 'role.event.admin') or app.user|has_event_permission(event, 'role.event.promoter') %}
+                                            <a href="#invited-users"
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#invited-users"
+                                               class="list-group-item list-group-item-action text-center">
+                                                {{ 'invited-by-email'|trans({count: event.eventEmailInvitations.count|compact_notation}) }}
+                                            </a>
+                                        {% else %}
+                                            <div class="list-group-item text-center">
+                                                {{ 'invited-by-email'|trans({count: event.eventEmailInvitations.count|compact_notation}) }}
+                                            </div>
+                                        {% endif %}
                                         {% if app.user and app.user|has_event_permission(event, 'role.event.manager') or app.user|has_event_permission(event, 'role.event.admin') or app.user|has_event_permission(event, 'role.event.promoter') %}
                                             <div class="list-group-item text-end">
                                                 <a class="btn btn-outline-primary" href="#send-invite"
@@ -370,6 +380,44 @@
                         </div>
                     </div>
                 </turbo-frame>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="invited-users" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5"
+                        id="exampleModalLabel">{{ 'sent-email-invitations'|trans|capitalize }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="list-group list-group-flush" {{ stimulus_controller('list-group-search') }}>
+                    <div class="list-group-item">
+                        <div class="input-group mb-3">
+                            <input {{ stimulus_target('list-group-search', 'input') }} {{ stimulus_action('list-group-search', 'type', 'keyup') }}
+                                    type="text" class="form-control"
+                                    placeholder="{{ 'search'|trans }}"
+                                    aria-label="email-address"
+                                    aria-describedby="basic-addon1"/>
+                        </div>
+                    </div>
+                    {% for invitation in event.eventEmailInvitations %}
+                        <div {{ stimulus_target('list-group-search', 'item') }} data-searchable-content="{{ invitation.email }}"
+                                class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <div>{{ invitation.email }}</div>
+                                <div>{{ invitation.createdAt|time_ago }}</div>
+                            </div>
+                            <div>
+                                <a href="{{ path('remove_email_invitation', {id: invitation.id, token: csrf_token('remove-invitation')}) }}"
+                                   class="link-danger">
+                                    <div class="bi bi-x-lg fs-4 text-danger"></div>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

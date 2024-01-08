@@ -31,28 +31,29 @@
                                 </div>
                             </a>
                         </div>
-                    </div>
 
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item"> {{ form_row(eventForm.address) }}</div>
-                        <div class="list-group-item"> {{ form_row(eventForm.title) }}</div>
-                        <div class="list-group-item"> {{ form_row(eventForm.image) }}</div>
-                        <div class="list-group-item"> {{ form_row(eventForm.description) }}</div>
-                        <div class="list-group-item">
-                            <div class="row">
-                                <div class="col-6">
-                                    {{ form_row(eventForm.startAt) }}
-                                </div>
-                                <div class="col-6">
-                                    {{ form_row(eventForm.endAt) }}
+
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item"> {{ form_row(eventForm.address) }}</div>
+                            <div class="list-group-item"> {{ form_row(eventForm.title) }}</div>
+                            <div class="list-group-item"> {{ form_row(eventForm.image) }}</div>
+                            <div class="list-group-item"> {{ form_row(eventForm.description) }}</div>
+                            <div class="list-group-item">
+                                <div class="row">
+                                    <div class="col-6">
+                                        {{ form_row(eventForm.startAt) }}
+                                    </div>
+                                    <div class="col-6">
+                                        {{ form_row(eventForm.endAt) }}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="list-group-item">{{ form_row(eventForm.isPrivate) }}</div>
-                        <div class="list-group-item">
-                            {{ 'event-term-and-condition'|trans({
-                                path: path('create_index')
-                            })|raw }}
+                            <div class="list-group-item">{{ form_row(eventForm.isPrivate) }}</div>
+                            <div class="list-group-item">
+                                {{ 'event-term-and-condition'|trans({
+                                    path: path('create_index')
+                                })|raw }}
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">

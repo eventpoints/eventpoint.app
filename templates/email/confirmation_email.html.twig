@@ -1,0 +1,10 @@
+<h1>{{ 'email-account-confirm-header'|trans }}</h1>
+<p>
+    {{ 'email-account-confirm-text'|trans }} <br><br>
+    <a class="btn btn-light btn-lg" href="{{ signedUrl|raw }}">{{ 'confirm-email-address'|trans }}</a>.
+    {{ 'link-expires-in'|trans }} {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
+</p>
+
+<p>
+    {{ 'email-sign-off'|trans }}
+</p>

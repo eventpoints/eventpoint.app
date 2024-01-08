@@ -9,8 +9,8 @@ export default class extends Controller {
 
     type(event) {
         this.itemTargets.map((item, index) => {
-
-            if (item.innerText.toLowerCase().includes(this.inputTarget.value.toLowerCase())) {
+            let content = item.getAttribute('data-searchable-content');
+            if (content.toLowerCase().includes(this.inputTarget.value.toLowerCase())) {
                 this.itemTargets[index].classList.remove('visually-hidden')
             } else {
                 this.itemTargets[index].classList.add('visually-hidden')

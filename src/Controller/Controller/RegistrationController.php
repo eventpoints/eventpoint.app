@@ -26,7 +26,7 @@ class RegistrationController extends AbstractController
 {
     public function __construct(
         private readonly EmailVerifier $emailVerifier,
-        private readonly AvatarService $avatarService
+        private readonly AvatarService $avatarService,
     ) {
     }
 
@@ -59,7 +59,7 @@ class RegistrationController extends AbstractController
                     ->from(new Address('no-reply@eventpoint.app', 'Event Point'))
                     ->to($user->getEmail())
                     ->subject('Please Confirm your Email')
-                    ->htmlTemplate('registration/confirmation_email.html.twig')
+                    ->htmlTemplate('email/confirmation_email.html.twig')
             );
 
             return $userAuthenticator->authenticateUser(

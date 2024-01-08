@@ -1,8 +1,8 @@
-import { Controller } from '@hotwired/stimulus';
+import {Controller} from '@hotwired/stimulus';
 import mapboxgl from 'mapbox-gl';
 
 export default class extends Controller {
-    static targets = ['result', 'latitude', 'longitude', 'icon'];
+    static targets = ['result', 'latitude', 'longitude', 'icon', 'address'];
     static values = {
         token: String,
         latitude: String,
@@ -29,10 +29,11 @@ export default class extends Controller {
                 .setLngLat([parseFloat(this.lng), parseFloat(this.lat)])
                 .addTo(this.map);
 
-            this.marker.on('dragend', () => {
+            this.marker.on('dragend', async () => {
                 const lngLat = this.marker.getLngLat();
                 this.latitudeTarget.setAttribute('value', lngLat.lat);
                 this.longitudeTarget.setAttribute('value', lngLat.lng);
+                this.addressTarget.setAttribute('value', await this.reverseGeocode(lngLat.lng, lngLat.lat));
             });
         });
     }
@@ -51,6 +52,9 @@ export default class extends Controller {
             this.marker.setLngLat([longitude, latitude]);
             this.latitudeTarget.setAttribute('value', latitude);
             this.longitudeTarget.setAttribute('value', longitude);
+            this.addressTarget.setAttribute('value', await this.reverseGeocode(longitude, latitude));
+
+
             this.map.flyTo({
                 center: [longitude, latitude],
                 zoom: 15,
@@ -62,6 +66,26 @@ export default class extends Controller {
         } finally {
             this.iconTarget.classList.replace('spinner-border', 'bi');
             this.iconTarget.classList.replace('spinner-border-sm', 'bi-crosshair');
+        }
+    }
+
+    async reverseGeocode(longitude, latitude) {
+        const response = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${this.tokenValue}`
+        )
+
+        if (!response.ok) {
+            throw new Error('Failed to reverse geocode coordinates.')
+        }
+
+        const data = await response.json()
+        const firstFeature = data.features[0]
+        console.log(firstFeature)
+
+        if (firstFeature) {
+            return firstFeature.place_name
+        } else {
+            return 'Address not found'
         }
     }
 }

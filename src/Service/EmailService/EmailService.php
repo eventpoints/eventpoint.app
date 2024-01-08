@@ -78,6 +78,20 @@ final readonly class EmailService
      * @param array<string|int|object> $context
      * @throws TransportExceptionInterface
      */
+    public function sendInviteToUserWithAccount(string $recipientEmailAddress, array $context = []): void
+    {
+        $this->send(
+            subject: 'email.invitation.subject',
+            template: '/email/invitation-email.html.twig',
+            recipientEmailAddress: $recipientEmailAddress,
+            context: $context
+        );
+    }
+
+    /**
+     * @param array<string|int|object> $context
+     * @throws TransportExceptionInterface
+     */
     public function sendMessageRecivedEmail(string $recipientEmailAddress, array $context = []): void
     {
         $this->send(
