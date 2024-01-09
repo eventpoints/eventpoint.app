@@ -6,6 +6,7 @@ namespace App\Controller\Controller\Event;
 
 use App\Entity\Event\Event;
 use App\Entity\Event\EventEmailInvitation;
+use App\Entity\User;
 use App\Enum\FlashEnum;
 use App\Form\Form\EmailFormType;
 use App\Repository\Event\EventRepository;
@@ -16,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/event/invitations')]
@@ -30,14 +32,14 @@ class EventInvitationController extends AbstractController
     }
 
     #[Route('/create/{event}', name: 'create_event_invitation', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function create(Event $event, Request $request): Response
+    public function create(Event $event, Request $request, #[CurrentUser] User $currentUser): Response
     {
         $eventInvitationForm = $this->createForm(EmailFormType::class);
         $eventInvitationForm->handleRequest($request);
         if ($eventInvitationForm->isSubmitted() && $eventInvitationForm->isValid()) {
             $email = $eventInvitationForm->get('email')->getData();
 
-            $this->eventService->process(event: $event, email: $email);
+            $this->eventService->process(event: $event, email: $email, currentUser: $currentUser);
 
             $this->eventRepository->save($event, true);
             $this->addFlash('message', $this->translator->trans('invitation-sent'));

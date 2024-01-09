@@ -14,10 +14,12 @@ final class EventInvitationFactory
 {
     public function create(
         User  $owner,
+        User  $target,
         Event $event
     ): EventInvitation {
         $eventInvite = new EventInvitation();
         $eventInvite->setOwner($owner);
+        $eventInvite->setTarget($target);
         $eventInvite->setEvent($event);
 
         return $eventInvite;
@@ -27,7 +29,7 @@ final class EventInvitationFactory
     {
         $eventParticipantFactory = new EventParticpantFactory();
         return $eventParticipantFactory->create(
-            owner: $eventInvitation->getOwner(),
+            owner: $eventInvitation->getTarget(),
             event: $eventInvitation->getEvent()
         );
     }
@@ -36,7 +38,7 @@ final class EventInvitationFactory
     {
         $eventRejectionFactory = new EventRejectionFactory();
         return $eventRejectionFactory->create(
-            owner: $eventInvitation->getOwner(),
+            owner: $eventInvitation->getTarget(),
             event: $eventInvitation->getEvent()
         );
     }

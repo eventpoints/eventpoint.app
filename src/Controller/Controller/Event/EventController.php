@@ -22,6 +22,7 @@ use App\Form\Form\ImageFormType;
 use App\Repository\Event\EventGroupRepository;
 use App\Repository\Event\EventRepository;
 use App\Repository\Event\EventRoleRepository;
+use App\Repository\EventEmailInvitationRepository;
 use App\Repository\ImageCollectionRepository;
 use App\Security\Voter\EventVoter;
 use App\Service\ImageUploadService\ImageService;
@@ -49,7 +50,8 @@ class EventController extends AbstractController
         private readonly EventFactory              $eventFactory,
         private readonly EventCancellationFactory  $eventCancellationFactory,
         private readonly TranslatorInterface       $translator,
-        private readonly EventGroupRepository      $eventGroupRepository
+        private readonly EventGroupRepository      $eventGroupRepository,
+        private readonly EventEmailInvitationRepository      $eventEmailInvitationRepository
     ) {
     }
 
@@ -126,7 +128,13 @@ class EventController extends AbstractController
     #[Route(path: '/events/{id}', name: 'show_event')]
     public function show(Request $request, Event $event, #[CurrentUser] null|User $currentUser): Response
     {
-        $this->isGranted(EventVoter::VIEW_EVENT, $event);
+        $invitationToken = $request->get('token');
+        $invitation = null;
+        if ($invitationToken) {
+            $invitation = $this->eventEmailInvitationRepository->findOneBy([
+                'token' => $invitationToken,
+            ]);
+        }
 
         $imageForm = $this->createForm(ImageFormType::class);
         $imageForm->handleRequest($request);
@@ -137,6 +145,7 @@ class EventController extends AbstractController
         return $this->render('events/show.html.twig', [
             'imageForm' => $imageForm,
             'event' => $event,
+            'invitation' => $invitation,
         ]);
     }
 

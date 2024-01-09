@@ -100,7 +100,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     private ?string $country = RegionalEnum::REGIONAL_REGION->value;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $eventInvitations;
+    private Collection $receivedEventInvitations;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $createdEventInvitations;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $createdEmailEventInvitations;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
@@ -161,7 +167,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->imageCollections = new ArrayCollection();
         $this->eventGroups = new ArrayCollection();
         $this->eventGroupMembers = new ArrayCollection();
-        $this->eventInvitations = new ArrayCollection();
+        $this->receivedEventInvitations = new ArrayCollection();
+        $this->createdEventInvitations = new ArrayCollection();
+        $this->createdEmailEventInvitations = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
         $this->updatedAt = new CarbonImmutable();
         $this->authoredEvents = new ArrayCollection();
@@ -528,24 +536,72 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     /**
      * @return Collection|EventInvitation[]
      */
-    public function getEventInvitations(): Collection
+    public function getReceivedEventInvitations(): Collection
     {
-        return $this->eventInvitations;
+        return $this->receivedEventInvitations;
     }
 
-    public function addEventInvitation(EventInvitation $eventInvitation): self
+    public function addReceivedEventInvitation(EventInvitation $eventInvitation): self
     {
-        if (! $this->eventInvitations->contains($eventInvitation)) {
-            $this->eventInvitations[] = $eventInvitation;
+        if (! $this->receivedEventInvitations->contains($eventInvitation)) {
+            $this->receivedEventInvitations[] = $eventInvitation;
+            $eventInvitation->setTarget($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReceivedEventInvitation(EventInvitation $eventInvitation): self
+    {
+        $this->receivedEventInvitations->removeElement($eventInvitation);
+        return $this;
+    }
+
+    /**
+     * @return Collection|EventInvitation[]
+     */
+    public function getCreatedEventInvitations(): Collection
+    {
+        return $this->createdEventInvitations;
+    }
+
+    public function addCreatedEventInvitation(EventInvitation $eventInvitation): self
+    {
+        if (! $this->createdEventInvitations->contains($eventInvitation)) {
+            $this->createdEventInvitations[] = $eventInvitation;
             $eventInvitation->setOwner($this);
         }
 
         return $this;
     }
 
-    public function removeEventInvitation(EventInvitation $eventInvitation): self
+    public function removeCreatedEventInvitation(EventInvitation $eventInvitation): self
     {
-        $this->eventInvitations->removeElement($eventInvitation);
+        $this->createdEventInvitations->removeElement($eventInvitation);
+        return $this;
+    }
+
+    /**
+     * @return Collection|EventInvitation[]
+     */
+    public function getCreatedEmailEventInvitations(): Collection
+    {
+        return $this->createdEmailEventInvitations;
+    }
+
+    public function addCreatedEmailEventInvitation(EventInvitation $eventInvitation): self
+    {
+        if (! $this->createdEmailEventInvitations->contains($eventInvitation)) {
+            $this->createdEmailEventInvitations[] = $eventInvitation;
+            $eventInvitation->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCreatedEmailEventInvitation(EventInvitation $eventInvitation): self
+    {
+        $this->createdEmailEventInvitations->removeElement($eventInvitation);
         return $this;
     }
 

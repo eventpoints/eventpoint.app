@@ -22,23 +22,26 @@ class EventService
     ) {
     }
 
-    public function process(Event $event, string $email): void
+    /**
+     * @throws TransportExceptionInterface
+     */
+    public function process(Event $event, string $email, User $currentUser): void
     {
         $user = $this->userRepository->findOneBy([
             'email' => $email,
         ]);
 
         if ($user instanceof User) {
-            $this->sendInvitation(user: $user, event: $event);
+            $this->sendInvitation(user: $user, event: $event, currentUser: $currentUser);
         } else {
-            $this->sendEmailInvitationToUserWithoutAccount(email: $email, event: $event);
+            $this->sendEmailInvitationToUserWithoutAccount(email: $email, event: $event, currentUser: $currentUser);
         }
     }
 
     /**
      * @throws TransportExceptionInterface
      */
-    public function sendInvitation(User $user, Event $event): void
+    public function sendInvitation(User $user, Event $event, User $currentUser): void
     {
         if ($event->hasRequestedToAttend($user)) {
             // TODO: accept user's request to join
@@ -50,12 +53,13 @@ class EventService
             return;
         }
 
-        $invitation = $this->eventInvitationFactory->create(owner: $user, event: $event);
+        $invitation = $this->eventInvitationFactory->create(owner: $currentUser, target: $user, event: $event);
         $this->emailService->sendInviteToUserWithAccount(
             recipientEmailAddress: $user->getEmail(),
             context: [
                 'event' => $event,
-                'user' => $user,
+                'target' => $user,
+                'owner' => $currentUser,
             ]
         );
         $event->addEventInvitation($invitation);
@@ -64,14 +68,16 @@ class EventService
     /**
      * @throws TransportExceptionInterface
      */
-    public function sendEmailInvitationToUserWithoutAccount(string $email, Event $event): void
+    public function sendEmailInvitationToUserWithoutAccount(string $email, Event $event, User $currentUser): void
     {
-        $emailInvitation = $this->eventEmailInvitationFactory->create(email: $email);
+        $emailInvitation = $this->eventEmailInvitationFactory->create(email: $email, owner: $currentUser);
         $event->addEmailInvitation($emailInvitation);
         $this->emailService->sendInviteToUserWithoutAccount(
             recipientEmailAddress: $email,
             context: [
                 'event' => $event,
+                'owner' => $currentUser,
+                'token' => $emailInvitation->getToken(),
             ]
         );
     }

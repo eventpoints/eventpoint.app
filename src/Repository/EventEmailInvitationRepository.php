@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\Event\EventEmailInvitation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -43,5 +44,23 @@ class EventEmailInvitationRepository extends ServiceEntityRepository
             $this->getEntityManager()
                 ->flush();
         }
+    }
+
+    /**
+     * @return array<int, EventEmailInvitation>|Query
+     */
+    public function findByEmail(string $email, bool $isQuery = false): array|Query
+    {
+        $qb = $this->createQueryBuilder('event_email_invitation');
+
+        $qb->andWhere(
+            $qb->expr()->eq('event_email_invitation.email', ':email')
+        )->setParameter('email', $email);
+
+        if ($isQuery) {
+            return $qb->getQuery();
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

@@ -10,6 +10,7 @@ use App\Repository\UserRepository;
 use App\Security\CustomAuthenticator;
 use App\Security\EmailVerifier;
 use App\Service\AvatarService\AvatarService;
+use App\Service\EmailEventService\EmailEventService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,6 +28,7 @@ class RegistrationController extends AbstractController
     public function __construct(
         private readonly EmailVerifier $emailVerifier,
         private readonly AvatarService $avatarService,
+        private readonly EmailEventService $emailEventService,
     ) {
     }
 
@@ -50,6 +52,8 @@ class RegistrationController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
+
+            $this->emailEventService->process(user: $user);
 
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation(

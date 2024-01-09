@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Event;
 
+use App\Entity\User;
 use App\Repository\EventEmailInvitationRepository;
 use Carbon\CarbonImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -31,6 +32,10 @@ class EventEmailInvitation
 
     #[ORM\ManyToOne(inversedBy: 'emailInvitations')]
     private ?Event $event = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: '')]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $owner;
 
     public function __construct()
     {
@@ -89,5 +94,15 @@ class EventEmailInvitation
         $this->event = $event;
 
         return $this;
+    }
+
+    public function getOwner(): null|User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(null|User $owner): void
+    {
+        $this->owner = $owner;
     }
 }

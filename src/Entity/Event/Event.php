@@ -359,7 +359,7 @@ class Event implements Stringable
 
     public function addEventInvitation(EventInvitation $eventInvite): self
     {
-        if (! $this->getEventParticipants()->exists(fn (int $key, EventParticipant $eventParticipant) => $eventParticipant->getEvent() === $eventInvite->getEvent() && $eventParticipant->getOwner() === $eventInvite->getOwner()) && ! $this->eventInvitations->exists(fn (int $key, EventInvitation $existingEventInvite) => $existingEventInvite->getEvent() === $eventInvite->getEvent() && $existingEventInvite->getOwner() === $eventInvite->getOwner())) {
+        if (! $this->getEventParticipants()->exists(fn (int $key, EventParticipant $eventParticipant) => $eventParticipant->getEvent() === $eventInvite->getEvent() && $eventParticipant->getOwner() === $eventInvite->getTarget()) && ! $this->eventInvitations->exists(fn (int $key, EventInvitation $existingEventInvite) => $existingEventInvite->getEvent() === $eventInvite->getEvent() && $existingEventInvite->getTarget() === $eventInvite->getTarget())) {
             $this->eventInvitations->add($eventInvite);
             $eventInvite->setEvent($this);
         }
@@ -573,7 +573,7 @@ class Event implements Stringable
 
     public function getUnansweredInvitation(User $user): null|EventInvitation
     {
-        return $this->getEventInvitations()->findFirst(fn (int $key, EventInvitation $eventInvitation) => $eventInvitation->getOwner() === $user);
+        return $this->getEventInvitations()->findFirst(fn (int $key, EventInvitation $eventInvitation) => $eventInvitation->getTarget() === $user);
     }
 
     public function getAddress(): null|string

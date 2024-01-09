@@ -35,7 +35,7 @@ class EventInvitationResponseBannerFormComponent extends AbstractController
     #[LiveAction]
     public function submit(#[LiveArg] bool $isAttending): void
     {
-        $owner = $this->eventInvitation->getOwner();
+        $owner = $this->eventInvitation->getTarget();
         $event = $this->eventInvitation->getEvent();
         if ($isAttending) {
             $eventParticipant = $this->eventParticipantFactory->create(owner: $owner, event: $event);

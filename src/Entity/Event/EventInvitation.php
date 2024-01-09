@@ -27,7 +27,11 @@ class EventInvitation
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'eventInvitations')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'eventInvitationsReceived')]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $target;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'eventInvitationsCreated')]
     #[ORM\JoinColumn(nullable: false)]
     private User $owner;
 
@@ -65,15 +69,23 @@ class EventInvitation
         return $this;
     }
 
-    public function getOwner(): User
+    public function getTarget(): null|User
+    {
+        return $this->target;
+    }
+
+    public function setTarget(null|User $target): void
+    {
+        $this->target = $target;
+    }
+
+    public function getOwner(): null|User
     {
         return $this->owner;
     }
 
-    public function setOwner(User $owner): self
+    public function setOwner(null|User $owner): void
     {
         $this->owner = $owner;
-
-        return $this;
     }
 }

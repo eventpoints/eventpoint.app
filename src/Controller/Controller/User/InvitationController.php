@@ -23,7 +23,7 @@ class InvitationController extends AbstractController
     public function index(#[CurrentUser] User $currentUser): Response
     {
         $eventInvitations = $this->eventInvitationRepository->findBy([
-            'owner' => $currentUser,
+            'target' => $currentUser,
         ]);
 
         return $this->render('user/invitations.html.twig', [
