@@ -2,7 +2,6 @@
 
 {% block body %}
     <div class="card">
-        <img class="card-img-top object-fit-cover" style="background-size: cover" height="250" src="{{ event.base64Image }}"/>
         <div class="card-body">
             <h1>{{ 'email-intro'|trans({name: user.fullName}) }}</h1>
             <p class="lead">{{ 'invitation-text'|trans({title: event.title}) }} </p>

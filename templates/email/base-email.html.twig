@@ -13,11 +13,7 @@
 </head>
 <body>
 {% apply inline_css(source("email/style/email.css")) %}
-    <div class="row justify-content-center">
-        <div class="col-10">
-            {% block body %}{% endblock %}
-        </div>
-    </div>
+    {% block body %}{% endblock %}
 {% endapply %}
 </body>
 </html>

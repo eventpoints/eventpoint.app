@@ -89,4 +89,6 @@ return [
     'invitation-text' => 'You have been invited to {title}, click on the link below to respond to the invitation.',
     'number-invited-by-email' => '{count} people have been invited by email',
     'show-event' => 'view event',
+    'email.no-account-participant-invitation.subject' => 'Event Invitation',
+    'email.invitation.subject' => 'Event Invitation',
 ];
