@@ -1,5 +1,64 @@
 {% extends 'email/base-email.html.twig' %}
 
 {% block content %}
-
+    <center data-parsed="">
+        {{ include('email/partial/_header.html.twig') }}
+        <table align="center" class="container body-drip float-center">
+            <tbody>
+            <tr>
+                <td>
+                    {{ include('email/partial/_spacer.html.twig') }}
+                    <table class="row">
+                        <tbody>
+                        <tr>
+                            <th class="small-12 large-12 columns first last">
+                                <table>
+                                    <tr>
+                                        <th>
+                                            <h4 class="text-center">{{ 'email-intro'|trans({name: target.fullName }) }},</h4>
+                                        </th>
+                                        <th class="expander"></th>
+                                    </tr>
+                                </table>
+                            </th>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <table class="row">
+                        <tbody>
+                        <tr>
+                            <th class="small-12 large-12 columns first last">
+                                <table>
+                                    <tr>
+                                        <th>
+                                            <p class="text-center">{{ 'invitation-no-account-text'|trans({title: event.title, name: owner.fullName}) }}</p>
+                                            <center data-parsed="">
+                                                <table class="button success float-center">
+                                                    <tr>
+                                                        <td>
+                                                            <table>
+                                                                <tr>
+                                                                    <td>
+                                                                        <a href="{{ absolute_url(path('show_event', {id: event.id, token: token})) }}">{{ 'show-event'|trans }}</a>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </center>
+                                        </th>
+                                        <th class="expander"></th>
+                                    </tr>
+                                </table>
+                            </th>
+                        </tr>
+                        </tbody>
+                    </table>
+                    {{ include('email/partial/_signiture.html.twig') }}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </center>
 {% endblock %}
