@@ -91,5 +91,5 @@ return [
     'show-event' => 'view event',
     'email.no-account-participant-invitation.subject' => 'Event Invitation',
     'email.invitation.subject' => 'Event Invitation',
-    'token-invitation-text' => 'Hey! Looks like you have been invited to this event by { name } click on the link below to respond to an event invitation.',
+    'token-invitation-text' => 'Hey! Looks like you\'ve been invited to this event by { name } sign up up to let them know if you\'re going.',
 ];
