@@ -20,7 +20,7 @@ class EventService
         private readonly EventEmailInvitationFactory $eventEmailInvitationFactory,
         private readonly UserRepository              $userRepository,
         private readonly EmailService                $emailService,
-        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly UrlGeneratorInterface       $urlGenerator,
     ) {
     }
 
@@ -77,7 +77,7 @@ class EventService
         $link = $this->urlGenerator->generate(name: 'show_event', parameters: [
             'id' => $event->getId(),
             'token' => $emailInvitation->getToken(),
-        ]);
+        ], referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
         $this->emailService->sendInviteToUserWithoutAccount(
             recipientEmailAddress: $email,
             context: [
