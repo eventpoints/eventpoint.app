@@ -8,13 +8,15 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final readonly class EmailService
 {
     private const SENDER_EMAIL_ADDRESS = 'notifications@eventpoint.app';
 
     public function __construct(
-        private MailerInterface $mailer
+        private MailerInterface $mailer,
+        private TranslatorInterface $translator
     ) {
     }
 
@@ -67,7 +69,7 @@ final readonly class EmailService
     public function sendInviteToUserWithoutAccount(string $recipientEmailAddress, array $context = []): void
     {
         $this->send(
-            subject: 'email.no-account-participant-invitation.subject',
+            subject: $this->translator->trans('email.invitation.subject'),
             template: '/email/no-account-participant-invitation-email.html.twig',
             recipientEmailAddress: $recipientEmailAddress,
             context: $context
@@ -81,7 +83,7 @@ final readonly class EmailService
     public function sendInviteToUserWithAccount(string $recipientEmailAddress, array $context = []): void
     {
         $this->send(
-            subject: 'email.invitation.subject',
+            subject: $this->translator->trans('email.invitation.subject'),
             template: '/email/invitation-email.html.twig',
             recipientEmailAddress: $recipientEmailAddress,
             context: $context

@@ -89,7 +89,6 @@ return [
     'invitation-text' => '{name} has invited you to {title}, click on the link below to respond to the invitation.',
     'number-invited-by-email' => '{count} people have been invited by email',
     'show-event' => 'view event',
-    'email.no-account-participant-invitation.subject' => 'Event Invitation',
-    'email.invitation.subject' => 'Event Invitation',
+    'email.invitation.subject' => 'You\'re Invited!',
     'token-invitation-text' => 'Hey! Looks like you\'ve been invited to this event by { name } sign up up to let them know if you\'re going.',
 ];

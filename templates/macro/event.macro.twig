@@ -73,7 +73,7 @@
                 </div>
                 <div>
                     <div class="lh-1">{{ event.owner.fullName|title }}</div>
-                    <div class="text-muted small">{{ event.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                    <div class="text-muted small">{{ event.createdAt|time_ago }}</div>
                 </div>
             </a>
         </div>
