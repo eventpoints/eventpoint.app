@@ -11,7 +11,6 @@
                 {{ include('partials/_event-group-navbar.html.twig') }}
             </div>
             <div class="col-12 col-md-6">
-                {% if not eventGroup.isPrivate and eventGroup.isMember(app.user) or eventGroup.isMaintainer(app.user) %}
                     <div class="card mb-3">
                         <div class="card-body">
                             <div class="fw-bold text-muted small">{{ 'group-activity'|trans|upper }}</div>
@@ -25,9 +24,8 @@
                             </turbo-frame>
                         </div>
                     </div>
-                {% endif %}
 
-                {% if app.user and eventGroup.isMember(app.user) or eventGroup.isMaintainer(app.user)  %}
+                {% if app.user and eventGroup.isMember(app.user) or app.user and eventGroup.isMaintainer(app.user)  %}
                     <div class="list-group mb-3 list-group-horizontal d-flex justify-content-between">
                         <a href="{{ path('create_event', {eventGroup: eventGroup.id}) }}"
                            class="list-group-item list-group-item-action text-center">
