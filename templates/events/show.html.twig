@@ -171,7 +171,8 @@
                 {% if not app.user and invitation != null %}
                     <div class="card mb-3">
                         <div class="card-body text-center">
-                            <div class="mb-3 lead">
+                            <div class="fs-3">🎉</div>
+                            <div class="mb-3">
                                 {{ 'token-invitation-text'|trans({name: invitation.owner.fullName}) }}
                             </div>
                             <a class="btn btn-outline-primary w-100" href="{{ path('app_register') }}">sign up</a>

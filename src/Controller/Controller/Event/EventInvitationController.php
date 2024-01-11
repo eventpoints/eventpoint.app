@@ -15,6 +15,7 @@ use App\Security\Voter\EventVoter;
 use App\Service\EventService\EventService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -27,7 +28,8 @@ class EventInvitationController extends AbstractController
         private readonly EventRepository                $eventRepository,
         private readonly EventEmailInvitationRepository $emailInvitationRepository,
         private readonly EventService                   $eventService,
-        private readonly TranslatorInterface            $translator
+        private readonly TranslatorInterface            $translator,
+        private readonly RequestStack                   $requestStack
     ) {
     }
 
@@ -39,10 +41,9 @@ class EventInvitationController extends AbstractController
         if ($eventInvitationForm->isSubmitted() && $eventInvitationForm->isValid()) {
             $email = $eventInvitationForm->get('email')->getData();
 
-            $this->eventService->process(event: $event, email: $email, currentUser: $currentUser);
-
+            $this->eventService->process(event: $event, email: $email, currentUser: $currentUser, requestStack: $this->requestStack);
             $this->eventRepository->save($event, true);
-            $this->addFlash('message', $this->translator->trans('invitation-sent'));
+
             return $this->redirectToRoute('show_event', [
                 'id' => $event->getId(),
             ]);

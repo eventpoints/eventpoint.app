@@ -669,6 +669,11 @@ class Event implements Stringable
         return $this->getEventRequests()->exists(fn (int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
     }
 
+    public function getRequestToAttend(User $user): null|EventRequest
+    {
+        return $this->getEventRequests()->findFirst(fn (int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
+    }
+
     public function attendRequest(User $user): null|EventRequest
     {
         return $this->getEventRequests()->findFirst(fn (int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
