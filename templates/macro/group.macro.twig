@@ -2,7 +2,7 @@
     <div class="card card-hover h-100">
         <div class="card-body text-center">
             {% if eventGroup.base64Image %}
-                <img class="border rounded-circle object-fit-cover mb-2" height="50" width="50"
+                <img class="border  object-fit-cover mb-2" height="50" width="50"
                      src="{{ eventGroup.base64Image }}"/>
             {% endif %}
             <div class="fw-bold">{{ eventGroup.name }}</div>
@@ -27,7 +27,7 @@
                class="list-group-item list-group-item-action">
                 <div class="d-flex justify-content-start align-items-center">
                     <div>
-                        <img src="{{ comment.owner.avatar }}" class="rounded-circle border me-2"
+                        <img src="{{ comment.owner.avatar }}" class=" border me-2"
                              height="50"/>
                     </div>
                     <div>
@@ -50,7 +50,7 @@
                class="list-group-item list-group-item-action">
                 <div class="d-flex justify-content-start align-items-center">
                     <div>
-                        <img src="{{ discussion.owner.avatar }}" class="rounded-circle border me-2"
+                        <img src="{{ discussion.owner.avatar }}" class=" border me-2"
                              height="50"/>
                     </div>
                     <div>

@@ -82,10 +82,9 @@
                                 <div class="fw-bold">{{ event.eventGroup.name }}</div>
                             </a>
                         {% endif %}
-                        <div class="list-group-item d-flex">
-                            <div>{{ event.startAt|format_date(timezone=regional.regionalSettingValueObject.timezone,pattern=day_date_pattern) }}</div>
-                            <div>{{ event.startAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }}
-                                - {{ event.endAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }}</div>
+                        <div class="list-group-item d-flex justify-content-start align-items-center">
+                            <div class="me-2">{{ event.startAt|format_date(timezone=regional.regionalSettingValueObject.timezone,pattern=day_date_pattern) }} </div>
+                            <div>{{ event.startAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }} - {{ event.endAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }}</div>
                         </div>
                         <div class="list-group-item d-flex d-flex justify-content-between align-items-center"
                                 {{ stimulus_controller('clipboard', {
@@ -237,7 +236,7 @@
                                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                             <div class="d-flex justify-content-start align-items-center">
                                                 <div>
-                                                    <img height="50" class="rounded-circle border me-2"
+                                                    <img height="50" class=" border me-2"
                                                          src="{{ organiser.owner.avatar }}"/>
                                                 </div>
                                                 <div>
@@ -259,7 +258,7 @@
                                         <a href="{{ path('show_profile', {id: participant.owner.id}) }}"
                                            class="list-group-item list-group-item-action d-flex justify-content-start">
                                             <div class="me-2">
-                                                <img height="50" class="rounded-circle"
+                                                <img height="50" class=""
                                                      src="{{ participant.owner.avatar }}"/>
                                             </div>
                                             <div>
@@ -280,7 +279,7 @@
                                                class="list-group-item list-group-item-action d-flex justify-content-start align-items-start">
                                                 <div>
                                                     <img src="{{ invitation.owner.avatar }}"
-                                                         class="rounded-circle border me-2"
+                                                         class=" border me-2"
                                                          height="50"/>
                                                 </div>
                                                 <div>
@@ -348,7 +347,7 @@
                                 <div class="card mb-3">
                                     <div class="card-header bg-white sticky-top">
                                         <div class="d-flex justify-content-start align-items-start">
-                                            <img class="rounded-circle me-2 border"
+                                            <img class=" me-2 border"
                                                  src="{{ imageCollection.owner.avatar }}"
                                                  width="40"
                                                  height="40"/>
@@ -417,7 +416,7 @@
                     {% for invitation in event.eventEmailInvitations %}
                         <div {{ stimulus_target('list-group-search', 'item') }}
                                 data-searchable-content="{{ invitation.email }}"
-                                class="list-group-item d-flex justify-content-between align-items-center">
+                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             <div>
                                 <div>{{ invitation.email }}</div>
                                 <div>{{ invitation.createdAt|time_ago }}</div>

@@ -46,6 +46,8 @@ $enable-shadows: true !default;
 
 // Body
 
+$border-color: $gray-400 !default;
+
 $body-color: $gray-700 !default;
 
 $headings-color: $gray-900 !default;
@@ -88,14 +90,24 @@ $btn-active-box-shadow: $box-shadow !default;
 // Forms
 
 $form-label-font-weight: 500 !default;
+$input-border-color: $gray-400 !default;
+$input-border-radius: 0 !default;
+$input-box-shadow: 0 !default;
 
-$input-box-shadow: $box-shadow !default;
-
+$input-focus-border-color: $gray-400 !default;
+$input-focus-color: $black;
+$input-focus-box-shadow:  0 !default;
 $input-group-addon-bg: $gray-100 !default;
 
 $border-width: 1px !default;
 
-// Navs
+
+// Select
+
+$form-select-box-shadow: 0 !default;
+$form-select-focus-box-shadow: 0 !default;
+
+  // Navs
 $nav-link-color: $body-color !default;
 $nav-link-disabled-color: $secondary !default;
 $nav-link-hover-color: $dark !default;
@@ -164,6 +176,9 @@ $card-cap-padding-y: 1rem !default;
 $card-cap-padding-x: 1.5rem !default;
 $card-border-width: $border-width !default;
 
+$card-border-radius: 0 !default;
+$card-inner-border-radius: 0 !default;
+
 // Toasts
 
 $toast-header-color: $headings-color !default;
@@ -172,6 +187,7 @@ $toast-header-color: $headings-color !default;
 
 $modal-content-border-color: $gray-300 !default;
 $modal-header-border-width: 0 !default;
+$modal-content-border-radius: 0 !default;
 
 // List group
 $list-group-item-padding-y: 0.75rem !default;

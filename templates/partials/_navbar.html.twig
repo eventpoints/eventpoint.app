@@ -36,18 +36,17 @@
 
 <div class="offcanvas offcanvas-end" data-bs-backdrop="menu" tabindex="-1" id="menu" aria-labelledby="menu">
     {% if app.user %}
-        <div class="list-group list-group-horizontal list-group-flush border-0">
-            <a href="{{ path('user_account') }}"
-               class="list-group-item d-flex justify-content-start align-items-center">
+        <div class="d-flex justify-content-between align-items-center p-2">
+            <a class="link-dark text-decoration-none d-flex justify-content-start align-items-center" href="{{ path('user_future_events') }}">
                 <div class="me-3">
-                    <img src="{{ app.user.avatar }}" height="50" class="border rounded-circle"/>
+                    <img src="{{ app.user.avatar }}" height="50" class="border "/>
                 </div>
                 <div>
-                    <div class="fw-bold"> {{ app.user.fullName }}</div>
+                    <div class="fw-bold lh-1"> {{ app.user.fullName }}</div>
                     <div> {{ app.user.email }}</div>
                 </div>
             </a>
-            <a class="list-group-item w-25 border-top-0 border-bottom text-center"
+            <a class="me-2"
                data-bs-dismiss="offcanvas"
                aria-label="Close">
                 <span class="bi bi-x-lg fs-4"></span>
@@ -78,10 +77,23 @@
     </div>
 </div>
 
-{{ component.modal(
-    'regional_settings',
-    'regional_settings',
-    path('_app_regional_settings'),
-    'regional-settings'|trans,
-    '_top'
-) }}
+
+<div class="modal fade" id="regional_settings" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">{{ 'regional-settings'|trans }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <turbo-frame id="regional_settings" src="{{ path('_app_regional_settings') }}"
+                         target="_top" loading="lazy">
+                <div class="d-flex min-vh-50 justify-content-center align-items-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </turbo-frame>
+        </div>
+    </div>
+</div>

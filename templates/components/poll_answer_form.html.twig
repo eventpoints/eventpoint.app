@@ -22,7 +22,7 @@
                     <div class="d-flex align-items-center">
                         <div class="lead me-2">{{ pollOption.content }}</div>
                         {% if userAnswer.pollOption == pollOption %}
-                            <img src="{{ app.user.avatar }}" class="rounded-circle border me-2" height="20"  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{ userAnswer.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone, pattern=date_time_pattern) }}"/>
+                            <img src="{{ app.user.avatar }}" class=" border me-2" height="20"  data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="{{ userAnswer.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone, pattern=date_time_pattern) }}"/>
                         {% endif %}
                     </div>
                     <div>
@@ -41,7 +41,7 @@
     <a href="{{ path('show_profile', {id: poll.owner.id}) }}" class="list-group-item list-group-item-action">
         <div class="d-flex justify-content-start align-items-center">
             <div>
-                <img src="{{ poll.owner.avatar }}" class="rounded-circle border me-2" height="50"/>
+                <img src="{{ poll.owner.avatar }}" class=" border me-2" height="50"/>
             </div>
             <div>
                 <div class="fw-bold">{{ poll.owner.fullName }}</div>

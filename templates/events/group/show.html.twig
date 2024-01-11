@@ -11,21 +11,21 @@
                 {{ include('partials/_event-group-navbar.html.twig') }}
             </div>
             <div class="col-12 col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <div class="fw-bold text-muted small">{{ 'group-activity'|trans|upper }}</div>
-                            <turbo-frame id="event-group-graph-frame"
-                                         src="{{ path('event_group_activity_graph', {id: eventGroup.id }) }}">
-                                <div class="d-flex justify-content-center py-5">
-                                    <div class="spinner-border" role="status">
-                                        <span class="visually-hidden">Loading...</span>
-                                    </div>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="fw-bold text-muted small">{{ 'group-activity'|trans|upper }}</div>
+                        <turbo-frame id="event-group-graph-frame"
+                                     src="{{ path('event_group_activity_graph', {id: eventGroup.id }) }}">
+                            <div class="d-flex justify-content-center py-5">
+                                <div class="spinner-border" role="status">
+                                    <span class="visually-hidden">Loading...</span>
                                 </div>
-                            </turbo-frame>
-                        </div>
+                            </div>
+                        </turbo-frame>
                     </div>
+                </div>
 
-                {% if app.user and eventGroup.isMember(app.user) or app.user and eventGroup.isMaintainer(app.user)  %}
+                {% if app.user and eventGroup.isMember(app.user) or app.user and eventGroup.isMaintainer(app.user) %}
                     <div class="list-group mb-3 list-group-horizontal d-flex justify-content-between">
                         <a href="{{ path('create_event', {eventGroup: eventGroup.id}) }}"
                            class="list-group-item list-group-item-action text-center">
@@ -70,7 +70,10 @@
                         <div class="text-center text-muted">{{ 'group-hidden-content'|trans|upper }}</div>
                     {% endif %}
                 {% else %}
-                    <div class="text-center text-muted">{{ 'create-account-to-join-group'|trans|upper }}</div>
+                    <div class="text-center mt-5">
+                        <div class="text-muted mb-2">{{ 'create-account-to-join-group'|trans|upper }}</div>
+                        <a class="btn btn-outline-primary" href="{{ path('app_register') }}">{{ 'sign-up'|trans }}</a>
+                    </div>
                 {% endif %}
             </div>
         </div>

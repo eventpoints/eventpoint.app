@@ -85,10 +85,11 @@ return [
     'email-sign-off' => 'The Event Point Team',
     'email-intro' => 'Hi {name}',
     'email-no-account-intro' => 'Hi there!',
-    'invitation-no-account-text' => '{name} has invited your to {title}. click on the link below to sign up and let them know if your going!',
     'invitation-text' => '{name} has invited you to {title}, click on the link below to respond to the invitation.',
     'number-invited-by-email' => '{count} people have been invited by email',
     'show-event' => 'view event',
     'email.invitation.subject' => 'You\'re Invited!',
     'token-invitation-text' => 'Hey! Looks like you\'ve been invited to this event by { name } sign up up to let them know if you\'re going.',
+    'create-account-to-join-group' => 'sign up to join this group',
+    'sign-up' => 'sign up',
 ];
