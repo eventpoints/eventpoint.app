@@ -86,6 +86,7 @@ class EventGroupFormType extends AbstractType
                 ],
             ])
             ->add('isPrivate', CheckboxType::class, [
+                'required' => false,
                 'label' => $this->translator->trans('is-private-group-input-label'),
                 'label_attr' => [
                     'class' => 'checkbox-switch',
