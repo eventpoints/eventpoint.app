@@ -1,10 +1,7 @@
 {% macro minCard(eventGroup) %}
     <div class="card card-hover h-100">
+        <img class="object-fit-cover card-img-top" src="{{ eventGroup.base64Image }}"/>
         <div class="card-body text-center">
-            {% if eventGroup.base64Image %}
-                <img class="border  object-fit-cover mb-2" height="50" width="50"
-                     src="{{ eventGroup.base64Image }}"/>
-            {% endif %}
             <div class="fw-bold">{{ eventGroup.name }}</div>
         </div>
         <div class="card-body border-top text-center p-2">

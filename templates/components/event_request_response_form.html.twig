@@ -10,19 +10,19 @@
                 <img src="{{ eventRequest.owner.avatar }}" class=" border" height="50"/>
             </div>
             <div>
-                <div>{{ eventRequest.owner.fullName }}</div>
-                <div>{{ eventRequest.createdAt|format_datetime }}</div>
+                <div class="fw-bold">{{ eventRequest.owner.fullName }}</div>
+                <div>{{ eventRequest.createdAt|time_ago }}</div>
             </div>
         </div>
         <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)"
            class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
             <div class="bi bi-check-circle fs-4 text-primary"></div>
-            <div>{{ 'accept-request'|trans }}</div>
+            <div class="fw-bold">{{ 'accept-request'|trans|upper }}</div>
         </a>
         <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)"
            class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
             <div class="bi bi-x-circle fs-4 text-danger"></div>
-            <div>{{ 'decline-request'|trans }}</div>
+            <div class="fw-bold">{{ 'decline-request'|trans|upper }}</div>
         </a>
     {% endif %}
 </div>

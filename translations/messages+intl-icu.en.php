@@ -92,4 +92,10 @@ return [
     'token-invitation-text' => 'Hey! Looks like you\'ve been invited to this event by { name } sign up up to let them know if you\'re going.',
     'create-account-to-join-group' => 'sign up to join this group',
     'sign-up' => 'sign up',
+    'cancel-request' => 'cancel request',
+    'accept-request' => 'accept',
+    'decline-request' => 'decline',
+    'request-to-attend' => 'request to join',
+    'requests' => 'requests',
+    'request-explainer-text' => 'Ask the event organiser if you can join their event.',
 ];
