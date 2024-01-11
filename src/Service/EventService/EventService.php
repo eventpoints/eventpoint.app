@@ -11,6 +11,7 @@ use App\Factory\Event\EventInvitationFactory;
 use App\Repository\UserRepository;
 use App\Service\EmailService\EmailService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EventService
 {
@@ -19,6 +20,7 @@ class EventService
         private readonly EventEmailInvitationFactory $eventEmailInvitationFactory,
         private readonly UserRepository              $userRepository,
         private readonly EmailService                $emailService,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -72,12 +74,13 @@ class EventService
     {
         $emailInvitation = $this->eventEmailInvitationFactory->create(email: $email, owner: $currentUser);
         $event->addEmailInvitation($emailInvitation);
+        $link = $this->urlGenerator->generate(name: 'show_event',parameters: ['id' => $event->getId(), 'token' => $emailInvitation->getToken()]);
         $this->emailService->sendInviteToUserWithoutAccount(
             recipientEmailAddress: $email,
             context: [
                 'event' => $event,
                 'owner' => $currentUser,
-                'token' => $emailInvitation->getToken(),
+                'link' => $link,
             ]
         );
     }
