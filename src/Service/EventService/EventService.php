@@ -74,7 +74,10 @@ class EventService
     {
         $emailInvitation = $this->eventEmailInvitationFactory->create(email: $email, owner: $currentUser);
         $event->addEmailInvitation($emailInvitation);
-        $link = $this->urlGenerator->generate(name: 'show_event',parameters: ['id' => $event->getId(), 'token' => $emailInvitation->getToken()]);
+        $link = $this->urlGenerator->generate(name: 'show_event', parameters: [
+            'id' => $event->getId(),
+            'token' => $emailInvitation->getToken(),
+        ]);
         $this->emailService->sendInviteToUserWithoutAccount(
             recipientEmailAddress: $email,
             context: [
