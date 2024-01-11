@@ -294,11 +294,11 @@
                                                data-bs-toggle="modal"
                                                data-bs-target="#invited-users"
                                                class="list-group-item list-group-item-action text-center">
-                                                {{ 'invited-by-email'|trans({count: event.eventEmailInvitations.count|compact_notation}) }}
+                                                {{ 'number-invited-by-email'|trans({count: event.eventEmailInvitations.count|compact_notation}) }}
                                             </a>
                                         {% else %}
                                             <div class="list-group-item text-center">
-                                                {{ 'invited-by-email'|trans({count: event.eventEmailInvitations.count|compact_notation}) }}
+                                                {{ 'number-invited-by-email'|trans({count: event.eventEmailInvitations.count|compact_notation}) }}
                                             </div>
                                         {% endif %}
                                         {% if app.user and app.user|has_event_permission(event, 'role.event.manager') or app.user|has_event_permission(event, 'role.event.admin') or app.user|has_event_permission(event, 'role.event.promoter') %}
