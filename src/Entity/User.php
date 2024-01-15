@@ -29,6 +29,7 @@ use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -40,6 +41,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
+    #[Groups(['user_contact'])]
     private Uuid $id;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -160,6 +162,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventGroupJoinRequest::class)]
     private Collection $eventGroupJoinRequests;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: UserContact::class)]
+    private Collection $contacts;
+
     public function __construct()
     {
         $this->eventRequests = new ArrayCollection();
@@ -185,6 +190,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->phoneNumbers = new ArrayCollection();
         $this->eventGroupInvitations = new ArrayCollection();
         $this->eventGroupJoinRequests = new ArrayCollection();
+        $this->contacts = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -1065,5 +1071,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     public function getUserGroupMemberships(): Collection
     {
         return $this->getEventGroupMembers()->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MEMBER))->map(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getEventGroup());
+    }
+
+    /**
+     * @return Collection<int, UserContact>
+     */
+    public function getContacts(): Collection
+    {
+        return $this->contacts;
+    }
+
+    public function addContact(UserContact $contact): static
+    {
+        if (! $this->contacts->contains($contact)) {
+            $this->contacts->add($contact);
+            $contact->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContact(UserContact $contact): static
+    {
+        if ($this->contacts->removeElement($contact)) {
+            // set the owning side to null (unless already changed)
+            if ($contact->getOwner() === $this) {
+                $contact->setOwner(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -669,6 +669,16 @@ class Event implements Stringable
         return $this->getEventRequests()->exists(fn (int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
     }
 
+    public function hasBeenInvited(User $user): bool
+    {
+        return $this->getEventInvitations()->exists(fn (int $key, EventInvitation $eventInvitation) => $eventInvitation->getTarget() === $user);
+    }
+
+    public function hasEmailBeenInvited(string $emailAddress): bool
+    {
+        return $this->getEventEmailInvitations()->exists(fn (int $key, EventEmailInvitation $eventEmailInvitation) => $eventEmailInvitation->getEmail()->getContent() === $emailAddress);
+    }
+
     public function getRequestToAttend(User $user): null|EventRequest
     {
         return $this->getEventRequests()->findFirst(fn (int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);

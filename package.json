@@ -33,6 +33,7 @@
         "@mapbox/mapbox-gl-geocoder": "^5.0.1",
         "@mdi/font": "^7.3.67",
         "@popperjs/core": "^2.11.8",
+        "axios": "^1.6.5",
         "bootstrap": "^5.3.2",
         "bootstrap-icons": "^1.11.1",
         "chartjs-adapter-date-fns": "^3.0.0",

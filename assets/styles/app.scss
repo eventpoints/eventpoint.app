@@ -10,15 +10,20 @@
 
 .text-bg-dark-grey {
   color: #333 !important;
-  background-color: rgba(0,0,0,0.07) !important;
+  background-color: rgba(0, 0, 0, 0.07) !important;
 }
 
-body{
+.text-dark-grey {
+  color: rgba(73, 80, 87, 0.75) !important;
+}
+
+
+body {
   padding: 0;
   margin: 0;
 }
 
-.z-90001{
+.z-90001 {
   z-index: 90001 !important;
 }
 
@@ -30,30 +35,31 @@ body{
   filter: blur(var(--value, .2rem))
 }
 
-.min-vh-10{
+.min-vh-10 {
   min-height: 10vh;
 }
 
-.min-vh-25{
-   min-height: 25vh;
-}
-.min-vh-50{
-   min-height: 50vh;
+.min-vh-25 {
+  min-height: 25vh;
 }
 
-.min-vh-60{
+.min-vh-50 {
+  min-height: 50vh;
+}
+
+.min-vh-60 {
   min-height: 60vh;
 }
 
-.min-vh-70{
+.min-vh-70 {
   min-height: 70vh;
 }
 
-.min-vh-80{
+.min-vh-80 {
   min-height: 80vh;
 }
 
-.min-vh-90{
+.min-vh-90 {
   min-height: 90vh;
 }
 
@@ -96,7 +102,7 @@ body{
   z-index: 90000;
 }
 
-.messages_container{
+.messages_container {
   min-height: 50vh;
   max-height: 50vh;
   overflow-x: hidden;
