@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller;
 
+use App\Entity\Email;
 use App\Entity\User;
 use App\Form\Form\RegistrationFormType;
 use App\Repository\UserRepository;
@@ -11,6 +12,7 @@ use App\Security\CustomAuthenticator;
 use App\Security\EmailVerifier;
 use App\Service\AvatarService\AvatarService;
 use App\Service\EmailEventService\EmailEventService;
+use App\Service\EmailService\EmailToUserConnectorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,9 +28,10 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 class RegistrationController extends AbstractController
 {
     public function __construct(
-        private readonly EmailVerifier $emailVerifier,
-        private readonly AvatarService $avatarService,
+        private readonly EmailVerifier     $emailVerifier,
+        private readonly AvatarService     $avatarService,
         private readonly EmailEventService $emailEventService,
+        private readonly EmailToUserConnectorService   $emailToUserConnectorService,
     ) {
     }
 
@@ -54,6 +57,7 @@ class RegistrationController extends AbstractController
             $entityManager->flush();
 
             $this->emailEventService->process(user: $user);
+            $this->emailToUserConnectorService->connect(user: $user);
 
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation(

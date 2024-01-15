@@ -7,6 +7,8 @@ namespace App\Repository\Event;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventInvitation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -46,13 +48,16 @@ class EventInvitationRepository extends ServiceEntityRepository
         }
     }
 
-    public function findByEvent(Event $event, bool $isQuery = false): mixed
+    /**
+     * @return array<int, EventInvitation>|Query
+     */
+    public function findByEvent(Event $event, bool $isQuery = false): array|Query
     {
-        $qb = $this->createQueryBuilder('ei');
-        $qb->andWhere($qb->expr() ->eq('ei.event', ':event'))
+        $qb = $this->createQueryBuilder('event_invitation');
+        $qb->andWhere($qb->expr() ->eq('event_invitation.event', ':event'))
             ->setParameter('event', $event->getId(), 'uuid');
 
-        $qb->orderBy('ei.createdAt', 'ASC');
+        $qb->orderBy('event_invitation.createdAt', Criteria::DESC);
 
         if ($isQuery) {
             return $qb->getQuery();

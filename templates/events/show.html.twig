@@ -258,32 +258,50 @@
                                      aria-labelledby="pills-home-tab"
                                      tabindex="0">
                                     <div class="list-group list-group-flush">
-                                        {% for invitation in event.eventInvitations %}
-                                            <a href="{{ path('show_profile', {id: invitation.owner.id}) }}"
-                                               class="list-group-item list-group-item-action d-flex justify-content-start align-items-start">
-                                                <div>
-                                                    <img src="{{ invitation.owner.avatar }}"
-                                                         class=" border me-2"
-                                                         height="50"/>
+                                        {% for invitation in invitations %}
+                                            {% if invitation|instanceof('App\\Entity\\Event\\EventInvitation') %}
+                                                <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex justify-content-start align-items-start">
+                                                        <div>
+                                                            <img src="{{ invitation.target.avatar }}"
+                                                                 class=" border me-2"
+                                                                 height="50"/>
+                                                        </div>
+                                                        <div>
+                                                            <div>{{ invitation.target.fullName|title }}</div>
+                                                            <div>{{ invitation.createdAt|time_ago }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <a href="#"
+                                                           class="link-danger">
+                                                            <div class="bi bi-x-lg fs-4 text-danger"></div>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <div>{{ invitation.owner.fullName|title }}</div>
-                                                    <div>{{ invitation.createdAt|time_ago }}</div>
+                                            {% elseif invitation|instanceof('App\\Entity\\Event\\EventEmailInvitation') %}
+                                                <div {{ stimulus_target('list-group-search', 'item') }}
+                                                        data-searchable-content="{{ invitation.email.content }}"
+                                                        class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                                    <div class="d-flex justify-content-start align-items-center">
+                                                        <div>
+                                                            <div class="mdi mdi-at fs-1 me-3"></div>
+                                                        </div>
+                                                        <div>
+                                                            <div>{{ invitation.email.content }}</div>
+                                                            <div>{{ invitation.createdAt|time_ago }}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <a href="{{ path('remove_email_invitation', {id: invitation.id, token: csrf_token('remove-invitation')}) }}"
+                                                           class="link-danger">
+                                                            <div class="bi bi-x-lg fs-4 text-danger"></div>
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                            </a>
+                                            {% endif %}
                                         {% endfor %}
-                                        {% if app.user and app.user|has_event_permission(event, 'role.event.manager') or app.user|has_event_permission(event, 'role.event.admin') or app.user|has_event_permission(event, 'role.event.promoter') %}
-                                            <a href="#invited-users"
-                                               data-bs-toggle="modal"
-                                               data-bs-target="#invited-users"
-                                               class="list-group-item list-group-item-action text-center">
-                                                {{ 'number-invited-by-email'|trans({count: event.eventEmailInvitations.count|compact_notation}) }}
-                                            </a>
-                                        {% else %}
-                                            <div class="list-group-item text-center">
-                                                {{ 'number-invited-by-email'|trans({count: event.eventEmailInvitations.count|compact_notation}) }}
-                                            </div>
-                                        {% endif %}
+
                                         {% if app.user and app.user|has_event_permission(event, 'role.event.manager') or app.user|has_event_permission(event, 'role.event.admin') or app.user|has_event_permission(event, 'role.event.promoter') %}
                                             <div class="list-group-item text-end">
                                                 <a class="btn btn-outline-primary" href="#send-invite"
@@ -379,60 +397,17 @@
     </div>
 
     <div class="modal fade" id="send-invite" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">{{ 'send-invitation'|trans|capitalize }}</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">{{ 'send-invitations'|trans|capitalize }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <turbo-frame id="invitation-form-frame" src="{{ path('create_event_invitation', {event: event.id}) }}"
-                             loading="lazy" target="_top">
-                    <div class="d-flex justify-content-center my-5">
-                        <div class="spinner-border" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </div>
-                </turbo-frame>
+                {{ component('email_autocompleter_component', {
+                    event: event
+                }) }}
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="invited-users" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5"
-                        id="exampleModalLabel">{{ 'sent-email-invitations'|trans|capitalize }}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0 list-group list-group-flush" {{ stimulus_controller('list-group-search') }}>
-                    <div class="list-group-item sticky-top">
-                        <div class="input-group mb-3">
-                            <input {{ stimulus_target('list-group-search', 'input') }} {{ stimulus_action('list-group-search', 'type', 'keyup') }}
-                                    type="text" class="form-control"
-                                    placeholder="{{ 'search'|trans }}"
-                                    aria-label="email-address"
-                                    aria-describedby="basic-addon1"/>
-                        </div>
-                    </div>
-                    {% for invitation in event.eventEmailInvitations %}
-                        <div {{ stimulus_target('list-group-search', 'item') }}
-                                data-searchable-content="{{ invitation.email }}"
-                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                            <div>
-                                <div>{{ invitation.email }}</div>
-                                <div>{{ invitation.createdAt|time_ago }}</div>
-                            </div>
-                            <div>
-                                <a href="{{ path('remove_email_invitation', {id: invitation.id, token: csrf_token('remove-invitation')}) }}"
-                                   class="link-danger">
-                                    <div class="bi bi-x-lg fs-4 text-danger"></div>
-                                </a>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
 {% endblock %}

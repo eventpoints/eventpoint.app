@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Event;
 
+use App\Entity\Email;
 use App\Entity\User;
 use App\Repository\EventEmailInvitationRepository;
 use Carbon\CarbonImmutable;
@@ -21,8 +22,8 @@ class EventEmailInvitation
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(length: 255)]
-    private string $email;
+    #[ORM\ManyToOne(cascade: ['persist'])]
+    private null|Email $email = null;
 
     #[ORM\Column(type: 'uuid')]
     private Uuid $token;
@@ -48,12 +49,12 @@ class EventEmailInvitation
         return $this->id;
     }
 
-    public function getEmail(): string
+    public function getEmail(): Email
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(Email $email): static
     {
         $this->email = $email;
 

@@ -20,6 +20,7 @@ use App\Form\Form\EventCancellationFormType;
 use App\Form\Form\EventFormType;
 use App\Form\Form\ImageFormType;
 use App\Repository\Event\EventGroupRepository;
+use App\Repository\Event\EventInvitationRepository;
 use App\Repository\Event\EventRepository;
 use App\Repository\Event\EventRoleRepository;
 use App\Repository\EventEmailInvitationRepository;
@@ -27,6 +28,8 @@ use App\Repository\ImageCollectionRepository;
 use App\Security\Voter\EventVoter;
 use App\Service\ImageUploadService\ImageService;
 use Carbon\CarbonImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -51,7 +54,8 @@ class EventController extends AbstractController
         private readonly EventCancellationFactory  $eventCancellationFactory,
         private readonly TranslatorInterface       $translator,
         private readonly EventGroupRepository      $eventGroupRepository,
-        private readonly EventEmailInvitationRepository      $eventEmailInvitationRepository
+        private readonly EventEmailInvitationRepository      $eventEmailInvitationRepository,
+        private readonly EventInvitationRepository      $eventInvitationRepository
     ) {
     }
 
@@ -142,10 +146,19 @@ class EventController extends AbstractController
             return $this->handleEventImageUploadForm(imageForm: $imageForm, currentUser: $currentUser, event: $event);
         }
 
+        $userInvitations = $this->eventEmailInvitationRepository->findByEvent(event: $event);
+        $emailInvitations = $this->eventInvitationRepository->findByEvent(event: $event);
+        $invitations = new ArrayCollection([...$userInvitations, ...$emailInvitations]);
+        $criteria = Criteria::create()->orderBy([
+            'createdAt' => Criteria::DESC,
+        ]);
+        $invitations = $invitations->matching($criteria);
+
         return $this->render('events/show.html.twig', [
             'imageForm' => $imageForm,
             'event' => $event,
             'invitation' => $invitation,
+            'invitations' => $invitations,
         ]);
     }
 

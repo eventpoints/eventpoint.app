@@ -20,9 +20,9 @@ final readonly class EmailEventService
 
     public function process(User $user): void
     {
-        $eventEmailInvitations = $this->eventEmailInvitationRepository->findByEmail(email: $user->getEmail());
+        $eventEmailInvitations = $this->eventEmailInvitationRepository->findByEmailAddress(emailAddress: $user->getEmail());
         foreach ($eventEmailInvitations as $eventEmailInvitation) {
-            $eventInvitation = $this->eventInvitationFactory->create(owner: $eventEmailInvitation->getOwner(), target: $user, event: $eventEmailInvitation->getEvent());
+            $eventInvitation = $this->eventInvitationFactory->create(owner: $eventEmailInvitation->getOwner(), target: $user, event: $eventEmailInvitation->getEvent(), createdAt: $eventEmailInvitation->getCreatedAt());
             $this->eventInvitationRepository->save($eventInvitation, true);
             $this->eventEmailInvitationRepository->remove($eventEmailInvitation, true);
         }

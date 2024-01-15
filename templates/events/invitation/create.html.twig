@@ -10,7 +10,11 @@
             action: path('create_event_invitation', {event: event.id})
         }) }}
         <div class="modal-body">
-            {{ form_row(eventInvitationForm.email) }}
+            {{ form_row(eventInvitationForm.email, {
+                attr: {
+                    'autocomplete' : 'off'
+                }
+            }) }}
         </div>
         <div class="modal-footer">
             <a href="{{ path('show_event', {id: event.id }) }}" class="btn btn-secondary w-25">{{ 'close'|trans }}</a>

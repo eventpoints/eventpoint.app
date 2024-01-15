@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\EventService;
 
+use App\Entity\Email;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventEmailInvitation;
 use App\Entity\Event\EventRequest;
@@ -43,7 +44,7 @@ class EventService
     /**
      * @throws TransportExceptionInterface
      */
-    public function process(Event $event, string $email, User $currentUser, RequestStack $requestStack): void
+    public function process(Event $event, Email $email, User $currentUser, RequestStack $requestStack): void
     {
         $session = $requestStack->getSession();
 
@@ -54,7 +55,7 @@ class EventService
         $flashBag = $session->getFlashBag();
 
         $user = $this->userRepository->findOneBy([
-            'email' => $email,
+            'email' => $email->getContent(),
         ]);
 
         if ($user instanceof User) {
@@ -86,7 +87,7 @@ class EventService
     /**
      * @throws TransportExceptionInterface
      */
-    public function sendEmailInvitationToUserWithoutAccount(string $email, Event $event, User $currentUser, FlashBagInterface $flashBag): void
+    public function sendEmailInvitationToUserWithoutAccount(Email $email, Event $event, User $currentUser, FlashBagInterface $flashBag): void
     {
         if ($this->canEmailBeInvited(event: $event, email: $email, flashBag: $flashBag)) {
             $emailInvitation = $this->eventEmailInvitationFactory->create(email: $email, owner: $currentUser);
@@ -96,7 +97,7 @@ class EventService
                 'token' => $emailInvitation->getToken(),
             ], referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
             $this->emailService->sendInviteToUserWithoutAccount(
-                recipientEmailAddress: $email,
+                recipientEmailAddress: $email->getContent(),
                 context: [
                     'event' => $event,
                     'owner' => $currentUser,
@@ -122,7 +123,7 @@ class EventService
         return true;
     }
 
-    public function canEmailBeInvited(Event $event, string $email, FlashBagInterface $flashBag): bool
+    public function canEmailBeInvited(Event $event, Email $email, FlashBagInterface $flashBag): bool
     {
         $invitation = $this->eventEmailInvitationRepository->findOneBy([
             'email' => $email,

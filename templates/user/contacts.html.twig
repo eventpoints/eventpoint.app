@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-4">
+                <div class="card">
+                    {{ include('partials/_account-navbar.html.twig') }}
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="fs-3 fw-bold text-end">{{ 'contacts'|trans|upper }}</div>
+                <hr class="mt-0"/>
+
+                <div class="list-group">
+                    {% for contact in contacts %}
+                        <div class="list-group-item">
+                            {{ contact.email.content }}
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}
