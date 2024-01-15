@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Controller\Controller\Event;
 
 use App\Entity\Event\EventEmailInvitation;
+use App\Entity\Event\EventInvitation;
 use App\Enum\FlashEnum;
+use App\Repository\Event\EventInvitationRepository;
 use App\Repository\EventEmailInvitationRepository;
 use App\Security\Voter\EventVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +22,7 @@ class EventInvitationController extends AbstractController
 {
     public function __construct(
         private readonly EventEmailInvitationRepository $emailInvitationRepository,
+        private readonly EventInvitationRepository      $eventInvitationRepository,
         private readonly TranslatorInterface            $translator,
     ) {
     }
@@ -27,8 +30,8 @@ class EventInvitationController extends AbstractController
     /**
      * @throws TransportExceptionInterface
      */
-    #[Route('/remove/{id}/{token}', name: 'remove_email_invitation', methods: [Request::METHOD_GET])]
-    public function remove(EventEmailInvitation $emailInvitation, string $token): Response
+    #[Route('/remove/email/{id}/{token}', name: 'remove_email_invitation', methods: [Request::METHOD_GET])]
+    public function removeEmailInvitation(EventEmailInvitation $emailInvitation, string $token): Response
     {
         if ($this->isCsrfTokenValid(id: 'remove-invitation', token: $token)) {
             $event = $emailInvitation->getEvent();
@@ -37,7 +40,26 @@ class EventInvitationController extends AbstractController
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changes-saved'));
             return $this->redirectToRoute('show_event', [
                 'id' => $event->getId(),
-                '_fragment' => 'invited-users',
+                '_fragment' => 'invited',
+            ]);
+        }
+        return $this->redirectToRoute('app_login');
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    #[Route('/remove/{id}/{token}', name: 'remove_invitation', methods: [Request::METHOD_GET])]
+    public function removeInvitation(EventInvitation $eventInvitation, string $token): Response
+    {
+        if ($this->isCsrfTokenValid(id: 'remove-invitation', token: $token)) {
+            $event = $eventInvitation->getEvent();
+            $this->isGranted(EventVoter::EDIT_EVENT, $eventInvitation->getEvent());
+            $this->eventInvitationRepository->remove($eventInvitation, true);
+            $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changes-saved'));
+            return $this->redirectToRoute('show_event', [
+                'id' => $event->getId(),
+                '_fragment' => 'invited',
             ]);
         }
         return $this->redirectToRoute('app_login');
