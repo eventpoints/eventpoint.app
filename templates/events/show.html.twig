@@ -178,41 +178,45 @@
                             <div class="nav nav-pills nav-justified" id="pills-tab"
                                  role="tablist">
                                 <div class="nav-item" role="presentation">
-                                    <button class="nav-link active d-flex justify-content-between align-items-center"
-                                            id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#going"
-                                            type="button" role="tab" aria-controls="pills-home"
-                                            aria-selected="true">
+                                    <a class="nav-link active d-flex justify-content-between align-items-center"
+                                       id="pills-home-tab" data-bs-toggle="pill"
+                                       data-bs-target="#going"
+                                       href="#going"
+                                       type="button" role="tab" aria-controls="pills-home"
+                                       aria-selected="true">
                                         <span class="fw-bold me-3">{{ event.isComplete ? 'went'|trans|capitalize : 'going'|trans|capitalize }}</span>
                                         <span class="fw-bold badge rounded-pill text-bg-dark">{{ event.eventOrganisers.count + event.eventParticipants.count|compact_notation }}</span>
-                                    </button>
+                                    </a>
                                 </div>
                                 {% if not event.isComplete %}
                                     <div class="nav-item" role="presentation">
-                                        <button class="nav-link d-flex justify-content-between align-items-center"
-                                                id="invited-tab"
-                                                data-bs-toggle="pill" data-bs-target="#invited"
-                                                type="button" role="tab" aria-controls="pills-invited"
-                                                aria-selected="true">
+                                        <a class="nav-link d-flex justify-content-between align-items-center"
+                                           id="invited-tab"
+                                           href="#invited"
+                                           data-bs-toggle="pill" data-bs-target="#invited"
+                                           type="button" role="tab" aria-controls="pills-invited"
+                                           aria-selected="true">
                                             <span class="fw-bold me-3">{{ 'invited'|trans|capitalize }}</span>
                                             <span class="fw-bold badge rounded-pill text-bg-dark">{{ event.eventEmailInvitations.count + event.eventInvitations.count|compact_notation }}</span>
-                                        </button>
+                                        </a>
                                     </div>
                                     <div class="nav-item" role="presentation">
-                                        <button class="nav-link d-flex justify-content-between align-items-center"
-                                                id="requests-tab" data-bs-toggle="pill"
-                                                data-bs-target="#requests"
-                                                type="button" role="tab" aria-controls="pills-requested"
-                                                aria-selected="true">
+                                        <a class="nav-link d-flex justify-content-between align-items-center"
+                                           id="requests-tab" data-bs-toggle="pill"
+                                           href="#requests"
+                                           data-bs-target="#requests"
+                                           type="button" role="tab" aria-controls="pills-requested"
+                                           aria-selected="true">
                                             <span class="fw-bold me-3">{{ 'requests'|trans|capitalize }}</span>
                                             <span class="fw-bold badge rounded-pill text-bg-dark">{{ event.eventRequests.count|compact_notation }}</span>
-                                        </button>
+                                        </a>
                                     </div>
                                 {% endif %}
                             </div>
                         </div>
                         <div class="tab-content" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="going" role="tabpanel"
-                                 aria-labelledby="pills-home-tab"
+                                 aria-labelledby="pills-going-tab"
                                  tabindex="0">
                                 <div class="list-group rounded-bottom list-group-flush">
                                     {% for organiser in event.eventOrganisers %}
@@ -273,10 +277,12 @@
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <a href="#"
-                                                           class="link-danger">
-                                                            <div class="bi bi-x-lg fs-4 text-danger"></div>
-                                                        </a>
+                                                        {% if app.user and app.user|has_event_permission(event, 'role.event.manager') or app.user and app.user|has_event_permission(event, 'role.event.admin') %}
+                                                            <a href="{{ path('remove_invitation', {id: invitation.id, token: csrf_token('remove-invitation')}) }}"
+                                                               class="link-danger">
+                                                                <div class="bi bi-x-lg fs-4 text-danger"></div>
+                                                            </a>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             {% elseif invitation|instanceof('App\\Entity\\Event\\EventEmailInvitation') %}
@@ -293,10 +299,12 @@
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <a href="{{ path('remove_email_invitation', {id: invitation.id, token: csrf_token('remove-invitation')}) }}"
-                                                           class="link-danger">
-                                                            <div class="bi bi-x-lg fs-4 text-danger"></div>
-                                                        </a>
+                                                        {% if app.user and app.user|has_event_permission(event, 'role.event.manager') or app.user and app.user|has_event_permission(event, 'role.event.admin') %}
+                                                            <a href="{{ path('remove_email_invitation', {id: invitation.id, token: csrf_token('remove-invitation')}) }}"
+                                                               class="link-danger">
+                                                                <div class="bi bi-x-lg fs-4 text-danger"></div>
+                                                            </a>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             {% endif %}

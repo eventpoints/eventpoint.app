@@ -29,7 +29,14 @@
                             </div>
                         </div>
                     {% else %}
-                        <div>{{ contact.email.content }}</div>
+                        <div class="d-flex justify-content-start align-items-center">
+                            <div>
+                                <div class="mdi mdi-at fs-1 me-3"></div>
+                            </div>
+                            <div>
+                                <div>{{ contact.email.content }}</div>
+                            </div>
+                        </div>
                     {% endif %}
                 </div>
                 <div>
