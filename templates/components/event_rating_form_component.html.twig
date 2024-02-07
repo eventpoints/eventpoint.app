@@ -1,0 +1,109 @@
+<div {{ attributes }}>
+    {% if not this.event.hasRated(app.user) %}
+        <div class="card mb-3">
+            <div class="list-group list-group-flush">
+                <div class="list-group-item h5">{{ 'how-was-it'|trans }}</div>
+                {% if this.venueRating is null and this.contentRating is null and this.hostRating is null and this.guestRating is null and this.expectationRating is null %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="h5">{{ 'venue-rating'|trans }}</div>
+                            <div>{{ 'venue-rating-explainer'|trans }}</div>
+                        </div>
+                        <div >
+                            <a data-action="live#action" data-action-name="prevent|setVenueRating(rating=1)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setVenueRating(rating=2)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setVenueRating(rating=3)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setVenueRating(rating=4)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setVenueRating(rating=5)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                        </div>
+                    </div>
+                {% elseif this.venueRating is not null and this.contentRating is null and this.hostRating is null and this.guestRating is null and this.expectationRating is null %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="h5">{{ 'content-rating'|trans }}</div>
+                            <div>{{ 'content-rating-explainer'|trans }}</div>
+                        </div>
+                        <div>
+                            <a data-action="live#action" data-action-name="prevent|setContentRating(rating=1)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setContentRating(rating=2)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setContentRating(rating=3)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setContentRating(rating=4)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setContentRating(rating=5)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                        </div>
+                    </div>
+                {% elseif this.venueRating is not null and this.contentRating is not null and this.hostRating is null and this.guestRating is null and this.expectationRating is null %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="h5">{{ 'host-rating'|trans }}</div>
+                            <div>{{ 'host-rating-explainer'|trans }}</div>
+                        </div>
+                        <div>
+                            <a data-action="live#action" data-action-name="prevent|setHostRating(rating=1)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setHostRating(rating=2)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setHostRating(rating=3)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setHostRating(rating=4)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setHostRating(rating=5)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                        </div>
+                    </div>
+                {% elseif this.venueRating is not null and this.contentRating is not null and this.hostRating is not null and this.guestRating is null and this.expectationRating is null %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="h5">{{ 'guest-rating'|trans }}</div>
+                            <div>{{ 'guest-rating-explainer'|trans }}</div>
+                        </div>
+                        <div>
+                            <a data-action="live#action" data-action-name="prevent|setGuestRating(rating=1)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setGuestRating(rating=2)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setGuestRating(rating=3)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setGuestRating(rating=4)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setGuestRating(rating=5)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="h5">{{ 'expectation-rating'|trans }}</div>
+                            <div>{{ 'expectation-rating-explainer'|trans }}</div>
+                        </div>
+                        <div>
+                            <a data-action="live#action" data-action-name="prevent|setExpectationRating(rating=1)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setExpectationRating(rating=2)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setExpectationRating(rating=3)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setExpectationRating(rating=4)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a data-action="live#action" data-action-name="prevent|setExpectationRating(rating=5)"
+                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-success text-center" role="alert">
+            {{ 'thanks-for-the-feedback'|trans }}
+        </div>
+    {% endif %}
+</div>

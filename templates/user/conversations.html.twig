@@ -23,7 +23,7 @@
                                 </div>
                                 <div>
                                     <div class="fw-bold lh-1">{{ conversation.owner.fullName }}</div>
-                                    <div>{{ conversation.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                    <div>{{ conversation.createdAt|format_datetime(timezone=regional.timezone,pattern=date_time_pattern) }}</div>
                                 </div>
                             </div>
                             <div class="text-muted w-50">{{ conversation.messages.last.content|slice(0, 50) }}

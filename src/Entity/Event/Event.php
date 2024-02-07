@@ -8,6 +8,7 @@ use App\Entity\Category;
 use App\Entity\EventCancellation;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventOrganiserInvitation;
+use App\Entity\EventReview;
 use App\Entity\Image;
 use App\Entity\ImageCollection;
 use App\Entity\User;
@@ -121,6 +122,9 @@ class Event implements Stringable
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventOrganiserInvitation::class, cascade: ['persist'])]
     private Collection $eventOrganiserInvitations;
 
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventReview::class)]
+    private Collection $eventReviews;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
@@ -130,6 +134,7 @@ class Event implements Stringable
         $this->eventEmailInvitations = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
         $this->eventOrganiserInvitations = new ArrayCollection();
+        $this->eventReviews = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -694,6 +699,11 @@ class Event implements Stringable
         return $this->getEventParticipants()->exists(fn (int $key, EventParticipant $eventParticipant) => $eventParticipant->getOwner() === $user);
     }
 
+    public function hasRated(User $user): bool
+    {
+        return $this->getEventReviews()->exists(fn (int $key, EventReview $eventReview) => $eventReview->getOwner() === $user);
+    }
+
     public function getIsOrganiser(User $user): bool
     {
         return $this->getEventOrganisers()->exists(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $user);
@@ -707,5 +717,35 @@ class Event implements Stringable
     public function isEmailAlreadyInvitedOrganiser(string $email): bool
     {
         return $this->eventOrganiserInvitations->exists(fn (int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getEmail() === $email);
+    }
+
+    /**
+     * @return Collection<int, EventReview>
+     */
+    public function getEventReviews(): Collection
+    {
+        return $this->eventReviews;
+    }
+
+    public function addEventReview(EventReview $eventReview): static
+    {
+        if (! $this->eventReviews->contains($eventReview)) {
+            $this->eventReviews->add($eventReview);
+            $eventReview->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventReview(EventReview $eventReview): static
+    {
+        if ($this->eventReviews->removeElement($eventReview)) {
+            // set the owning side to null (unless already changed)
+            if ($eventReview->getEvent() === $this) {
+                $eventReview->setEvent(null);
+            }
+        }
+
+        return $this;
     }
 }

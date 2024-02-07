@@ -1,4 +1,6 @@
 {
+    "name": "eventpoints/eventpoint.app",
+    "description": "event orgnising web application",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",

@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Model\BrowserRegionalData;
+use App\Model\RegionalConfiguration;
 use App\Service\ApplicationTimeService\ApplicationTimeService;
-use App\Service\RegionalSettingsService\RegionalSettingsService;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
@@ -11,7 +12,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $containerConfigurator->extension('twig', [
         'default_path' => '%kernel.project_dir%/templates',
         'globals' => [
-            'regional' => service(RegionalSettingsService::class),
+            'regional' => service(RegionalConfiguration::class),
+            'browser_timezone' => service(BrowserRegionalData::class),
             'supported_locales' => explode(',', (string) $_ENV['SUPPORTED_LOCALES']),
             'app_time' => service(ApplicationTimeService::class),
             'date_pattern' => 'dd MM yy',

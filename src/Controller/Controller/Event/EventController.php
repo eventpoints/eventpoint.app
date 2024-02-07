@@ -55,7 +55,7 @@ class EventController extends AbstractController
         private readonly TranslatorInterface       $translator,
         private readonly EventGroupRepository      $eventGroupRepository,
         private readonly EventEmailInvitationRepository      $eventEmailInvitationRepository,
-        private readonly EventInvitationRepository      $eventInvitationRepository
+        private readonly EventInvitationRepository      $eventInvitationRepository,
     ) {
     }
 

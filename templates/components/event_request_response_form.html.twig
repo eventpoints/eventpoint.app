@@ -1,11 +1,12 @@
-<div {{ attributes }} class="list-group list-group-flush list-group-horizontal">
-    {% if eventRequest.event.isAttending(eventRequest.owner) %}
-        <div class="list-group-item border-0 rounded-0 text-center w-100">
-            <div class="bi bi-check-circle text-success fs-4"></div>
-            <div>{{ 'response-sent'|trans }}</div>
-        </div>
-    {% else %}
-        <div class="list-group-item border-0 rounded-0 d-flex justify-content-start align-items-start w-50">
+{% if eventRequest.event.isAttending(eventRequest.owner) %}
+    <div {{ attributes }} class="list-group-item text-center">
+        <div class="bi bi-check-circle text-success fs-4"></div>
+        <div>{{ 'response-sent'|trans }}</div>
+    </div>
+{% else %}
+    <div {{ attributes }}
+            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+        <div class="d-flex justify-content-start align-items-start">
             <div class="me-3">
                 <img src="{{ eventRequest.owner.avatar }}" class=" border" height="50"/>
             </div>
@@ -14,15 +15,13 @@
                 <div>{{ eventRequest.createdAt|time_ago }}</div>
             </div>
         </div>
-        <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)"
-           class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
-            <div class="bi bi-check-circle fs-4 text-primary"></div>
-            <div class="fw-bold">{{ 'accept-request'|trans|upper }}</div>
-        </a>
-        <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)"
-           class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
-            <div class="bi bi-x-circle fs-4 text-danger"></div>
-            <div class="fw-bold">{{ 'decline-request'|trans|upper }}</div>
-        </a>
-    {% endif %}
-</div>
+        <div class="d-flex justify-content-between align-items-center">
+            <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)" class="me-5">
+                <div class="bi bi-check-circle fs-1 text-primary"></div>
+            </a>
+            <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)">
+                <div class="bi bi-x-circle fs-1 text-danger"></div>
+            </a>
+        </div>
+    </div>
+{% endif %}

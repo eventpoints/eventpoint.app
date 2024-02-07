@@ -1,8 +1,8 @@
 {% macro card(event, hasMap = false, hasLink = false, hasHeader = false) %}
     <div class="card mb-2">
-        {% if event.isInProgress(regional.regionalSettingValueObject.timezone) or event.eventCancellation or event.isComplete %}
+        {% if event.isInProgress(regional.timezone) or event.eventCancellation or event.isComplete %}
             <div class="list-group list-group-flush">
-                {% if event.isInProgress(regional.regionalSettingValueObject.timezone) %}
+                {% if event.isInProgress(regional.timezone) %}
                     <div class="list-group-item text-success d-flex justify-content-between align-items-center">
                         <div>{{ 'event-in-progress'|trans|upper }}</div>
                         <div class="badge rounded-pill text-bg-primary" {{ stimulus_controller('countdown', {
@@ -26,7 +26,7 @@
         {% endif %}
         {% if event.base64Image %}
             <img src="{{ event.base64Image }}"
-                 class="{{ event.isInProgress(regional.regionalSettingValueObject.timezone) or event.eventCancellation or event.isComplete ? '' : 'card-img-top' }}  object-fit-cover
+                 class="{{ event.isInProgress(regional.timezone) or event.eventCancellation or event.isComplete ? '' : 'card-img-top' }}  object-fit-cover
 {{ event.isComplete or event.eventCancellation ? 'b-and-w' }}"
                  height="150px"
                  alt="{{ event.title }}">
@@ -45,9 +45,9 @@
             {% endif %}
             {% if not event.isComplete and not event.eventCancellation %}
                 <div class="list-group-item">
-                    <div>{{ event.startAt|format_date(timezone=regional.regionalSettingValueObject.timezone,pattern=day_date_pattern) }}</div>
-                    <div>{{ event.startAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }}
-                        - {{ event.endAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }}</div>
+                    <div>{{ event.startAt|format_date(timezone=regional.timezone,pattern=day_date_pattern) }}</div>
+                    <div>{{ event.startAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}
+                        - {{ event.endAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}</div>
                 </div>
                 <div class="list-group-item d-flex d-flex justify-content-between align-items-center"
                         {{ stimulus_controller('clipboard', {

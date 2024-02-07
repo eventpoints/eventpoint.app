@@ -57,7 +57,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $googleUser = $client->fetchUserFromToken($accessToken);
                 $email = $googleUser->getEmail();
 
-                // 1) have they logged in with Facebook before? Easy!
+                // 1) have they logged in with Google before? Easy!
                 $socialAuth = $this->socialAuthRepository->findOneBy([
                     'token' => $googleUser->getId(),
                 ]);

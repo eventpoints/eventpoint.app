@@ -31,7 +31,7 @@
                                 </div>
                                 <div>
                                     <div>{{ organiser.owner.fullName }}</div>
-                                    <div class="text-muted"> {{ organiser.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                    <div class="text-muted"> {{ organiser.createdAt|format_datetime(timezone=regional.timezone,pattern=date_time_pattern) }}</div>
                                     {% for role in organiser.roles %}
                                         <span class="badge text-bg-primary">{{ role.title.value|trans }}</span>
                                     {% endfor %}
@@ -70,7 +70,7 @@
                                             </div>
                                             <div>
                                                 <div>{{ inviation.owner.fullName }}</div>
-                                                <div class="text-muted"> {{ inviation.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                                <div class="text-muted"> {{ inviation.createdAt|format_datetime(timezone=regional.timezone,pattern=date_time_pattern) }}</div>
                                                 <div>
                                                     {% for role in inviation.roles %}
                                                         <span class="badge badge-pill text-bg-primary">{{ role.title.value|trans }}</span>
@@ -92,7 +92,7 @@
                                             </div>
                                             <div>
                                                 <div> {{ inviation.email }}</div>
-                                                <div class="text-muted"> {{ inviation.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                                <div class="text-muted"> {{ inviation.createdAt|format_datetime(timezone=regional.timezone,pattern=date_time_pattern) }}</div>
                                                 {% for role in inviation.roles %}
                                                     <span class="badge badge-pill text-bg-primary">{{ role.title.value|trans }}</span>
                                                 {% endfor %}

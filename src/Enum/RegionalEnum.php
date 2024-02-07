@@ -6,8 +6,9 @@ namespace App\Enum;
 
 enum RegionalEnum: string
 {
-    case REGIONAL_LOCALE = 'EN';
-    case REGIONAL_CURRECNY = 'CZK';
-    case REGIONAL_REGION = 'CZE';
-    case REGIONAL_TIMEZONE = 'Europe/Prague';
+    case REGIONAL_LOCALE = 'en';
+    case REGIONAL_CURRECNY = 'czk';
+    case REGIONAL_REGION = 'cz';
+    case REGIONAL_TIMEZONE = 'europe/prague';
+    case REGIONAL_TIMEZONE_OFFSET = '0';
 }

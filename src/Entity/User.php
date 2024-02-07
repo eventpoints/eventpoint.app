@@ -165,6 +165,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: UserContact::class)]
     private Collection $contacts;
 
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventReview::class)]
+    private Collection $eventReviews;
+
     public function __construct()
     {
         $this->eventRequests = new ArrayCollection();
@@ -191,6 +194,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->eventGroupInvitations = new ArrayCollection();
         $this->eventGroupJoinRequests = new ArrayCollection();
         $this->contacts = new ArrayCollection();
+        $this->eventReviews = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -1097,6 +1101,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
             // set the owning side to null (unless already changed)
             if ($contact->getOwner() === $this) {
                 $contact->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventReview>
+     */
+    public function getEventReviews(): Collection
+    {
+        return $this->eventReviews;
+    }
+
+    public function addEventReview(EventReview $eventReview): static
+    {
+        if (! $this->eventReviews->contains($eventReview)) {
+            $this->eventReviews->add($eventReview);
+            $eventReview->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventReview(EventReview $eventReview): static
+    {
+        if ($this->eventReviews->removeElement($eventReview)) {
+            // set the owning side to null (unless already changed)
+            if ($eventReview->getOwner() === $this) {
+                $eventReview->setOwner(null);
             }
         }
 

@@ -2,15 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\ValueObject;
+namespace App\Model;
 
-final class RegionalSettingValueObject
+final class RegionalConfiguration
 {
     public function __construct(
-        private null|string $locale = null,
-        private null|string $currency = null,
-        private null|string $region = null,
-        private null|string $timezone = null
+        private null|string              $locale = null,
+        private null|string              $currency = null,
+        private null|string              $region = null,
+        private null|string              $timezone = null,
+        private null|BrowserRegionalData $browserRegionalData = null,
     ) {
     }
 
@@ -52,5 +53,15 @@ final class RegionalSettingValueObject
     public function setTimezone(?string $timezone): void
     {
         $this->timezone = $timezone;
+    }
+
+    public function getBrowserRegionalData(): ?BrowserRegionalData
+    {
+        return $this->browserRegionalData;
+    }
+
+    public function setBrowserRegionalData(?BrowserRegionalData $browserRegionalData): void
+    {
+        $this->browserRegionalData = $browserRegionalData;
     }
 }

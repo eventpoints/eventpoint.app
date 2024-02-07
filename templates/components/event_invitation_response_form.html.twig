@@ -15,8 +15,8 @@
             <div>
                 <div class="fw-bold">{{ eventInvitation.event.title }}</div>
                 <div>
-                    <div>{{ eventInvitation.event.startAt|format_date(timezone=regional.regionalSettingValueObject.timezone,pattern=day_date_pattern) }}</div>
-                    <div>{{ eventInvitation.event.startAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }} - {{ eventInvitation.event.endAt|format_time(timezone=regional.regionalSettingValueObject.timezone,pattern=time_pattern) }}</div>
+                    <div>{{ eventInvitation.event.startAt|format_date(timezone=regional.timezone,pattern=day_date_pattern) }}</div>
+                    <div>{{ eventInvitation.event.startAt|format_time(timezone=regional.timezone,pattern=time_pattern) }} - {{ eventInvitation.event.endAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}</div>
                 </div>
             </div>
         </a>

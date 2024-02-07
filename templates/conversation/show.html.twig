@@ -52,7 +52,7 @@
                             {% endif %}
                             <div class="list-group-item list-group-item-action">
                                 {{ message.content|nl2br }}
-                                <div class="text-center text-muted">{{ message.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                                <div class="text-center text-muted">{{ message.createdAt|format_datetime(timezone=regional.timezone,pattern=date_time_pattern) }}</div>
                             </div>
                         {% endfor %}
                     </div>

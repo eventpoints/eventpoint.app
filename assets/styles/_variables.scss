@@ -76,7 +76,7 @@ $table-th-font-weight: 500 !default;
 // Buttons + Forms
 
 $input-btn-padding-y: .75rem !default;
-$btn-border-radius: 0.25rem !default;
+$btn-border-radius: 0 !default;
 $input-btn-padding-x: 1rem !default;
 $input-btn-font-size: $font-size-sm !default;
 
@@ -97,7 +97,7 @@ $input-box-shadow: 0 !default;
 $input-focus-border-color: $gray-400 !default;
 $input-focus-color: $black;
 $input-placeholder-color: $black;
-$input-focus-box-shadow:  0 !default;
+$input-focus-box-shadow: 0 !default;
 $input-group-addon-bg: $gray-100 !default;
 
 $border-width: 1px !default;
@@ -108,34 +108,26 @@ $border-width: 1px !default;
 $form-select-box-shadow: 0 !default;
 $form-select-focus-box-shadow: 0 !default;
 
-  // Navs
-$nav-link-color: $body-color !default;
-$nav-link-disabled-color: $secondary !default;
-$nav-link-hover-color: $dark !default;
-
+// Navs
 .nav .nav-link:hover, .nav .nav-link:focus {
   background-color: $light;
 }
-
+$nav-link-color: $black !default;
+$nav-link-disabled-color: $secondary !default;
+$nav-link-hover-color: $dark !default;
 $nav-tabs-border-radius: 1rem !default;
-$nav-tabs-link-active-color: $primary !default;
-
+$nav-tabs-link-active-color: $gray-300 !default;
 $nav-link-padding-x: 1rem !default;
 $nav-link-padding-y: 0.75rem !default;
-;
-$nav-tab: 0.75rem !default;
-$nav-pills-border-radius: 0.25rem !default;
+$nav-tab: 0 !default;
+$nav-pills-border-radius: 0 !default;
 
 // Navbar
-
 $navbar-padding-y: .85rem !default;
-
 $navbar-nav-link-padding-x: .75rem !default;
-
 $navbar-dark-color: $white !default;
 $navbar-dark-hover-color: $white !default;
 $navbar-dark-active-color: $white !default;
-
 $navbar-light-color: $black !default;
 $navbar-light-hover-color: $black !default;
 $navbar-light-active-color: $black !default;
@@ -183,6 +175,9 @@ $card-inner-border-radius: 0 !default;
 // Toasts
 
 $toast-header-color: $headings-color !default;
+
+// Alerts
+$alert-border-radius: 0 !default;
 
 // Modals
 
