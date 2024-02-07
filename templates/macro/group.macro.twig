@@ -29,7 +29,7 @@
                     </div>
                     <div>
                         <div class="fw-bold">{{ comment.owner.fullName }}</div>
-                        <div>{{ comment.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                        <div>{{ comment.createdAt|format_datetime(timezone=regional.timezone,pattern=date_time_pattern) }}</div>
                     </div>
                 </div>
             </a>
@@ -52,7 +52,7 @@
                     </div>
                     <div>
                         <div class="fw-bold">{{ discussion.owner.fullName }}</div>
-                        <div>{{ discussion.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                        <div>{{ discussion.createdAt|format_datetime(timezone=regional.timezone,pattern=date_time_pattern) }}</div>
                     </div>
                 </div>
             </a>

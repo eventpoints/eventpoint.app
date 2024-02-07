@@ -38,3 +38,11 @@
         </div>
     </div>
 {% endblock %}
+
+
+{% block javascripts %}
+
+    {{ parent() }}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+{% endblock %}

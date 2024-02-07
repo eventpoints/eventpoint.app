@@ -7,6 +7,7 @@
         token: mapbox_token,
         events: eventPagination.items|serialize(format = 'json'),
     }) }}>
+
         <div class="offcanvas offcanvas-bottom vh-50" data-bs-scroll="true" tabindex="-1" id="map-offcanvas"
              aria-labelledby="map">
             <div class="map-big" id="map" {{ stimulus_target('dynamic-map', 'map') }}></div>
@@ -16,7 +17,6 @@
             <div class="row justify-content-center mt-3">
                 <div class="col-12 col-md-4">
                     <div class="card sticky-top">
-                        <div class="card-header fw-bold">{{ 'filter'|trans|capitalize }}</div>
                         {{ form_start(eventFilter) }}
                         <div class="list-group list-group-flush">
                             <div class="list-group-item">{{ form_row(eventFilter.keyword) }}</div>
@@ -57,59 +57,59 @@
                                         <div>
                                             {% if period.value == 'recently' %}
                                                 <div class="fw-bold">
-                                                    {{ app_time.now.subWeek.startOfWeek.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.startOfWeek.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.startOfWeek.dayName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.startOfWeek.day|timezone_name(regional.timezone) }}
                                                     -
-                                                    {{ app_time.now.subWeek.endOfWeek.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.endOfWeek.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.subWeek.endOfWeek.dayName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.endOfWeek.day|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
                                                 </div>
                                             {% elseif period.value == 'today' %}
                                                 <div class="fw-bold">
                                                     <div class="fw-bold">
-                                                        {{ app_time.now.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                        {{ app_time.now.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                        {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                        {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                        {{ app_time.now.dayName|timezone_name(regional.timezone) }}
+                                                        {{ app_time.now.day|timezone_name(regional.timezone) }}
+                                                        {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                                                        {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
                                                     </div>
                                                 </div>
                                             {% elseif period.value == 'tomorrow' %}
                                                 <div class="fw-bold">
-                                                    {{ app_time.now.addDay.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.addDay.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.addDay.dayName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.addDay.day|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
                                                 </div>
                                             {% elseif period.value == 'this-weekend' %}
                                                 <div class="fw-bold">
-                                                    {{ app_time.now.next('SATURDAY').dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.next('SATURDAY').day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.next('SATURDAY').dayName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.next('SATURDAY').day|timezone_name(regional.timezone) }}
                                                     -
-                                                    {{ app_time.now.next('SUNDAY').dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.next('SUNDAY').day|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.next('SUNDAY').dayName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.next('SUNDAY').day|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
                                                 </div>
                                             {% elseif period.value == 'this-week' %}
                                                 <div class="fw-bold">
-                                                    {{ app_time.now.previous('MONDAY').dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.previous('MONDAY').day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.previous('MONDAY').dayName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.previous('MONDAY').day|timezone_name(regional.timezone) }}
                                                     -
-                                                    {{ app_time.now.next('FRIDAY').dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.next('FRIDAY').day|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.next('FRIDAY').dayName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.next('FRIDAY').day|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
                                                 </div>
                                             {% elseif period.value == 'next-week' %}
                                                 <div class="fw-bold">
-                                                    {{ app_time.now.addWeek.startOfWeek.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.addWeek.startOfWeek.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.addWeek.startOfWeek.dayName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.addWeek.startOfWeek.day|timezone_name(regional.timezone) }}
                                                     -
-                                                    {{ app_time.now.addWeek.endOfWeek.dayName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.addWeek.endOfWeek.day|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.regionalSettingValueObject.timezone) }}
-                                                    {{ app_time.now.subWeek.year|timezone_name(regional.regionalSettingValueObject.timezone) }}
+                                                    {{ app_time.now.addWeek.endOfWeek.dayName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.addWeek.endOfWeek.day|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                                                    {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
                                                 </div>
                                             {% else %}
                                             {% endif %}

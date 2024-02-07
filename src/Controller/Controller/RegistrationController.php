@@ -11,14 +11,10 @@ use App\Repository\UserRepository;
 use App\Security\CustomAuthenticator;
 use App\Security\EmailVerifier;
 use App\Service\AvatarService\AvatarService;
-use App\Service\EmailEventService\EmailEventService;
-use App\Service\EmailService\EmailToUserConnectorService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
@@ -28,10 +24,8 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 class RegistrationController extends AbstractController
 {
     public function __construct(
-        private readonly EmailVerifier     $emailVerifier,
-        private readonly AvatarService     $avatarService,
-        private readonly EmailEventService $emailEventService,
-        private readonly EmailToUserConnectorService   $emailToUserConnectorService,
+        private readonly AvatarService $avatarService,
+        private readonly EmailVerifier          $emailVerifier
     ) {
     }
 
@@ -55,20 +49,6 @@ class RegistrationController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
-
-            $this->emailEventService->process(user: $user);
-            $this->emailToUserConnectorService->connect(user: $user);
-
-            // generate a signed url and email it to the user
-            $this->emailVerifier->sendEmailConfirmation(
-                'app_verify_email',
-                $user,
-                (new TemplatedEmail())
-                    ->from(new Address('no-reply@eventpoint.app', 'Event Point'))
-                    ->to($user->getEmail())
-                    ->subject('Please Confirm your Email')
-                    ->htmlTemplate('email/confirmation_email.html.twig')
-            );
 
             return $userAuthenticator->authenticateUser(
                 $user,
@@ -102,7 +82,6 @@ class RegistrationController extends AbstractController
             $this->emailVerifier->handleEmailConfirmation($request, $user);
         } catch (VerifyEmailExceptionInterface $exception) {
             $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
-
             return $this->redirectToRoute('app_register');
         }
 

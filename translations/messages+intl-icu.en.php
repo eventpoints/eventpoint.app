@@ -100,4 +100,5 @@ return [
     'request-explainer-text' => 'Ask the event organiser if you can join their event.',
     'sent-invitations' => 'sent invitations',
     'send-invitations' => 'send invitations',
+    'how-was-it' => 'How was it?',
 ];

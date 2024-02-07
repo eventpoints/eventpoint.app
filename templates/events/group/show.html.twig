@@ -72,7 +72,8 @@
                 {% else %}
                     <div class="text-center mt-5">
                         <div class="text-muted mb-2">{{ 'create-account-to-join-group'|trans|upper }}</div>
-                        <a class="btn btn-outline-primary" href="{{ path('app_register') }}">{{ 'sign-up'|trans }}</a>
+                        <a class="btn btn-outline-primary" href="{{ path('app_register') }}">{{ 'register'|trans }}</a>
+                        <a class="btn btn-outline-primary" href="{{ path('app_login') }}">{{ 'login'|trans }}</a>
                     </div>
                 {% endif %}
             </div>

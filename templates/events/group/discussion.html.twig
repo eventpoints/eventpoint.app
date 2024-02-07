@@ -17,7 +17,7 @@
                         <a class="list-group-item list-group-item-action"
                            href="{{ path('show_group_discussion', {id: discussion.id}) }}">
                             <div class="fw-bold">{{ discussion.agenda }}</div>
-                            <div>{{ discussion.createdAt|format_datetime(timezone=regional.regionalSettingValueObject.timezone,pattern=date_time_pattern) }}</div>
+                            <div>{{ discussion.createdAt|format_datetime(timezone=regional.timezone,pattern=date_time_pattern) }}</div>
                         </a>
                     {% endfor %}
                     {% if discussionPagination.getTotalItemCount() > discussionPagination.getItemNumberPerPage() %}

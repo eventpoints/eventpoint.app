@@ -11,7 +11,11 @@ import 'chartjs-adapter-date-fns';
 
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.scss';
+import TimezoneService from './TimezoneService'
 
+
+const timezoneService = new TimezoneService();
+timezoneService.configureTimezone();
 
 document.addEventListener('turbo:load', function (e) {
     let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
