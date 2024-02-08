@@ -23,11 +23,10 @@
                             <div class="list-group-item">{{ form_row(eventFilter.category) }}</div>
                         </div>
                         {{ form_row(eventFilter.period) }}
-                        <div class="card-footer bg-white">
-                            <button type="button" href="{{ path('events') }}"
-                                    class="btn mb-3 w-100 btn-secondary">{{ 'clear'|trans }}</button>
-                            <button type="submit"
-                                    class="btn w-100 btn-outline-primary">{{ 'search'|trans }}</button>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item">
+                                <button type="submit" class="btn btn-primary w-100">{{ 'search'|trans }}</button>
+                            </div>
                         </div>
                         {{ form_end(eventFilter) }}
                     </div>

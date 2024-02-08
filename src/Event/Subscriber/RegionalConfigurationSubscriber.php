@@ -12,13 +12,13 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
-class RegionalConfigurationSubscriber implements EventSubscriberInterface
+readonly class RegionalConfigurationSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private readonly Security                     $security,
-        private readonly RegionalConfiguration        $regionalConfiguration,
-        private readonly RequestStack                 $requestStack,
-        private readonly RegionalConfigurationService $regionalConfigurationService
+        private Security                     $security,
+        private RegionalConfiguration        $regionalConfiguration,
+        private RequestStack                 $requestStack,
+        private RegionalConfigurationService $regionalConfigurationService
     ) {
     }
 

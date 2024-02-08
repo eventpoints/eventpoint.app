@@ -21,6 +21,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             'time_pattern' => 'HH:mm',
             'day_date_pattern' => 'EEEE, dd MMMM yyyy',
             'mapbox_token' => $_ENV['MAPBOX_TOKEN'],
+            'turnstile_public_key' => $_ENV['CLOUDFLARE_TURNSTILE_PUBLIC_KEY'],
         ],
         'form_themes' => [
             'bootstrap_5_layout.html.twig',

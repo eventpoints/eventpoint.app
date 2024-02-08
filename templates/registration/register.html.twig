@@ -27,8 +27,10 @@
                                       class="hidden bi bi-eye-slash-fill fs-4"></span>
                             </button>
                         </div>
+                        <div class="text-center">
+                            <div class="cf-turnstile" data-sitekey="{{ turnstile_public_key }}"></div>
+                        </div>
                         <button type="submit" class="btn btn-lg mt-5 btn-primary w-100">{{ 'register'|trans }}</button>
-
 
                         {{ form_end(registrationForm) }}
 
