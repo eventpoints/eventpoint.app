@@ -53,8 +53,8 @@ services:
     restart: unless-stopped
     environment:
       SERVER_NAME: ":80"
-      MERCURE_PUBLISHER_JWT_KEY: "__EVENTPOINT_MERCURE_JWT_SECRET__"
-      MERCURE_SUBSCRIBER_JWT_KEY: "__EVENTPOINT_MERCURE_JWT_SECRET__"
+      MERCURE_PUBLISHER_JWT_KEY: "${{ secrets.__EVENTPOINT_MERCURE_JWT_SECRET__ }}"
+      MERCURE_SUBSCRIBER_JWT_KEY: "${{ secrets.__EVENTPOINT_MERCURE_JWT_SECRET__ }}"
     volumes:
       - php_socket:/var/run/php
       - caddy_data:/data
