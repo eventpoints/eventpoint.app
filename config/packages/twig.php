@@ -20,8 +20,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             'date_time_pattern' => 'dd MM yy HH:mm',
             'time_pattern' => 'HH:mm',
             'day_date_pattern' => 'EEEE, dd MMMM yyyy',
-            'mapbox_token' => $_ENV['MAPBOX_TOKEN'],
-            'turnstile_public_key' => $_ENV['CLOUDFLARE_TURNSTILE_PUBLIC_KEY'],
+            'mapbox_token' => '%env(MAPBOX_TOKEN)%',
+            'turnstile_public_key' => '%env(CLOUDFLARE_TURNSTILE_PUBLIC_KEY)%',
         ],
         'form_themes' => [
             'bootstrap_5_layout.html.twig',
