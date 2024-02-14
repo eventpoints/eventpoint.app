@@ -6,6 +6,7 @@ namespace App\Controller\Controller;
 
 use App\Entity\Email;
 use App\Entity\User;
+use App\Enum\FlashEnum;
 use App\Form\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\CustomAuthenticator;
@@ -18,14 +19,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
 class RegistrationController extends AbstractController
 {
     public function __construct(
-        private readonly AvatarService $avatarService,
-        private readonly EmailVerifier          $emailVerifier
+        private readonly AvatarService       $avatarService,
+        private readonly EmailVerifier       $emailVerifier,
+        private readonly HttpClientInterface $cloudflareTurnstileClient,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -37,6 +41,21 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $response = $this->cloudflareTurnstileClient->request(Request::METHOD_POST, '/turnstile/v0/siteverify', [
+                'body' => [
+                    'secret' => $this->getParameter('CLOUDFLARE_TURNSTILE_PRIVATE_KEY'),
+                    'response' => $request->request->get('cf-turnstile-response'),
+                    'ip' => $request->getClientIp(),
+                ],
+            ]);
+
+            $isCaptchaSuccessful = json_decode($response->getContent())->success;
+
+            if (! $isCaptchaSuccessful) {
+                $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('something-went-wrong'));
+                return $this->redirectToRoute('app_register');
+            }
+
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,

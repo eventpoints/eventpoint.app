@@ -15,6 +15,16 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             'cookie_samesite' => 'lax',
             'storage_factory_id' => 'session.storage.factory.native',
         ],
+        'http_client' => [
+            'scoped_clients' => [
+                'cloudflare.turnstile.client' => [
+                    'base_uri' => 'https://challenges.cloudflare.com',
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
+                ],
+            ],
+        ],
         'php_errors' => [
             'log' => true,
         ],
