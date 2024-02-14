@@ -101,4 +101,5 @@ return [
     'sent-invitations' => 'sent invitations',
     'send-invitations' => 'send invitations',
     'how-was-it' => 'How was it?',
+    'change-password' => 'change password'
 ];

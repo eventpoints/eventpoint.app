@@ -19,7 +19,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class UserAccountFormType extends AbstractType
+class ChangeUserPasswordFormType extends AbstractType
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
@@ -29,43 +29,28 @@ class UserAccountFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('firstName', TextType::class, [
-                'row_attr' => [
-                ],
-            ])
-            ->add('lastName', TextType::class, [
-                'row_attr' => [
-                ],
-            ])
-            ->add('email', EmailType::class)
-            ->add('locale', LanguageType::class, [
-                'label' => $this->translator->trans('language'),
-                'choice_loader' => null,
-                'choices' => [
-                    'English' => 'en',
-                    'Čeština' => 'cz',
-                    'Русский' => 'ru',
-                ],
-            ])
-            ->add('country', CountryType::class, [
-                'label' => $this->translator->trans('region-country', [
-                    'required' => false,
-                ]),
-            ])
-            ->add('currency', CurrencyType::class, [
-                'label' => $this->translator->trans('currency', [
-                    'required' => false,
-                ]),
-            ])
-            ->add('timezone', TimezoneType::class, [
+            ->add('currentPassword', PasswordType::class, [
                 'required' => false,
-            ])
-            ->add('avatar', FileType::class, [
-                'row_attr' => [
-                    'class' => 'w-75',
-                ],
                 'mapped' => false,
+            ])
+            ->add('newPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'options' => [
+                    'attr' => [
+                        'class' => 'password-field',
+                    ],
+                ],
+                'invalid_message' => $this->translator->trans('passwords-not-match'),
+                'first_options' =>
+                    [
+                        'label' => $this->translator->trans('new-password'),
+                    ],
+                'second_options' =>
+                    [
+                        'label' => $this->translator->trans('repeat-new-password'),
+                    ],
                 'required' => false,
+                'mapped' => false,
             ]);
     }
 

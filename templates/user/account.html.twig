@@ -40,9 +40,11 @@
                         <div class="list-group-item">
                             {{ form_row(userAccountForm.country) }}
                         </div>
-                        <div class="list-group-item">
-                            {{ form_row(userAccountForm.password) }}
-                        </div>
+                        <a href="{{ path('change_user_password') }}"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                           <div> {{ 'change-password'|trans|capitalize }}</div>
+                           <div class="bi bi-key fs-3"></div>
+                        </a>
                     </div>
                     <div class="card-footer d-flex justify-content-center">
                         <button type="submit" class="btn btn-primary w-100">{{ 'save'|trans }}</button>

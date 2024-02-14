@@ -99,7 +99,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         // change "app_homepage" to some route in your app
-        $targetUrl = $this->router->generate('user_account');
+        $targetUrl = $this->router->generate('user_event_invitations');
 
         return new RedirectResponse($targetUrl);
     }

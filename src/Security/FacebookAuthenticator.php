@@ -98,7 +98,7 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        $targetUrl = $this->router->generate('user_events');
+        $targetUrl = $this->router->generate('user_event_invitations');
 
         return new RedirectResponse($targetUrl);
     }
