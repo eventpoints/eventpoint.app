@@ -43,91 +43,95 @@
                         {% endif %}
                     </div>
                 </div>
-                <div class="card mb-3">
-                    <div class="card-header bg-white fw-bold">{{ 'join-requests'|trans|title }}</div>
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item">
-                            <a href="#" class="btn btn-light">{{ 'accept-all'|trans }}</a>
-                            <a href="#" class="btn btn-light">{{ 'decline-all'|trans }}</a>
+
+                {% if eventGroup.isUserAdmin(app.user) %}
+                    <div class="card mb-3">
+                        <div class="card-header bg-white fw-bold">{{ 'join-requests'|trans|title }}</div>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item">
+                                <a href="#" class="btn btn-light">{{ 'accept-all'|trans }}</a>
+                                <a href="#" class="btn btn-light">{{ 'decline-all'|trans }}</a>
+                            </div>
+                            {% for joinRequest in eventGroupJoinRequestPagination %}
+                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+                                    <div class="me-2 d-flex justify-content-start align-items-start">
+                                        <a href="{{ path('show_profile', {id: joinRequest.owner.id}) }}">
+                                            <img class=" border me-3" height="50"
+                                                 src="{{ joinRequest.owner.avatar }}">
+                                        </a>
+                                        <div>
+                                            <div class="lead">{{ joinRequest.owner.fullName }}</div>
+                                            <div>{{ joinRequest.createdAt|format_datetime }}</div>
+                                        </div>
+                                    </div>
+                                    {% if eventGroup.isUserAdmin(app.user) %}
+                                        <div>
+                                            <a class="btn btn-outline-primary"
+                                               href="#">
+                                                <span class="bi bi-check-circle fs-4"></span>
+                                            </a>
+                                            <a class="btn btn-outline-danger"
+                                               href="#">
+                                                <span class="bi bi-x-circle fs-4"></span>
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="text-center text-muted list-group-item">{{ 'no-join-requests'|trans }}</div>
+                            {% endfor %}
+                            {% if eventGroupJoinRequestPagination.getTotalItemCount() > eventGroupJoinRequestPagination.getItemNumberPerPage() %}
+                                <div class="list-group-item">
+                                    {{ knp_pagination_render(eventGroupJoinRequestPagination, viewParams={align: 'center', size: 'medium'}) }}
+                                </div>
+                            {% endif %}
                         </div>
-                        {% for joinRequest in eventGroupJoinRequestPagination %}
-                            <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-                                <div class="me-2 d-flex justify-content-start align-items-start">
-                                    <a href="{{ path('show_profile', {id: joinRequest.owner.id}) }}">
-                                        <img class=" border me-3" height="50"
-                                             src="{{ joinRequest.owner.avatar }}">
-                                    </a>
-                                    <div>
-                                        <div class="lead">{{ joinRequest.owner.fullName }}</div>
-                                        <div>{{ joinRequest.createdAt|format_datetime }}</div>
-                                    </div>
-                                </div>
-                                {% if eventGroup.isUserAdmin(app.user) %}
-                                    <div>
-                                        <a class="btn btn-outline-primary"
-                                           href="#">
-                                            <span class="bi bi-check-circle fs-4"></span>
-                                        </a>
-                                        <a class="btn btn-outline-danger"
-                                           href="#">
-                                            <span class="bi bi-x-circle fs-4"></span>
-                                        </a>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% else %}
-                            <div class="text-center text-muted list-group-item">{{ 'no-join-requests'|trans }}</div>
-                        {% endfor %}
-                        {% if eventGroupJoinRequestPagination.getTotalItemCount() > eventGroupJoinRequestPagination.getItemNumberPerPage() %}
-                            <div class="list-group-item">
-                                {{ knp_pagination_render(eventGroupJoinRequestPagination, viewParams={align: 'center', size: 'medium'}) }}
-                            </div>
-                        {% endif %}
                     </div>
-                </div>
-                <div class="card mb-3">
-                    <div class="card-header bg-white fw-bold">{{ 'invitations-sent'|trans|title }}</div>
-                    <div class="list-group list-group-flush">
-                        <a href="#"
-                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                            <div>{{ 'sent-invitation'|trans }}</div>
-                            <div class="bi bi-plus-circle fs-4"></div>
-                        </a>
-                        {% for invitation in eventGroupInvitationsPagination %}
-                            <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
-                                <div class="me-2 d-flex justify-content-start align-items-start">
-                                    <a href="{{ path('show_profile', {id: invitation.owner.id}) }}">
-                                        <img class=" border me-3" height="50"
-                                             src="{{ invitation.owner.avatar }}">
-                                    </a>
-                                    <div>
-                                        <div class="lead">{{ invitation.owner.fullName }}</div>
-                                        <div>{{ invitation.createdAt|format_datetime }}</div>
+                    <div class="card mb-3">
+                        <div class="card-header bg-white fw-bold">{{ 'invitations-sent'|trans|title }}</div>
+                        <div class="list-group list-group-flush">
+                            <a href="#"
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <div>{{ 'sent-invitation'|trans }}</div>
+                                <div class="bi bi-plus-circle fs-4"></div>
+                            </a>
+                            {% for invitation in eventGroupInvitationsPagination %}
+                                <div class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+                                    <div class="me-2 d-flex justify-content-start align-items-start">
+                                        <a href="{{ path('show_profile', {id: invitation.owner.id}) }}">
+                                            <img class=" border me-3" height="50"
+                                                 src="{{ invitation.owner.avatar }}">
+                                        </a>
+                                        <div>
+                                            <div class="lead">{{ invitation.owner.fullName }}</div>
+                                            <div>{{ invitation.createdAt|format_datetime }}</div>
+                                        </div>
                                     </div>
+                                    {% if eventGroup.isUserAdmin(app.user) %}
+                                        <div>
+                                            <a class="btn btn-outline-primary"
+                                               href="#">
+                                                <span class="bi bi-check-circle fs-4"></span>
+                                            </a>
+                                            <a class="btn btn-outline-danger"
+                                               href="#">
+                                                <span class="bi bi-x-circle fs-4"></span>
+                                            </a>
+                                        </div>
+                                    {% endif %}
                                 </div>
-                                {% if eventGroup.isUserAdmin(app.user) %}
-                                    <div>
-                                        <a class="btn btn-outline-primary"
-                                           href="#">
-                                            <span class="bi bi-check-circle fs-4"></span>
-                                        </a>
-                                        <a class="btn btn-outline-danger"
-                                           href="#">
-                                            <span class="bi bi-x-circle fs-4"></span>
-                                        </a>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        {% else %}
-                            <div class="text-center text-muted list-group-item">{{ 'no-invitations-set'|trans }}</div>
-                        {% endfor %}
-                        {% if  eventGroupInvitationsPagination.getTotalItemCount() > eventGroupInvitationsPagination.getItemNumberPerPage() %}
-                            <div class="list-group-item">
-                                {{ knp_pagination_render(eventGroupInvitationsPagination, viewParams={align: 'center', size: 'medium'}) }}
-                            </div>
-                        {% endif %}
+                            {% else %}
+                                <div class="text-center text-muted list-group-item">{{ 'no-invitations-set'|trans }}</div>
+                            {% endfor %}
+                            {% if  eventGroupInvitationsPagination.getTotalItemCount() > eventGroupInvitationsPagination.getItemNumberPerPage() %}
+                                <div class="list-group-item">
+                                    {{ knp_pagination_render(eventGroupInvitationsPagination, viewParams={align: 'center', size: 'medium'}) }}
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
+
             </div>
         </div>
     </div>

@@ -135,22 +135,6 @@
             </div>
             <div class="col-12 col-md-6">
 
-                {% if not event.isPublished and not event.isComplete and app.user and app.user|has_event_permission(event, 'role.event.manager') or app.user|has_event_permission(event, 'role.event.admin') or app.user|has_event_permission(event, 'role.event.promoter') %}
-                    <div class="card mb-3">
-                        {% if app.user and app.user|has_event_permission(event, 'role.event.manager') or app.user|has_event_permission(event, 'role.event.admin') %}
-                            <div class="card-body text-center">
-                                <div class="fs-4 fw-bold text-warning">{{ 'event-not-published'|trans }}</div>
-                                <div>{{ 'publish-event-journey-explainer'|trans }}</div>
-                            </div>
-                            <div class="card-footer bg-white">
-                                <a class="btn w-100 btn-light" href="{{ path('event_settings', {id: event.id} ) }}">
-                                    {{ 'publish-now'|trans }}
-                                </a>
-                            </div>
-                        {% endif %}
-                    </div>
-                {% endif %}
-
                 {% if not app.user and invitation != null %}
                     <div class="card mb-3">
                         <div class="card-body text-center">

@@ -8,11 +8,8 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\LanguageType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TimezoneType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -37,7 +34,6 @@ class UserAccountFormType extends AbstractType
                 'row_attr' => [
                 ],
             ])
-            ->add('email', EmailType::class)
             ->add('locale', LanguageType::class, [
                 'label' => $this->translator->trans('language'),
                 'choice_loader' => null,
@@ -59,25 +55,6 @@ class UserAccountFormType extends AbstractType
             ])
             ->add('timezone', TimezoneType::class, [
                 'required' => false,
-            ])
-            ->add('password', RepeatedType::class, [
-                'type' => PasswordType::class,
-                'options' => [
-                    'attr' => [
-                        'class' => 'password-field',
-                    ],
-                ],
-                'invalid_message' => $this->translator->trans('passwords-not-match'),
-                'first_options' =>
-                    [
-                        'label' => $this->translator->trans('password'),
-                    ],
-                'second_options' =>
-                    [
-                        'label' => $this->translator->trans('repeat-password'),
-                    ],
-                'required' => false,
-                'mapped' => false,
             ])
             ->add('avatar', FileType::class, [
                 'row_attr' => [

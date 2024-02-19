@@ -59,6 +59,11 @@ class PhoneNumber
         return $this->number;
     }
 
+    public function getPhoneNumberWithCode(): null|string
+    {
+        return $this->code . $this->number;
+    }
+
     public function setNumber(null|string $number): static
     {
         $this->number = $number;

@@ -7,6 +7,7 @@ return [
     'search' => 'search',
     'login' => 'login',
     'email-placeholder' => 'john.doe@example.com',
+    'email-or-phone-number' => 'e-mail address or phone number',
     'email-address' => 'e-mail address',
     'password-placeholder' => 'shh.. it\'s a secret',
     'password' => 'password',
@@ -101,4 +102,8 @@ return [
     'sent-invitations' => 'sent invitations',
     'send-invitations' => 'send invitations',
     'how-was-it' => 'How was it?',
+    'change-password' => 'change password',
+    'create-group' => 'create group',
+    'multiple-email-account-explainer' => 'Tired of trying to remember which email address you registered with? No worries! Add all you email addresses here and login with any of them.',
+    'phone-number-login-explainer' => 'Add your  phone numbers, you can also use these to login',
 ];

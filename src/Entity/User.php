@@ -26,7 +26,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -34,7 +33,6 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringable, UpdatedAtInterface
 {
     #[ORM\Id]
@@ -43,9 +41,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     #[Groups(['user_contact'])]
     private Uuid $id;
-
-    #[ORM\Column(length: 180, unique: true)]
-    private ?string $email = null;
 
     /**
      * @var array<string>
@@ -101,7 +96,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\Column(length: 3, nullable: true)]
     private ?string $country = RegionalEnum::REGIONAL_REGION->value;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'target', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $receivedEventInvitations;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -168,6 +163,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventReview::class)]
     private Collection $eventReviews;
 
+    #[ORM\OneToOne]
+    private ?Email $email = null;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Email::class, cascade: ['persist'])]
+    private Collection $emails;
+
     public function __construct()
     {
         $this->eventRequests = new ArrayCollection();
@@ -195,28 +196,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->eventGroupJoinRequests = new ArrayCollection();
         $this->contacts = new ArrayCollection();
         $this->eventReviews = new ArrayCollection();
+        $this->emails = new ArrayCollection();
     }
 
     public function __toString(): string
     {
-        return (string) $this->getEmail();
+        return $this->getEmail()->getAddress();
     }
 
     public function getId(): null|Uuid
     {
         return $this->id;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
     }
 
     public function getFullName(): string
@@ -231,7 +221,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return $this->email?->getAddress() ?? $this->phoneNumber->getPhoneNumberWithCode();
     }
 
     /**
@@ -1133,6 +1123,48 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
                 $eventReview->setOwner(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Email>
+     */
+    public function getEmails(): Collection
+    {
+        return $this->emails;
+    }
+
+    public function addEmail(Email $email): static
+    {
+        if (! $this->emails->contains($email)) {
+            $this->emails->add($email);
+            $email->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEmail(Email $email): static
+    {
+        if ($this->emails->removeElement($email)) {
+            // set the owning side to null (unless already changed)
+            if ($email->getOwner() === $this) {
+                $email->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getEmail(): null|Email
+    {
+        return $this->email;
+    }
+
+    public function setEmail(null|Email $defaultEmail): static
+    {
+        $this->email = $defaultEmail;
 
         return $this;
     }

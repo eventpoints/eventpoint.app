@@ -6,10 +6,11 @@ namespace App\Security;
 
 use App\Entity\SocialAuth;
 use App\Entity\User;
+use App\Factory\EmailFactory;
 use App\Factory\SocialAuthFactory;
 use App\Factory\UserFactory;
+use App\Repository\EmailRepository;
 use App\Repository\SocialAuthRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
@@ -34,11 +35,12 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
     public function __construct(
         private readonly ClientRegistry $clientRegistry,
         private readonly SocialAuthRepository $socialAuthRepository,
-        private readonly UserRepository $userRepository,
         private readonly RouterInterface $router,
         private readonly EntityManagerInterface $entityManager,
         private readonly UserFactory $userFactory,
-        private readonly SocialAuthFactory $socialAuthFactory
+        private readonly SocialAuthFactory $socialAuthFactory,
+        private readonly EmailFactory $emailFactory,
+        private readonly EmailRepository $emailRepository
     ) {
     }
 
@@ -56,7 +58,7 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
             new UserBadge($accessToken->getToken(), function () use ($accessToken, $client) {
                 /** @var FacebookUser $facebookUser */
                 $facebookUser = $client->fetchUserFromToken($accessToken);
-                $email = $facebookUser->getEmail();
+                $emailAddress = $facebookUser->getEmail();
 
                 // 1) have they logged in with Facebook before? Easy!
                 $socialAuth = $this->socialAuthRepository->findOneBy([
@@ -68,18 +70,22 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
                 }
 
                 // 2) do we have a matching user by email?
-                $user = $this->userRepository->findOneBy([
-                    'email' => $email,
-                ]);
+                $user = $this->emailRepository->findOneBy([
+                    'address' => $emailAddress,
+                ])?->getOwner();
 
                 if (! $user instanceof User) {
                     // 3) Maybe you just want to "register" them
+                    $email = $this->emailFactory->create(emailAddress: $emailAddress, user: $user);
                     $user = $this->userFactory->create(
                         firstName: $facebookUser->getFirstName() . '',
                         lastName: $facebookUser->getLastName() . '',
-                        email: $facebookUser->getEmail() . '',
+                        email: $email,
                         password: null
                     );
+
+                    $user->addEmail($email);
+                    $user->setEmail($email);
 
                     $socialAuth = $this->socialAuthFactory->create(
                         token: $facebookUser->getId(),
@@ -98,8 +104,7 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        $targetUrl = $this->router->generate('user_events');
-
+        $targetUrl = $this->router->generate('user_event_invitations');
         return new RedirectResponse($targetUrl);
     }
 

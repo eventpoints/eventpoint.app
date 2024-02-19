@@ -36,7 +36,7 @@ readonly class UserCreationSubscriber
             $user,
             (new TemplatedEmail())
                 ->from(new Address('no-reply@eventpoint.app', 'Event Point'))
-                ->to($user->getEmail())
+                ->to($user->getEmail()->getAddress())
                 ->subject('Please Confirm your Email')
                 ->htmlTemplate('email/confirmation_email.html.twig')
         );

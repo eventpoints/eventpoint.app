@@ -30,6 +30,7 @@ class RegistrationFormType extends AbstractType
                 ],
             ])
             ->add('email', EmailType::class, [
+                'mapped' => false,
                 'row_attr' => [
                     'class' => 'form-floating mb-3',
                 ],

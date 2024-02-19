@@ -21,9 +21,15 @@
                                 <div class="col-6">{{ form_row(userAccountForm.lastName) }}</div>
                             </div>
                         </div>
-                        <div class="list-group-item">
-                            {{ form_row(userAccountForm.email) }}
-                        </div>
+                        <a href="{{ path('user_email_addresses') }}"
+                           class="list-group-item list-group-item-action">
+                            <div class="text-muted mb-3">{{ 'multiple-email-account-explainer'|trans }}</div>
+                            <div class="d-flex justify-content-start align-items-center mb-3">
+                                {% for email in app.user.emails %}
+                                    <div class="badge rounded-pill {{ email == app.user.email ? 'text-bg-primary' : 'text-bg-secondary' }}">{{ app.user.email.address }}</div>
+                                {% endfor %}
+                            </div>
+                        </a>
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             {{ form_row(userAccountForm.avatar) }}
                             <img height="100" class=" border" src="{{ app.user.avatar }}"/>
@@ -40,9 +46,11 @@
                         <div class="list-group-item">
                             {{ form_row(userAccountForm.country) }}
                         </div>
-                        <div class="list-group-item">
-                            {{ form_row(userAccountForm.password) }}
-                        </div>
+                        <a href="{{ path('change_user_password') }}"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <div> {{ 'change-password'|trans|capitalize }}</div>
+                            <div class="bi bi-key fs-3"></div>
+                        </a>
                     </div>
                     <div class="card-footer d-flex justify-content-center">
                         <button type="submit" class="btn btn-primary w-100">{{ 'save'|trans }}</button>
@@ -55,6 +63,7 @@
                 <div class="card mb-3">
                     <div class="card-header fw-bold">{{ 'phone-numbers'|trans|capitalize }}</div>
                     <div class="list-group list-group-flush">
+                        <div class="list-group-item">{{ 'phone-number-login-explainer'|trans }}</div>
                         <a href="{{ path('create_user_phone_number') }}"
                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                             <div>{{ 'add-phone-number'|trans }}</div>

@@ -12,7 +12,7 @@ final class EmailFactory
     public function create(string $emailAddress, null|User $user = null): Email
     {
         $email = new Email();
-        $email->setContent($emailAddress);
+        $email->setAddress($emailAddress);
         $email->setOwner($user);
         return $email;
     }

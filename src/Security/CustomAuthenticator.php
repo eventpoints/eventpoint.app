@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Security;
 
+use App\Entity\Email;
 use App\Entity\User;
+use App\Repository\EmailRepository;
+use App\Repository\PhoneNumberRepository;
 use App\Repository\UserRepository;
 use Carbon\CarbonImmutable;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -29,18 +32,29 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
 
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly UserRepository        $userRepository
+        private readonly UserRepository        $userRepository,
+        private readonly EmailRepository       $emailRepository,
+        private readonly PhoneNumberRepository $phoneNumberRepository
     ) {
     }
 
     public function authenticate(Request $request): Passport
     {
-        $email = $request->request->get('email', '');
+        $emailAddressOrPhoneNumber = preg_replace('/\s+/', '', $request->request->get('email', ''));
+        ;
+        $email = $this->emailRepository->findOneBy([
+            'address' => $emailAddressOrPhoneNumber,
+        ]);
 
-        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
+        if (! $email instanceof Email) {
+            $phoneNumber = $this->phoneNumberRepository->findByFullNumber($emailAddressOrPhoneNumber);
+            $email = $phoneNumber->getOwner()->getEmail();
+        }
+
+        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email->getAddress());
 
         return new Passport(
-            new UserBadge($email),
+            new UserBadge($email->getAddress()),
             new PasswordCredentials($request->request->get('password', '')),
             [
                 new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
@@ -63,7 +77,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('events'));
+        return new RedirectResponse($this->urlGenerator->generate('user_event_invitations'));
     }
 
     protected function getLoginUrl(Request $request): string

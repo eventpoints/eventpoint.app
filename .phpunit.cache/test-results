@@ -1,0 +1,1 @@
+{"version":1,"defects":{"App\\Tests\\src\\Service\\PhoneNumberService\\PhoneNumberHelperServiceTest::testGetCodeWithoutPrefix":7},"times":{"App\\Tests\\src\\Service\\PhoneNumberService\\PhoneNumberHelperServiceTest::testGetDialCode":0.001,"App\\Tests\\src\\Service\\PhoneNumberService\\PhoneNumberHelperServiceTest::testGetCodeWithoutPrefix":0}}

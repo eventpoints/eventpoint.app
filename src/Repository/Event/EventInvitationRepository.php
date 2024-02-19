@@ -6,8 +6,11 @@ namespace App\Repository\Event;
 
 use App\Entity\Event\Event;
 use App\Entity\Event\EventInvitation;
+use App\Entity\User;
+use Carbon\CarbonImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -58,6 +61,31 @@ class EventInvitationRepository extends ServiceEntityRepository
             ->setParameter('event', $event->getId(), 'uuid');
 
         $qb->orderBy('event_invitation.createdAt', Criteria::DESC);
+
+        if ($isQuery) {
+            return $qb->getQuery();
+        }
+
+        return $qb->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return array<int, EventInvitation>|Query
+     */
+    public function findByTarget(User $user, bool $isQuery = false): array|Query
+    {
+        $qb = $this->createQueryBuilder('event_invitation');
+
+        $qb->andWhere($qb->expr() ->eq('event_invitation.target', ':target_user'))
+            ->setParameter('target_user', $user->getId(), 'uuid');
+
+        $now = CarbonImmutable::now();
+        $qb->leftJoin('event_invitation.event', 'event');
+
+        $qb->andWhere(
+            $qb->expr()->lte(':now', 'event.startAt')
+        )->setParameter('now', $now, Types::DATETIME_IMMUTABLE);
 
         if ($isQuery) {
             return $qb->getQuery();

@@ -25,19 +25,19 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class EventService
+final readonly class EventService
 {
     public function __construct(
-        private readonly EventInvitationFactory         $eventInvitationFactory,
-        private readonly EventEmailInvitationFactory    $eventEmailInvitationFactory,
-        private readonly UserRepository                 $userRepository,
-        private readonly EmailService                   $emailService,
-        private readonly UrlGeneratorInterface          $urlGenerator,
-        private readonly EventRequestFactory            $eventRequestFactory,
-        private readonly EventRequestRepository         $eventRequestRepository,
-        private readonly EventParticipantRepository     $eventParticipantRepository,
-        private readonly EventEmailInvitationRepository $eventEmailInvitationRepository,
-        private readonly TranslatorInterface            $translator,
+        private EventInvitationFactory         $eventInvitationFactory,
+        private EventEmailInvitationFactory    $eventEmailInvitationFactory,
+        private UserRepository                 $userRepository,
+        private EmailService                   $emailService,
+        private UrlGeneratorInterface          $urlGenerator,
+        private EventRequestFactory            $eventRequestFactory,
+        private EventRequestRepository         $eventRequestRepository,
+        private EventParticipantRepository     $eventParticipantRepository,
+        private EventEmailInvitationRepository $eventEmailInvitationRepository,
+        private TranslatorInterface            $translator,
     ) {
     }
 
@@ -55,7 +55,7 @@ class EventService
         $flashBag = $session->getFlashBag();
 
         $user = $this->userRepository->findOneBy([
-            'email' => $email->getContent(),
+            'email' => $email->getAddress(),
         ]);
 
         if ($user instanceof User) {
@@ -73,7 +73,7 @@ class EventService
         if ($this->canUserBeInvited(event: $event, user: $user, flashBag: $flashBag)) {
             $invitation = $this->eventInvitationFactory->create(owner: $currentUser, target: $user, event: $event);
             $this->emailService->sendInviteToUserWithAccount(
-                recipientEmailAddress: $user->getEmail(),
+                email: $user->getEmail(),
                 context: [
                     'event' => $event,
                     'target' => $user,
@@ -97,7 +97,7 @@ class EventService
                 'token' => $emailInvitation->getToken(),
             ], referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
             $this->emailService->sendInviteToUserWithoutAccount(
-                recipientEmailAddress: $email->getContent(),
+                email: $email,
                 context: [
                     'event' => $event,
                     'owner' => $currentUser,

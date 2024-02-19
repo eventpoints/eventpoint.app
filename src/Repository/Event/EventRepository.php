@@ -141,10 +141,6 @@ class EventRepository extends ServiceEntityRepository
         )->setParameter('false', false);
 
         $qb->andWhere(
-            $qb->expr()->eq('event.isPublished', ':true')
-        )->setParameter('true', true);
-
-        $qb->andWhere(
             $qb->expr()->eq('event.isPrivate', ':false')
         )->setParameter('false', false);
 
@@ -283,10 +279,6 @@ class EventRepository extends ServiceEntityRepository
             $qb->expr()->eq('event.eventGroup', ':id')
         )->setParameter('id', $eventGroup->getId());
 
-        $qb->andWhere(
-            $qb->expr()->eq('event.isPublished', ':true')
-        )->setParameter('true', true);
-
         return $qb->getQuery()->getResult();
     }
 
@@ -299,10 +291,6 @@ class EventRepository extends ServiceEntityRepository
         $qb->andWhere(
             $qb->expr()->eq('event.eventGroup', ':group')
         )->setParameter('group', $eventGroup->getId(), 'uuid');
-
-        $qb->andWhere(
-            $qb->expr()->eq('event.isPublished', ':true')
-        )->setParameter('true', true);
 
         $qb->orderBy('event.createdAt', Criteria::DESC);
 
@@ -319,10 +307,6 @@ class EventRepository extends ServiceEntityRepository
     public function findFutureAssociatedByUser(User $currentUser, bool $isQuery = false): array|Query
     {
         $qb = $this->createQueryBuilder('event');
-
-        $qb->andWhere(
-            $qb->expr()->eq('event.isPublished', ':true')
-        )->setParameter('true', true);
 
         $now = CarbonImmutable::now();
         $qb->andWhere(
@@ -342,10 +326,6 @@ class EventRepository extends ServiceEntityRepository
     public function findPastAssociatedByUser(User $currentUser, bool $isQuery = false): array|Query
     {
         $qb = $this->createQueryBuilder('event');
-
-        $qb->andWhere(
-            $qb->expr()->eq('event.isPublished', ':true')
-        )->setParameter('true', true);
 
         $now = CarbonImmutable::now();
         $qb->andWhere(

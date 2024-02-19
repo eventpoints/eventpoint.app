@@ -7,6 +7,7 @@ namespace App\Controller\Controller;
 use App\Entity\Email;
 use App\Entity\User;
 use App\Enum\FlashEnum;
+use App\Factory\EmailFactory;
 use App\Form\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\CustomAuthenticator;
@@ -30,6 +31,7 @@ class RegistrationController extends AbstractController
         private readonly EmailVerifier       $emailVerifier,
         private readonly HttpClientInterface $cloudflareTurnstileClient,
         private readonly TranslatorInterface $translator,
+        private readonly EmailFactory        $emailFactory,
     ) {
     }
 
@@ -41,20 +43,27 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $response = $this->cloudflareTurnstileClient->request(Request::METHOD_POST, '/turnstile/v0/siteverify', [
-                'body' => [
-                    'secret' => $this->getParameter('CLOUDFLARE_TURNSTILE_PRIVATE_KEY'),
-                    'response' => $request->request->get('cf-turnstile-response'),
-                    'ip' => $request->getClientIp(),
-                ],
-            ]);
+            if ($_ENV['APP_ENV'] === 'prod') {
+                $response = $this->cloudflareTurnstileClient->request(Request::METHOD_POST, '/turnstile/v0/siteverify', [
+                    'body' => [
+                        'secret' => $this->getParameter('CLOUDFLARE_TURNSTILE_PRIVATE_KEY'),
+                        'response' => $request->request->get('cf-turnstile-response'),
+                        'ip' => $request->getClientIp(),
+                    ],
+                ]);
 
-            $isCaptchaSuccessful = json_decode($response->getContent())->success;
+                $isCaptchaSuccessful = json_decode($response->getContent())->success;
 
-            if (! $isCaptchaSuccessful) {
-                $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('something-went-wrong'));
-                return $this->redirectToRoute('app_register');
+                if (! $isCaptchaSuccessful) {
+                    $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('something-went-wrong'));
+                    return $this->redirectToRoute('app_register');
+                }
             }
+
+            $emailAddress = $form->get('email')->getData();
+            $email = $this->emailFactory->create(emailAddress: $emailAddress, user: $user);
+            $entityManager->persist($email);
+            $user->setEmail($email);
 
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
@@ -63,7 +72,7 @@ class RegistrationController extends AbstractController
                 )
             );
 
-            $avatar = $this->avatarService->createAvatar($user->getEmail());
+            $avatar = $this->avatarService->createAvatar($user->getEmail()->getAddress());
             $user->setAvatar($avatar);
 
             $entityManager->persist($user);

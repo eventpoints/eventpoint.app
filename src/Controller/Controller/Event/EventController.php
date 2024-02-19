@@ -25,7 +25,6 @@ use App\Repository\Event\EventRepository;
 use App\Repository\Event\EventRoleRepository;
 use App\Repository\EventEmailInvitationRepository;
 use App\Repository\ImageCollectionRepository;
-use App\Security\Voter\EventVoter;
 use App\Service\ImageUploadService\ImageService;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -64,12 +63,12 @@ class EventController extends AbstractController
     {
         $eventFilterDto = new EventFilterDto();
         $eventFilter = $this->createForm(EventFilterType::class, $eventFilterDto);
-        $eventFilter->handleRequest($request);
         $events = $this->eventRepository->findByFilter(eventFilterDto: $eventFilterDto, isQuery: true);
         $groups = $this->eventGroupRepository->findByEventFilter(eventFilterDto: $eventFilterDto, isQuery: true);
         $eventPagination = $this->paginator->paginate(target: $events, page: $request->query->getInt('events', 1), limit: 30);
         $eventGroupPagination = $this->paginator->paginate(target: $groups, page: $request->query->getInt('groups', 1), limit: 30);
 
+        $eventFilter->handleRequest($request);
         if ($eventFilter->isSubmitted() && $eventFilter->isValid()) {
             $events = $this->eventRepository->findByFilter(eventFilterDto: $eventFilterDto, isQuery: true);
             $groups = $this->eventGroupRepository->findByEventFilter(eventFilterDto: $eventFilterDto, isQuery: true);
@@ -221,19 +220,6 @@ class EventController extends AbstractController
         return $this->render('events/cancel.html.twig', [
             'eventCancellationForm' => $eventCancellationForm,
             'event' => $event,
-        ]);
-    }
-
-    #[Route(path: '/events/publish/{id}', name: 'publish_event')]
-    public function publish(Event $event, Request $request, #[CurrentUser] User $currentUser): Response
-    {
-        $this->isGranted(EventVoter::PUBLISH_EVENT, $event);
-
-        $event->setIsPublished(true);
-        $this->eventRepository->save($event, true);
-        $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('event-published'));
-        return $this->redirectToRoute('show_event', [
-            'id' => $event->getId(),
         ]);
     }
 

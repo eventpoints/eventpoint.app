@@ -6,10 +6,11 @@ namespace App\Security;
 
 use App\Entity\SocialAuth;
 use App\Entity\User;
+use App\Factory\EmailFactory;
 use App\Factory\SocialAuthFactory;
 use App\Factory\UserFactory;
+use App\Repository\EmailRepository;
 use App\Repository\SocialAuthRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
@@ -33,11 +34,12 @@ class GoogleAuthenticator extends OAuth2Authenticator
     public function __construct(
         private readonly ClientRegistry $clientRegistry,
         private readonly SocialAuthRepository $socialAuthRepository,
-        private readonly UserRepository $userRepository,
         private readonly RouterInterface $router,
         private readonly EntityManagerInterface $entityManager,
         private readonly UserFactory $userFactory,
-        private readonly SocialAuthFactory $socialAuthFactory
+        private readonly SocialAuthFactory $socialAuthFactory,
+        private readonly EmailFactory $emailFactory,
+        private readonly EmailRepository $emailRepository
     ) {
     }
 
@@ -55,7 +57,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
             new UserBadge($accessToken->getToken(), function () use ($accessToken, $client) {
                 /** @var GoogleUser $googleUser */
                 $googleUser = $client->fetchUserFromToken($accessToken);
-                $email = $googleUser->getEmail();
+                $emailAddress = $googleUser->getEmail();
 
                 // 1) have they logged in with Google before? Easy!
                 $socialAuth = $this->socialAuthRepository->findOneBy([
@@ -67,19 +69,23 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 }
 
                 // 2) do we have a matching user by email?
-                $user = $this->userRepository->findOneBy([
-                    'email' => $email,
-                ]);
+                $user = $this->emailRepository->findOneBy([
+                    'address' => $emailAddress,
+                ])?->getOwner();
 
                 if (! $user instanceof User) {
                     // 3) Maybe you just want to "register" them
+                    $email = $this->emailFactory->create(emailAddress: $emailAddress, user: $user);
+
                     $user = $this->userFactory->create(
                         firstName: $googleUser->getFirstName() . '',
                         lastName: $googleUser->getLastName() . '',
-                        email: $googleUser->getEmail() . '',
+                        email: $email,
                         password: null,
                         avatar: $googleUser->getAvatar(),
                     );
+                    $user->addEmail($email);
+                    $user->setEmail($email);
 
                     $socialAuth = $this->socialAuthFactory->create(
                         token: $googleUser->getId(),
@@ -98,9 +104,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // change "app_homepage" to some route in your app
-        $targetUrl = $this->router->generate('user_account');
-
+        $targetUrl = $this->router->generate('user_event_invitations');
         return new RedirectResponse($targetUrl);
     }
 

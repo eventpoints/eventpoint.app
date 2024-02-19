@@ -6,6 +6,7 @@ namespace App\Repository;
 
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventGroup\EventGroupMember;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Query;
@@ -66,5 +67,20 @@ class EventGroupMemberRepository extends ServiceEntityRepository
         }
 
         return $result->getQuery()->getResult();
+    }
+
+    public function findByOwner(User $user, EventGroup $group): null|EventGroupMember
+    {
+        $qb = $this->createQueryBuilder('event_group_member');
+
+        $qb->andWhere(
+            $qb->expr()->eq('event_group_member.eventGroup', ':eventGroup')
+        )->setParameter('eventGroup', $group->getId(), 'uuid');
+
+        $qb->andWhere(
+            $qb->expr()->eq('event_group_member.owner', ':owner')
+        )->setParameter('owner', $user->getId(), 'uuid');
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }

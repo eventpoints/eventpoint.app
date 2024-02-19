@@ -45,7 +45,7 @@ class EventGroupController extends AbstractController
     public function __construct(
         private readonly EventGroupRepository             $eventGroupRepository,
         private readonly EventGroupJoinRequestRepository  $eventGroupJoinRequestRepository,
-        private readonly EventGroupInvitationRepository  $eventGroupInvitationRepository,
+        private readonly EventGroupInvitationRepository   $eventGroupInvitationRepository,
         private readonly EventGroupMemberRepository       $eventGroupMemberRepository,
         private readonly EventGroupJoinRequestFactory     $eventGroupJoinRequestFactory,
         private readonly EventRepository                  $eventRepository,
@@ -279,7 +279,7 @@ class EventGroupController extends AbstractController
     #[Route('/leave/{id}', name: 'leave_event_group', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function leaveEventGroup(Request $request, EventGroup $eventGroup, #[CurrentUser] User $currentUser): Response
     {
-        $eventGroupMember = $eventGroup->getMember($currentUser);
+        $eventGroupMember = $this->eventGroupMemberRepository->findByOwner(user: $currentUser, group: $eventGroup);
         if (! $eventGroupMember instanceof EventGroupMember) {
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('not-group-memeber'));
             return $this->redirectToRoute('event_group_show', [
@@ -287,8 +287,7 @@ class EventGroupController extends AbstractController
             ]);
         }
 
-        $eventGroup->removeEventGroupMember($eventGroupMember);
-        $this->eventGroupRepository->save($eventGroup, true);
+        $this->eventGroupMemberRepository->remove($eventGroupMember, true);
         $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('group-left'));
         return $this->redirectToRoute('event_group_show', [
             'id' => $eventGroup->getId(),

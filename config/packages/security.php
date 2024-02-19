@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Entity\User;
 use App\Security\CustomAuthenticator;
 use App\Security\FacebookAuthenticator;
 use App\Security\GoogleAuthenticator;
+use App\Security\User\UserProvider;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
@@ -16,11 +16,8 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             PasswordAuthenticatedUserInterface::class => 'auto',
         ],
         'providers' => [
-            'app_user_provider' => [
-                'entity' => [
-                    'class' => User::class,
-                    'property' => 'email',
-                ],
+            'users' => [
+                'id' => UserProvider::class,
             ],
         ],
         'firewalls' => [
@@ -30,7 +27,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             ],
             'main' => [
                 'lazy' => true,
-                'provider' => 'app_user_provider',
+                'provider' => 'users',
                 'entry_point' => CustomAuthenticator::class,
                 'custom_authenticators' => [
                     CustomAuthenticator::class,

@@ -86,10 +86,6 @@ class EventGroupRepository extends ServiceEntityRepository
         }
 
         $qb->andWhere(
-            $qb->expr()->eq('event.isPublished', ':true')
-        )->setParameter('true', true);
-
-        $qb->andWhere(
             $qb->expr()->eq('event_group.isPrivate', ':false')
         )->setParameter('false', false);
 

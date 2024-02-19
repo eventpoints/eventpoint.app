@@ -37,13 +37,14 @@
 <div class="offcanvas offcanvas-end" data-bs-backdrop="menu" tabindex="-1" id="menu" aria-labelledby="menu">
     {% if app.user %}
         <div class="d-flex justify-content-between align-items-center p-2">
-            <a class="link-dark text-decoration-none d-flex justify-content-start align-items-center" href="{{ path('user_future_events') }}">
+            <a class="link-dark text-decoration-none d-flex justify-content-start align-items-center"
+               href="{{ path('user_future_events') }}">
                 <div class="me-3">
                     <img src="{{ app.user.avatar }}" height="50" class="border "/>
                 </div>
                 <div>
                     <div class="fw-bold lh-1"> {{ app.user.fullName }}</div>
-                    <div> {{ app.user.email }}</div>
+                    <div> {{ app.user.email.address }}</div>
                 </div>
             </a>
             <a class="me-2"
