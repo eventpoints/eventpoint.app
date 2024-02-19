@@ -11,7 +11,6 @@ use App\Factory\SocialAuthFactory;
 use App\Factory\UserFactory;
 use App\Repository\EmailRepository;
 use App\Repository\SocialAuthRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
@@ -35,7 +34,6 @@ class GoogleAuthenticator extends OAuth2Authenticator
     public function __construct(
         private readonly ClientRegistry $clientRegistry,
         private readonly SocialAuthRepository $socialAuthRepository,
-        private readonly UserRepository $userRepository,
         private readonly RouterInterface $router,
         private readonly EntityManagerInterface $entityManager,
         private readonly UserFactory $userFactory,
@@ -77,7 +75,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
                 if (! $user instanceof User) {
                     // 3) Maybe you just want to "register" them
-                    $email = $this->emailFactory->create(emailAddress:  $emailAddress,user: $user);
+                    $email = $this->emailFactory->create(emailAddress: $emailAddress, user: $user);
 
                     $user = $this->userFactory->create(
                         firstName: $googleUser->getFirstName() . '',

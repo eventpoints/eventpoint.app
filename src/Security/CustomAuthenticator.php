@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Security;
 
 use App\Entity\Email;
-use App\Entity\PhoneNumber;
 use App\Entity\User;
 use App\Repository\EmailRepository;
 use App\Repository\PhoneNumberRepository;
@@ -36,16 +35,18 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
         private readonly UserRepository        $userRepository,
         private readonly EmailRepository       $emailRepository,
         private readonly PhoneNumberRepository $phoneNumberRepository
-    )
-    {
+    ) {
     }
 
     public function authenticate(Request $request): Passport
     {
-        $emailAddressOrPhoneNumber = preg_replace('/\s+/', '', $request->request->get('email', '')); ;
-        $email = $this->emailRepository->findOneBy(['address' => $emailAddressOrPhoneNumber]);
+        $emailAddressOrPhoneNumber = preg_replace('/\s+/', '', $request->request->get('email', ''));
+        ;
+        $email = $this->emailRepository->findOneBy([
+            'address' => $emailAddressOrPhoneNumber,
+        ]);
 
-        if (!$email instanceof Email) {
+        if (! $email instanceof Email) {
             $phoneNumber = $this->phoneNumberRepository->findByFullNumber($emailAddressOrPhoneNumber);
             $email = $phoneNumber->getOwner()->getEmail();
         }

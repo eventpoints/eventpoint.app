@@ -51,7 +51,7 @@ class EventGroupMemberRepository extends ServiceEntityRepository
      */
     public function findByGroup(EventGroup $eventGroup, QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
-        if (!$qb instanceof QueryBuilder) {
+        if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event_group_member');
         }
         $result = $qb;

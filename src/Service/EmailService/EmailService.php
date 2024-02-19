@@ -18,20 +18,19 @@ final readonly class EmailService
     public function __construct(
         private MailerInterface     $mailer,
         private TranslatorInterface $translator
-    )
-    {
+    ) {
     }
 
     /**
      * @param array<string|int|object> $context
      * @throws TransportExceptionInterface
      */
-    public function sendRegistrationWelcomeEmail(string $recipientEmailAddress, array $context = []): void
+    public function sendRegistrationWelcomeEmail(Email $email, array $context = []): void
     {
         $this->send(
             subject: 'email.registration-welcome-email.subject',
             template: '/email/registration-email.html.twig',
-            email: $recipientEmailAddress,
+            email: $email,
             context: $context
         );
     }
@@ -114,8 +113,7 @@ final readonly class EmailService
         string $template,
         string  $emailAddress,
         array  $context
-    ): TemplatedEmail
-    {
+    ): TemplatedEmail {
         $templatedEmail = new TemplatedEmail();
         $templatedEmail->from(addresses: self::SENDER_EMAIL_ADDRESS);
         $templatedEmail->to(address: new Address($emailAddress));
@@ -134,8 +132,7 @@ final readonly class EmailService
         string $template,
         Email  $email,
         array  $context
-    ): void
-    {
+    ): void {
         try {
             $envelope = $this->compose(
                 subject: $subject,

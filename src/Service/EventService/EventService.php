@@ -25,19 +25,19 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class EventService
+final readonly class EventService
 {
     public function __construct(
-        private readonly EventInvitationFactory         $eventInvitationFactory,
-        private readonly EventEmailInvitationFactory    $eventEmailInvitationFactory,
-        private readonly UserRepository                 $userRepository,
-        private readonly EmailService                   $emailService,
-        private readonly UrlGeneratorInterface          $urlGenerator,
-        private readonly EventRequestFactory            $eventRequestFactory,
-        private readonly EventRequestRepository         $eventRequestRepository,
-        private readonly EventParticipantRepository     $eventParticipantRepository,
-        private readonly EventEmailInvitationRepository $eventEmailInvitationRepository,
-        private readonly TranslatorInterface            $translator,
+        private EventInvitationFactory         $eventInvitationFactory,
+        private EventEmailInvitationFactory    $eventEmailInvitationFactory,
+        private UserRepository                 $userRepository,
+        private EmailService                   $emailService,
+        private UrlGeneratorInterface          $urlGenerator,
+        private EventRequestFactory            $eventRequestFactory,
+        private EventRequestRepository         $eventRequestRepository,
+        private EventParticipantRepository     $eventParticipantRepository,
+        private EventEmailInvitationRepository $eventEmailInvitationRepository,
+        private TranslatorInterface            $translator,
     ) {
     }
 
@@ -97,7 +97,7 @@ class EventService
                 'token' => $emailInvitation->getToken(),
             ], referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
             $this->emailService->sendInviteToUserWithoutAccount(
-                email: $email->getAddress(),
+                email: $email,
                 context: [
                     'event' => $event,
                     'owner' => $currentUser,

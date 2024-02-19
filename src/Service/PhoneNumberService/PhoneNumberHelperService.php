@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Service\PhoneNumberService;
 
 final class PhoneNumberHelperService
 {
-
     public function getCodeWithoutPrefix(string $code): ?string
     {
         $trimmedCode = ltrim($code, '+');
 
-        if (strpos($trimmedCode, '00') === 0) {
+        if (str_starts_with($trimmedCode, '00')) {
             $trimmedCode = substr($trimmedCode, 2);
         }
 
@@ -19,9 +20,9 @@ final class PhoneNumberHelperService
     public function getDialCode(string $phoneNumber): ?string
     {
         foreach ($this->getDialCodes() as $code => $country) {
-            if (strpos($phoneNumber, '+' . $code) === 0) {
+            if (str_starts_with($phoneNumber, '+' . $code)) {
                 return '+' . $code;
-            } elseif (strpos($phoneNumber, '00' . $code) === 0) {
+            } elseif (str_starts_with($phoneNumber, '00' . $code)) {
                 return '00' . $code;
             }
         }
@@ -29,18 +30,20 @@ final class PhoneNumberHelperService
         return null;
     }
 
-    public
-    function getNumber(string $phoneNumber): ?string
+    public function getNumber(string $phoneNumber): ?string
     {
         foreach ($this->getDialCodes() as $code => $countryCode) {
-            if (strpos($phoneNumber, '+' . $code) === 0 || strpos($phoneNumber, '00' . $code) === 0) {
-                $dialCodeLength = strlen($code) + (strpos($phoneNumber, '+') === 0 ? 1 : 2);
+            if (str_starts_with($phoneNumber, '+' . $code) || str_starts_with($phoneNumber, '00' . $code)) {
+                $dialCodeLength = strlen($code) + (str_starts_with($phoneNumber, '+') ? 1 : 2);
                 return substr($phoneNumber, $dialCodeLength);
             }
         }
         return null;
     }
 
+    /**
+     * @return string[]
+     */
     public function getDialCodes(): array
     {
         return [
@@ -250,5 +253,4 @@ final class PhoneNumberHelperService
             '263' => 'ZWE',
         ];
     }
-
 }

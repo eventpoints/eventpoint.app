@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Entity\User;
 use App\Security\CustomAuthenticator;
 use App\Security\FacebookAuthenticator;
 use App\Security\GoogleAuthenticator;

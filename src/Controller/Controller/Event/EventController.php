@@ -25,7 +25,6 @@ use App\Repository\Event\EventRepository;
 use App\Repository\Event\EventRoleRepository;
 use App\Repository\EventEmailInvitationRepository;
 use App\Repository\ImageCollectionRepository;
-use App\Security\Voter\EventVoter;
 use App\Service\ImageUploadService\ImageService;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;

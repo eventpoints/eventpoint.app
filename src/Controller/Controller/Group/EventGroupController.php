@@ -59,8 +59,7 @@ class EventGroupController extends AbstractController
         private readonly TranslatorInterface              $translator,
         private readonly EventActivityAnalyzer            $eventGroupAnalyzer,
         private readonly ImageService                     $imageUploadService
-    )
-    {
+    ) {
     }
 
     #[Route('/show/{id}', name: 'event_group_show', methods: ['GET', 'POST'])]
@@ -281,7 +280,7 @@ class EventGroupController extends AbstractController
     public function leaveEventGroup(Request $request, EventGroup $eventGroup, #[CurrentUser] User $currentUser): Response
     {
         $eventGroupMember = $this->eventGroupMemberRepository->findByOwner(user: $currentUser, group: $eventGroup);
-        if (!$eventGroupMember instanceof EventGroupMember) {
+        if (! $eventGroupMember instanceof EventGroupMember) {
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('not-group-memeber'));
             return $this->redirectToRoute('event_group_show', [
                 'id' => $eventGroup->getId(),
@@ -315,7 +314,7 @@ class EventGroupController extends AbstractController
         $eventGroupSettingForm->handleRequest($request);
         if ($eventGroupSettingForm->isSubmitted() && $eventGroupSettingForm->isValid()) {
             $image = $eventGroupSettingForm->get('image')->getData();
-            if (!empty($image)) {
+            if (! empty($image)) {
                 $eventGroup->setBase64Image($this->imageUploadService->processAvatar($image)->getEncoded());
             }
             $this->eventGroupRepository->save(entity: $eventGroup, flush: true);

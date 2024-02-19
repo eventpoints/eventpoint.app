@@ -9,7 +9,6 @@ use App\Entity\User;
 use App\Form\Type\EntitySelectionGroupType;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -19,14 +18,13 @@ class DefaultEmailFormType extends AbstractType
 {
     public function __construct(
         private readonly Security $security
-    )
-    {
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $currentUser = $this->security->getUser();
-        if (!$currentUser instanceof User) {
+        if (! $currentUser instanceof User) {
             return;
         }
 
@@ -44,7 +42,7 @@ class DefaultEmailFormType extends AbstractType
                     )->setParameter('owner', $currentUser);
                     return $qb;
                 },
-                'choice_label' => fn(Email $email): string => $email->getAddress(),
+                'choice_label' => fn (Email $email): string => $email->getAddress(),
                 'row_attr' => [
                     'class' => 'form-floating mb-3',
                 ],

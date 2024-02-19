@@ -105,5 +105,5 @@ return [
     'change-password' => 'change password',
     'create-group' => 'create group',
     'multiple-email-account-explainer' => 'Tired of trying to remember which email address you registered with? No worries! Add all you email addresses here and login with any of them.',
-    'phone-number-login-explainer' => 'Add your  phone numbers, you can also use these to login'
+    'phone-number-login-explainer' => 'Add your  phone numbers, you can also use these to login',
 ];

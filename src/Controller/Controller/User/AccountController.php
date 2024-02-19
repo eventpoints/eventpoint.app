@@ -116,6 +116,4 @@ class AccountController extends AbstractController
             'userPasswordForm' => $userPasswordForm,
         ]);
     }
-
-
 }

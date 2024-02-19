@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\src\Service\PhoneNumberService;
 
 use App\Service\PhoneNumberService\PhoneNumberHelperService;
@@ -7,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 class PhoneNumberHelperServiceTest extends TestCase
 {
-
     public function testGetDialCode(): void
     {
         foreach ($this->getNumbers() as $number => $code) {
@@ -16,7 +17,6 @@ class PhoneNumberHelperServiceTest extends TestCase
             $this->assertEquals($code, $dialCode);
         }
     }
-
 
     public function testGetCodeWithoutPrefix(): void
     {
@@ -27,6 +27,9 @@ class PhoneNumberHelperServiceTest extends TestCase
         }
     }
 
+    /**
+     * @return string[]
+     */
     public function getNumbers(): array
     {
         return [
@@ -44,6 +47,9 @@ class PhoneNumberHelperServiceTest extends TestCase
         ];
     }
 
+    /**
+     * @return string[]
+     */
     public function getCodes(): array
     {
         return [
@@ -60,5 +66,4 @@ class PhoneNumberHelperServiceTest extends TestCase
             '+91' => '91',  // India
         ];
     }
-
 }

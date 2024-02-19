@@ -7,9 +7,7 @@ namespace App\Repository;
 use App\Entity\PhoneNumber;
 use App\Service\PhoneNumberService\PhoneNumberHelperService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
-use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<PhoneNumber>
@@ -23,9 +21,8 @@ class PhoneNumberRepository extends ServiceEntityRepository
 {
     public function __construct(
         ManagerRegistry $registry,
-    private readonly PhoneNumberHelperService $phoneNumberHelperService
-    )
-    {
+        private readonly PhoneNumberHelperService $phoneNumberHelperService
+    ) {
         parent::__construct($registry, PhoneNumber::class);
     }
 
@@ -46,7 +43,6 @@ class PhoneNumberRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
 
     public function findByFullNumber(string $phoneNumber): null|PhoneNumber
     {

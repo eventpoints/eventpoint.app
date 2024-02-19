@@ -191,6 +191,7 @@ class Event implements Stringable
 
         return $this;
     }
+
     /**
      * @return Collection<int, Category>
      */

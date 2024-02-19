@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller\Controller\User;
 
 use App\Entity\Email;
@@ -20,16 +22,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EmailController extends AbstractController
 {
-
-
     public function __construct(
         private readonly UserRepository         $userRepository,
         private readonly TranslatorInterface    $translator,
         private readonly EmailFactory           $emailFactory,
         private readonly EmailRepository        $emailRepository,
         private readonly EntityManagerInterface $entityManager
-    )
-    {
+    ) {
     }
 
     #[Route(path: '/user/emails', name: 'user_email_addresses', methods: [Request::METHOD_GET, Request::METHOD_POST])]
@@ -51,12 +50,12 @@ class EmailController extends AbstractController
         ]);
     }
 
-//    #[Route(path: '/user/email/{id}', name: 'show_user_email_address', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-//    public function show(Email $email, Request $request, #[CurrentUser] User $currentUser): Response
-//    {
-//        return $this->render('user/email.html.twig');
-//    }
-//
+    //    #[Route(path: '/user/email/{id}', name: 'show_user_email_address', methods: [Request::METHOD_GET, Request::METHOD_POST])]
+    //    public function show(Email $email, Request $request, #[CurrentUser] User $currentUser): Response
+    //    {
+    //        return $this->render('user/email.html.twig');
+    //    }
+    //
     #[Route(path: '/user/email/create', name: 'create_user_email', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(Request $request, #[CurrentUser] User $currentUser): Response
     {
@@ -64,18 +63,19 @@ class EmailController extends AbstractController
         $emailForm->handleRequest($request);
         if ($emailForm->isSubmitted() && $emailForm->isValid()) {
             $emailAddress = $emailForm->get('address')->getData();
-            $email = $this->emailRepository->findOneBy(['address' => $emailAddress]);
+            $email = $this->emailRepository->findOneBy([
+                'address' => $emailAddress,
+            ]);
 
             if ($email instanceof Email) {
                 if ($email->getOwner() === $currentUser) {
                     $this->addFlash(FlashEnum::MESSAGE->value, 'email address already on your account');
                 } else {
-                    $this->addFlash(FlashEnum::MESSAGE->value, 'an account already exists with that email address. if you still wish to add this email address to this account, close the other account first.' );
+                    $this->addFlash(FlashEnum::MESSAGE->value, 'an account already exists with that email address. if you still wish to add this email address to this account, close the other account first.');
                 }
                 return $this->redirectToRoute('create_user_email');
-            } else {
-                $email = $this->emailFactory->create(emailAddress: $emailAddress, user: $currentUser);
             }
+            $email = $this->emailFactory->create(emailAddress: $emailAddress, user: $currentUser);
 
             $currentUser->addEmail($email);
             $this->entityManager->persist($email);
@@ -84,8 +84,7 @@ class EmailController extends AbstractController
         }
 
         return $this->render('user/email/create.html.twig', [
-            'emailForm' => $emailForm
+            'emailForm' => $emailForm,
         ]);
     }
-
 }

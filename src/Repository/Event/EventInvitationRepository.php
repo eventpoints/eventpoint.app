@@ -13,7 +13,6 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
-use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<EventInvitation>
@@ -71,7 +70,10 @@ class EventInvitationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function findByTarget(User $user, bool $isQuery = false) : array|Query
+    /**
+     * @return array<int, EventInvitation>|Query
+     */
+    public function findByTarget(User $user, bool $isQuery = false): array|Query
     {
         $qb = $this->createQueryBuilder('event_invitation');
 
@@ -82,15 +84,14 @@ class EventInvitationRepository extends ServiceEntityRepository
         $qb->leftJoin('event_invitation.event', 'event');
 
         $qb->andWhere(
-          $qb->expr()->lte(':now', 'event.startAt')
+            $qb->expr()->lte(':now', 'event.startAt')
         )->setParameter('now', $now, Types::DATETIME_IMMUTABLE);
-        
+
         if ($isQuery) {
             return $qb->getQuery();
         }
 
         return $qb->getQuery()
             ->getResult();
-
     }
 }

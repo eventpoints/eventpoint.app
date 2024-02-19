@@ -8,15 +8,11 @@ use App\Entity\Email;
 use App\Entity\User;
 use App\Enum\FlashEnum;
 use App\Factory\EmailFactory;
-use App\Factory\PhoneNumberFactory;
 use App\Form\Form\RegistrationFormType;
-use App\Repository\EmailRepository;
-use App\Repository\PhoneNumberRepository;
 use App\Repository\UserRepository;
 use App\Security\CustomAuthenticator;
 use App\Security\EmailVerifier;
 use App\Service\AvatarService\AvatarService;
-use App\Service\PhoneNumberService\PhoneNumberHelperService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,24 +32,17 @@ class RegistrationController extends AbstractController
         private readonly HttpClientInterface $cloudflareTurnstileClient,
         private readonly TranslatorInterface $translator,
         private readonly EmailFactory        $emailFactory,
-        private readonly EmailRepository     $emailRepository,
-        private readonly PhoneNumberRepository     $phoneNumberRepository,
-        private readonly PhoneNumberFactory     $phoneNumberFactory,
-        private readonly PhoneNumberHelperService     $phoneNumberHelperService,
-    )
-    {
+    ) {
     }
 
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, CustomAuthenticator $authenticator, EntityManagerInterface $entityManager): Response
     {
-
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             if ($_ENV['APP_ENV'] === 'prod') {
                 $response = $this->cloudflareTurnstileClient->request(Request::METHOD_POST, '/turnstile/v0/siteverify', [
                     'body' => [
@@ -65,7 +54,7 @@ class RegistrationController extends AbstractController
 
                 $isCaptchaSuccessful = json_decode($response->getContent())->success;
 
-                if (!$isCaptchaSuccessful) {
+                if (! $isCaptchaSuccessful) {
                     $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('something-went-wrong'));
                     return $this->redirectToRoute('app_register');
                 }

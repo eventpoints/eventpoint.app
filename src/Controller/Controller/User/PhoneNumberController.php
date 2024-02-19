@@ -22,8 +22,7 @@ class PhoneNumberController extends AbstractController
         private readonly PhoneNumberFactory $phoneNumberFactory,
         private readonly PhoneNumberHelperService $phoneNumberHelperService,
         private readonly UserRepository     $userRepository
-    )
-    {
+    ) {
     }
 
     #[Route(path: '/user/phone-number/create', name: 'create_user_phone_number')]
@@ -34,12 +33,11 @@ class PhoneNumberController extends AbstractController
         $phoneNumberForm->handleRequest($request);
 
         if ($phoneNumberForm->isSubmitted() && $phoneNumberForm->isValid()) {
-
-            $number = preg_replace('/\s+/', '', $phoneNumberForm->get('number')->getData());
-            $code = preg_replace('/\s+/', '', $phoneNumberForm->get('code')->getData());
+            $number = preg_replace('/\s+/', '', (string) $phoneNumberForm->get('number')->getData());
+            $code = preg_replace('/\s+/', '', (string) $phoneNumberForm->get('code')->getData());
             $codeWithoutPrefix = $this->phoneNumberHelperService->getCodeWithoutPrefix($code);
 
-            if(!array_key_exists($codeWithoutPrefix, $this->phoneNumberHelperService->getDialCodes())){
+            if (! array_key_exists($codeWithoutPrefix, $this->phoneNumberHelperService->getDialCodes())) {
                 $this->addFlash(FlashEnum::MESSAGE->value, 'Hmm... can\'t  find that dial code');
                 return $this->redirectToRoute('create_user_phone_number');
             }

@@ -24,5 +24,4 @@ return static function (ContainerConfigurator $containerConfigurator): void {
 
     $services->set(UserProvider::class)
         ->class(UserProvider::class);
-
 };
