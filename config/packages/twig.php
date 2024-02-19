@@ -12,6 +12,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $containerConfigurator->extension('twig', [
         'default_path' => '%kernel.project_dir%/templates',
         'globals' => [
+            'app_name' => 'Eventpoint',
             'regional' => service(RegionalConfiguration::class),
             'browser_timezone' => service(BrowserRegionalData::class),
             'supported_locales' => explode(',', (string) $_ENV['SUPPORTED_LOCALES']),
