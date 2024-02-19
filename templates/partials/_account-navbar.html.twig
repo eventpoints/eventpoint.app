@@ -47,7 +47,7 @@
                     </div>
                     <div class="badge rounded-pill text-bg-primary fs-5 d-flex justify-content-between align-items-center">
                         <span class="bi bi-postcard-heart me-3"></span>
-                        <span>5</span>
+                        <span>{{ app.user.receivedEventInvitations.count }}</span>
                     </div>
                 </a>
                 <a href="{{ path('user_event_requests') }}"
@@ -57,7 +57,7 @@
                     </div>
                     <div class="badge rounded-pill text-bg-primary fs-5 d-flex justify-content-between align-items-center">
                         <span class="bi bi-postcard me-3"></span>
-                        <span>5</span>
+                        <span>{{ app.user.eventRequests.count }}</span>
                     </div>
                 </a>
             </div>
