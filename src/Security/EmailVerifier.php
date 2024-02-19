@@ -31,7 +31,7 @@ final readonly class EmailVerifier
         $signatureComponents = $this->verifyEmailHelper->generateSignature(
             $verifyEmailRouteName,
             $user->getId()->toRfc4122(),
-            $user->getEmail(),
+            $user->getEmail()->getAddress(),
             [
                 'id' => $user->getId(),
             ]
@@ -56,7 +56,7 @@ final readonly class EmailVerifier
             return;
         }
 
-        $this->verifyEmailHelper->validateEmailConfirmation($request->getUri(), $user->getId()->toRfc4122(), $user->getEmail());
+        $this->verifyEmailHelper->validateEmailConfirmation($request->getUri(), $user->getId()->toRfc4122(), $user->getEmail()->getAddress());
 
         $user->setIsVerified(true);
 

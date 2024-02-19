@@ -13,6 +13,15 @@
              class="accordion-collapse collapse  {{ isUserEventShowing ? 'show' }}"
              data-bs-parent="#user-account-navbar-accordion">
             <div class="list-group list-group-flush">
+                <a href="{{ path('create_event') }}"
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        {{ 'create-event'|trans|title }}
+                    </div>
+                    <div class="fs-5 d-flex justify-content-between align-items-center">
+                        <span class="bi bi-plus-circle fs-3"></span>
+                    </div>
+                </a>
                 <a href="{{ path('user_future_events') }}"
                    class="{{ app.request.get('_route') == 'user_future_events' ? 'text-bg-dark-grey' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div>
@@ -38,7 +47,7 @@
                     </div>
                     <div class="badge rounded-pill text-bg-primary fs-5 d-flex justify-content-between align-items-center">
                         <span class="bi bi-postcard-heart me-3"></span>
-                        <span>{{ app.user.receivedEventInvitations.count|compact_notation }}</span>
+                        <span>5</span>
                     </div>
                 </a>
                 <a href="{{ path('user_event_requests') }}"
@@ -48,7 +57,7 @@
                     </div>
                     <div class="badge rounded-pill text-bg-primary fs-5 d-flex justify-content-between align-items-center">
                         <span class="bi bi-postcard me-3"></span>
-                        <span>{{ app.user.eventRequests.count|compact_notation }}</span>
+                        <span>5</span>
                     </div>
                 </a>
             </div>
@@ -69,6 +78,15 @@
              class="accordion-collapse collapse {{ isGroupShowing  ? 'show' }}"
              data-bs-parent="#user-account-navbar-accordion">
             <div class="list-group list-group-flush">
+                <a href="{{ path('create_event_group') }}"
+                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        {{ 'create-group'|trans|title }}
+                    </div>
+                    <div class="fs-5 d-flex justify-content-between align-items-center">
+                        <span class="bi bi-plus-circle fs-3"></span>
+                    </div>
+                </a>
                 <a href="{{ path('user_group_memberships') }}"
                    class="{{ app.request.get('_route') == 'user_group_memberships' ? 'text-bg-dark-grey' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                     <div>

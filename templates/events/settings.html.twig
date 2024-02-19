@@ -14,17 +14,6 @@
             {% endif %}
 
             <div class="col-12 col-md-4">
-
-                {% if not event.isPublished and not event.isComplete %}
-                    <div class="card mb-3">
-                        <div class="card-body">{{ 'event-publish-warning'|trans }}</div>
-                        <div class="card-footer">
-                            <a class="btn btn-primary w-100"
-                               href="{{ path('publish_event', {id: event.id}) }}">{{ 'publish-event'|trans }}</a>
-                        </div>
-                    </div>
-                {% endif %}
-
                 {{ eventSettingsMacro.card(event) }}
                 {{ include('partials/_event_settings_nav.html.twig') }}
             </div>

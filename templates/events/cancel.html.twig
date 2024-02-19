@@ -9,7 +9,7 @@
                 {{ include('partials/_event_settings_nav.html.twig') }}
             </div>
             <div class="col-12 col-md-8">
-                {% if not event.isComplete and event.isPublished %}
+                {% if not event.isComplete %}
                     {{ form_start(eventCancellationForm) }}
                     <div class="card border-danger">
                         <div class="card-header text-bg-danger d-flex justify-content-between">

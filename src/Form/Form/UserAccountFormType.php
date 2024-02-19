@@ -11,8 +11,6 @@ use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\LanguageType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TimezoneType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -37,7 +35,6 @@ class UserAccountFormType extends AbstractType
                 'row_attr' => [
                 ],
             ])
-            ->add('email', EmailType::class)
             ->add('locale', LanguageType::class, [
                 'label' => $this->translator->trans('language'),
                 'choice_loader' => null,

@@ -55,7 +55,7 @@ class EventService
         $flashBag = $session->getFlashBag();
 
         $user = $this->userRepository->findOneBy([
-            'email' => $email->getContent(),
+            'email' => $email->getAddress(),
         ]);
 
         if ($user instanceof User) {
@@ -73,7 +73,7 @@ class EventService
         if ($this->canUserBeInvited(event: $event, user: $user, flashBag: $flashBag)) {
             $invitation = $this->eventInvitationFactory->create(owner: $currentUser, target: $user, event: $event);
             $this->emailService->sendInviteToUserWithAccount(
-                recipientEmailAddress: $user->getEmail(),
+                email: $user->getEmail(),
                 context: [
                     'event' => $event,
                     'target' => $user,
@@ -97,7 +97,7 @@ class EventService
                 'token' => $emailInvitation->getToken(),
             ], referenceType: UrlGeneratorInterface::ABSOLUTE_URL);
             $this->emailService->sendInviteToUserWithoutAccount(
-                recipientEmailAddress: $email->getContent(),
+                email: $email->getAddress(),
                 context: [
                     'event' => $event,
                     'owner' => $currentUser,

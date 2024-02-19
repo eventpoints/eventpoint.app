@@ -28,18 +28,18 @@ class AccountController extends AbstractController
         private readonly UserPasswordHasherInterface $hasher,
         private readonly ImageService                $imageUploadService,
         private readonly TranslatorInterface         $translator,
-    )
-    {
+    ) {
     }
 
     #[Route(path: '/account', name: 'user_account', methods: [Request::METHOD_GET, Request::METHOD_POST])]
-    public function create(Request $request, #[CurrentUser] User $currentUser): Response
+    public function edit(Request $request, #[CurrentUser] User $currentUser): Response
     {
         $userAccountForm = $this->createForm(UserAccountFormType::class, $currentUser);
         $userAccountForm->handleRequest($request);
         if ($userAccountForm->isSubmitted() && $userAccountForm->isValid()) {
             $avatarData = $userAccountForm->get('avatar')->getData();
-            if (!empty($avatarData)) {
+
+            if (! empty($avatarData)) {
                 $avatar = $this->imageUploadService->processAvatar($avatarData);
                 $currentUser->setAvatar($avatar->getEncoded());
             }
@@ -73,7 +73,7 @@ class AccountController extends AbstractController
         $userPasswordForm->handleRequest($request);
         if ($userPasswordForm->isSubmitted() && $userPasswordForm->isValid()) {
             $plainPassword = $userPasswordForm->get('password')->getData();
-            if (!empty($plainPassword)) {
+            if (! empty($plainPassword)) {
                 $hashedPassword = $this->hasher->hashPassword($currentUser, $plainPassword);
                 $currentUser->setPassword($hashedPassword);
             }
@@ -88,7 +88,6 @@ class AccountController extends AbstractController
         ]);
     }
 
-
     #[Route(path: '/change-password', name: 'change_user_password', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function changePassword(Request $request, #[CurrentUser] User $currentUser): Response
     {
@@ -100,12 +99,11 @@ class AccountController extends AbstractController
             $plainNewPassword = $userPasswordForm->get('newPassword')->getData();
 
             if ($this->hasher->isPasswordValid($currentUser, $plainCurrentPassword)) {
-                if (!empty($plainNewPassword)) {
+                if (! empty($plainNewPassword)) {
                     $hashedPassword = $this->hasher->hashPassword($currentUser, $plainNewPassword);
                     $currentUser->setPassword($hashedPassword);
                     $this->userRepository->save($currentUser, true);
                     $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changed-saved'));
-
                 }
             } else {
                 $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('old-password-incorrect'));
@@ -118,4 +116,6 @@ class AccountController extends AbstractController
             'userPasswordForm' => $userPasswordForm,
         ]);
     }
+
+
 }

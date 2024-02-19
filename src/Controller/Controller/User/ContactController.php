@@ -6,7 +6,6 @@ namespace App\Controller\Controller\User;
 
 use App\Entity\User;
 use App\Repository\UserContactRepository;
-use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

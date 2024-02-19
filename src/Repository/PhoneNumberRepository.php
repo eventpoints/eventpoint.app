@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Repository;
 
 use App\Entity\PhoneNumber;
+use App\Service\PhoneNumberService\PhoneNumberHelperService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<PhoneNumber>
@@ -18,7 +21,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PhoneNumberRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(
+        ManagerRegistry $registry,
+    private readonly PhoneNumberHelperService $phoneNumberHelperService
+    )
     {
         parent::__construct($registry, PhoneNumber::class);
     }
@@ -39,5 +45,31 @@ class PhoneNumberRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+
+    public function findByFullNumber(string $phoneNumber): null|PhoneNumber
+    {
+        $code = $this->phoneNumberHelperService->getDialCode(phoneNumber: $phoneNumber);
+        $number = $this->phoneNumberHelperService->getNumber(phoneNumber: $phoneNumber);
+
+        $qb = $this->createQueryBuilder('phone_number');
+
+        if ($code !== null) {
+            $qb->andWhere(
+                $qb->expr()->andX(
+                    $qb->expr()->eq('phone_number.code', ':code'),
+                    $qb->expr()->eq('phone_number.number', ':number')
+                )
+            )
+                ->setParameter('code', $code)
+                ->setParameter('number', $number);
+        } else {
+            $qb->andWhere(
+                $qb->expr()->like('phone_number.number', ':number')
+            )->setParameter('number', $phoneNumber);
+        }
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }

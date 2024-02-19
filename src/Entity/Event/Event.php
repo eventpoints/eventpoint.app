@@ -51,9 +51,6 @@ class Event implements Stringable
     #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
     private null|string $longitude = null;
 
-    #[ORM\Column]
-    private null|bool $isPublished = false;
-
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'events')]
     private Collection $categories;
 
@@ -194,19 +191,6 @@ class Event implements Stringable
 
         return $this;
     }
-
-    public function getIsPublished(): ?bool
-    {
-        return $this->isPublished;
-    }
-
-    public function setIsPublished(bool $isPublished): static
-    {
-        $this->isPublished = $isPublished;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Category>
      */
@@ -681,7 +665,7 @@ class Event implements Stringable
 
     public function hasEmailBeenInvited(string $emailAddress): bool
     {
-        return $this->getEventEmailInvitations()->exists(fn (int $key, EventEmailInvitation $eventEmailInvitation) => $eventEmailInvitation->getEmail()->getContent() === $emailAddress);
+        return $this->getEventEmailInvitations()->exists(fn (int $key, EventEmailInvitation $eventEmailInvitation) => $eventEmailInvitation->getEmail()->getAddress() === $emailAddress);
     }
 
     public function getRequestToAttend(User $user): null|EventRequest

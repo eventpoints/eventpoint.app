@@ -24,6 +24,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -34,7 +35,6 @@ use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringable, UpdatedAtInterface
 {
     #[ORM\Id]
@@ -43,9 +43,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     #[Groups(['user_contact'])]
     private Uuid $id;
-
-    #[ORM\Column(length: 180, unique: true)]
-    private ?string $email = null;
 
     /**
      * @var array<string>
@@ -101,7 +98,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\Column(length: 3, nullable: true)]
     private ?string $country = RegionalEnum::REGIONAL_REGION->value;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'target', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $receivedEventInvitations;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -168,6 +165,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventReview::class)]
     private Collection $eventReviews;
 
+    #[ORM\OneToOne]
+    private ?Email $email = null;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Email::class, cascade: ['persist'])]
+    private Collection $emails;
+
     public function __construct()
     {
         $this->eventRequests = new ArrayCollection();
@@ -195,28 +198,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->eventGroupJoinRequests = new ArrayCollection();
         $this->contacts = new ArrayCollection();
         $this->eventReviews = new ArrayCollection();
+        $this->emails = new ArrayCollection();
     }
 
     public function __toString(): string
     {
-        return (string) $this->getEmail();
+        return $this->getEmail()->getAddress();
     }
 
     public function getId(): null|Uuid
     {
         return $this->id;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
     }
 
     public function getFullName(): string
@@ -231,7 +223,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return $this->email?->getAddress() ?? $this->phoneNumber->getPhoneNumberWithCode();
     }
 
     /**
@@ -339,7 +331,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventOrganiser(EventOrganiser $eventOrganiser): static
     {
-        if (! $this->eventOrganisers->contains($eventOrganiser)) {
+        if (!$this->eventOrganisers->contains($eventOrganiser)) {
             $this->eventOrganisers->add($eventOrganiser);
             $eventOrganiser->setOwner($this);
         }
@@ -381,7 +373,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addImageCollection(ImageCollection $imageCollection): static
     {
-        if (! $this->imageCollections->contains($imageCollection)) {
+        if (!$this->imageCollections->contains($imageCollection)) {
             $this->imageCollections->add($imageCollection);
             $imageCollection->setOwner($this);
         }
@@ -411,7 +403,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventGroup(EventGroup $eventGroup): static
     {
-        if (! $this->eventGroups->contains($eventGroup)) {
+        if (!$this->eventGroups->contains($eventGroup)) {
             $this->eventGroups->add($eventGroup);
             $eventGroup->setOwner($this);
         }
@@ -441,7 +433,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventGroupMember(EventGroupMember $eventGroupMember): static
     {
-        if (! $this->eventGroupMembers->contains($eventGroupMember)) {
+        if (!$this->eventGroupMembers->contains($eventGroupMember)) {
             $this->eventGroupMembers->add($eventGroupMember);
             $eventGroupMember->setOwner($this);
         }
@@ -471,7 +463,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventRequest(EventRequest $eventRequest): static
     {
-        if (! $this->eventRequests->contains($eventRequest)) {
+        if (!$this->eventRequests->contains($eventRequest)) {
             $this->eventRequests->add($eventRequest);
             $eventRequest->setOwner($this);
         }
@@ -553,7 +545,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addReceivedEventInvitation(EventInvitation $eventInvitation): self
     {
-        if (! $this->receivedEventInvitations->contains($eventInvitation)) {
+        if (!$this->receivedEventInvitations->contains($eventInvitation)) {
             $this->receivedEventInvitations[] = $eventInvitation;
             $eventInvitation->setTarget($this);
         }
@@ -577,7 +569,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addCreatedEventInvitation(EventInvitation $eventInvitation): self
     {
-        if (! $this->createdEventInvitations->contains($eventInvitation)) {
+        if (!$this->createdEventInvitations->contains($eventInvitation)) {
             $this->createdEventInvitations[] = $eventInvitation;
             $eventInvitation->setOwner($this);
         }
@@ -601,7 +593,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addCreatedEmailEventInvitation(EventInvitation $eventInvitation): self
     {
-        if (! $this->createdEmailEventInvitations->contains($eventInvitation)) {
+        if (!$this->createdEmailEventInvitations->contains($eventInvitation)) {
             $this->createdEmailEventInvitations[] = $eventInvitation;
             $eventInvitation->setOwner($this);
         }
@@ -649,7 +641,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addAuthouredEvent(Event $authouredEvent): static
     {
-        if (! $this->authoredEvents->contains($authouredEvent)) {
+        if (!$this->authoredEvents->contains($authouredEvent)) {
             $this->authoredEvents->add($authouredEvent);
             $authouredEvent->setOwner($this);
         }
@@ -679,7 +671,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventDiscussionComment(EventDiscussionComment $eventDiscussionComment): static
     {
-        if (! $this->eventDiscussionComments->contains($eventDiscussionComment)) {
+        if (!$this->eventDiscussionComments->contains($eventDiscussionComment)) {
             $this->eventDiscussionComments->add($eventDiscussionComment);
             $eventDiscussionComment->setOwner($this);
         }
@@ -709,7 +701,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventDiscussionCommentVote(EventDiscussionCommentVote $eventDiscussionCommentVote): static
     {
-        if (! $this->eventDiscussionCommentVotes->contains($eventDiscussionCommentVote)) {
+        if (!$this->eventDiscussionCommentVotes->contains($eventDiscussionCommentVote)) {
             $this->eventDiscussionCommentVotes->add($eventDiscussionCommentVote);
             $eventDiscussionCommentVote->setOwner($this);
         }
@@ -739,7 +731,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addAuthoredConversation(Conversation $authoredConversation): static
     {
-        if (! $this->authoredConversations->contains($authoredConversation)) {
+        if (!$this->authoredConversations->contains($authoredConversation)) {
             $this->authoredConversations->add($authoredConversation);
             $authoredConversation->setOwner($this);
         }
@@ -769,7 +761,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addConversationUser(ConversationParticipant $conversationUser): static
     {
-        if (! $this->conversationUsers->contains($conversationUser)) {
+        if (!$this->conversationUsers->contains($conversationUser)) {
             $this->conversationUsers->add($conversationUser);
             $conversationUser->setOwner($this);
         }
@@ -799,7 +791,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventCancellation(EventCancellation $eventCancellation): static
     {
-        if (! $this->eventCancellations->contains($eventCancellation)) {
+        if (!$this->eventCancellations->contains($eventCancellation)) {
             $this->eventCancellations->add($eventCancellation);
             $eventCancellation->setOwner($this);
         }
@@ -829,7 +821,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addSocialAuth(SocialAuth $socialAuth): self
     {
-        if (! $this->socialAuths->contains($socialAuth)) {
+        if (!$this->socialAuths->contains($socialAuth)) {
             $this->socialAuths[] = $socialAuth;
             $socialAuth->setOwner($this);
         }
@@ -857,7 +849,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventOrganiserInvitation(EventOrganiserInvitation $eventOrganiserInvitation): static
     {
-        if (! $this->eventOrganiserInvitations->contains($eventOrganiserInvitation)) {
+        if (!$this->eventOrganiserInvitations->contains($eventOrganiserInvitation)) {
             $this->eventOrganiserInvitations->add($eventOrganiserInvitation);
             $eventOrganiserInvitation->setOwner($this);
         }
@@ -887,7 +879,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addPollAnswer(PollAnswer $pollAnswer): static
     {
-        if (! $this->pollAnswers->contains($pollAnswer)) {
+        if (!$this->pollAnswers->contains($pollAnswer)) {
             $this->pollAnswers->add($pollAnswer);
             $pollAnswer->setOwner($this);
         }
@@ -917,7 +909,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addPoll(Poll $poll): static
     {
-        if (! $this->polls->contains($poll)) {
+        if (!$this->polls->contains($poll)) {
             $this->polls->add($poll);
             $poll->setOwner($this);
         }
@@ -947,7 +939,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addPhoneNumber(PhoneNumber $phoneNumber): static
     {
-        if (! $this->phoneNumbers->contains($phoneNumber)) {
+        if (!$this->phoneNumbers->contains($phoneNumber)) {
             $this->phoneNumbers->add($phoneNumber);
             $phoneNumber->setOwner($this);
         }
@@ -981,12 +973,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function groupMemberships(self $user): Collection
     {
-        return $this->eventGroupMembers->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && ! $eventGroupMember->isGroupAdmin());
+        return $this->eventGroupMembers->filter(fn(EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && !$eventGroupMember->isGroupAdmin());
     }
 
     public function groupsYouManage(self $user): Collection
     {
-        return $this->eventGroupMembers->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->isGroupAdmin());
+        return $this->eventGroupMembers->filter(fn(EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->isGroupAdmin());
     }
 
     /**
@@ -999,7 +991,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventGroupInvitation(EventGroupInvitation $eventGroupInvitation): static
     {
-        if (! $this->eventGroupInvitations->contains($eventGroupInvitation)) {
+        if (!$this->eventGroupInvitations->contains($eventGroupInvitation)) {
             $this->eventGroupInvitations->add($eventGroupInvitation);
             $eventGroupInvitation->setOwner($this);
         }
@@ -1029,7 +1021,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventGroupJoinRequest(EventGroupJoinRequest $eventGroupJoinRequest): static
     {
-        if (! $this->eventGroupJoinRequests->contains($eventGroupJoinRequest)) {
+        if (!$this->eventGroupJoinRequests->contains($eventGroupJoinRequest)) {
             $this->eventGroupJoinRequests->add($eventGroupJoinRequest);
             $eventGroupJoinRequest->setOwner($this);
         }
@@ -1052,13 +1044,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     public function getUserEventGroupRequests(): Collection
     {
         $user = $this;
-        return $this->eventGroupJoinRequests->filter(fn (EventGroupJoinRequest $eventGroupJoinRequest) => $eventGroupJoinRequest->getOwner() === $user);
+        return $this->eventGroupJoinRequests->filter(fn(EventGroupJoinRequest $eventGroupJoinRequest) => $eventGroupJoinRequest->getOwner() === $user);
     }
 
     public function getUserUnansweredEventGroupInvitations(): Collection
     {
         $user = $this;
-        return $this->eventGroupInvitations->filter(fn (EventGroupInvitation $eventGroupInvitation) => $eventGroupInvitation->getOwner() === $user && $eventGroupInvitation->getApprovedAt() === null);
+        return $this->eventGroupInvitations->filter(fn(EventGroupInvitation $eventGroupInvitation) => $eventGroupInvitation->getOwner() === $user && $eventGroupInvitation->getApprovedAt() === null);
     }
 
     /**
@@ -1066,7 +1058,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
      */
     public function getUserManagedGroups(): Collection
     {
-        return $this->getEventGroupMembers()->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER))->map(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getEventGroup());
+        return $this->getEventGroupMembers()->filter(fn(EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn(int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER))->map(fn(EventGroupMember $eventGroupMember) => $eventGroupMember->getEventGroup());
     }
 
     /**
@@ -1074,7 +1066,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
      */
     public function getUserGroupMemberships(): Collection
     {
-        return $this->getEventGroupMembers()->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MEMBER))->map(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getEventGroup());
+        return $this->getEventGroupMembers()->filter(fn(EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn(int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MEMBER))->map(fn(EventGroupMember $eventGroupMember) => $eventGroupMember->getEventGroup());
     }
 
     /**
@@ -1087,7 +1079,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addContact(UserContact $contact): static
     {
-        if (! $this->contacts->contains($contact)) {
+        if (!$this->contacts->contains($contact)) {
             $this->contacts->add($contact);
             $contact->setOwner($this);
         }
@@ -1117,7 +1109,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function addEventReview(EventReview $eventReview): static
     {
-        if (! $this->eventReviews->contains($eventReview)) {
+        if (!$this->eventReviews->contains($eventReview)) {
             $this->eventReviews->add($eventReview);
             $eventReview->setOwner($this);
         }
@@ -1136,4 +1128,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Email>
+     */
+    public function getEmails(): Collection
+    {
+        return $this->emails;
+    }
+
+    public function addEmail(Email $email): static
+    {
+        if (!$this->emails->contains($email)) {
+            $this->emails->add($email);
+            $email->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEmail(Email $email): static
+    {
+        if ($this->emails->removeElement($email)) {
+            // set the owning side to null (unless already changed)
+            if ($email->getOwner() === $this) {
+                $email->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getEmail(): null|Email
+    {
+        return $this->email;
+    }
+
+    public function setEmail(null|Email $defaultEmail): static
+    {
+        $this->email = $defaultEmail;
+
+        return $this;
+    }
+
 }

@@ -18,7 +18,7 @@ final readonly class EmailToUserConnectorService
     public function connect(User $user): null|Email
     {
         $email = $this->emailRepository->findOneBy([
-            'content' => $user->getEmail(),
+            'address' => $user->getEmail(),
         ]);
         if ($email instanceof Email) {
             $email->setOwner($user);

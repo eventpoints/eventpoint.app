@@ -6,7 +6,7 @@ namespace App\Form\Form;
 
 use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventRole;
-use App\Form\Type\UserAutocompleteField;
+use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,7 +17,9 @@ class EventOrganiserFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('owner', UserAutocompleteField::class, [
+            ->add('owner', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'fullName',
                 'row_attr' => [
                     'class' => 'form-floating mb-3',
                 ],
