@@ -2,38 +2,59 @@
 
 {% block title %}Register{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+
+    <style>
+        body {
+            min-height: 90vh;
+            background: url("{{ asset('images/register-bg-3-01.png') }}");
+            background-attachment: inherit;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+
+{% endblock %}
+
 {% block body %}
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card my-3">
-                    <div class="card-header bg-white">
-                        <div class="fs-3 fw-bold">{{ 'register'|trans|capitalize }}</div>
+    <div class="register-bg">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="mt-5 mb-3">
+                        <div class="display-3 fw-bold mb-4">{{ app_name|title }}</div>
+                        <div class="fs-4 text-muted">{{ 'app-explainer'|trans }}</div>
                     </div>
-                    <div class="card-header bg-white">
-                        <div class="card- bg-white">{{ include('security/_social-auth.html.twig') }}</div>
-                    </div>
-                    <div class="card-body">
-                        {{ form_start(registrationForm) }}
-                        {{ form_row(registrationForm.firstName) }}
-                        {{ form_row(registrationForm.lastName) }}
-                        {{ form_row(registrationForm.email) }}
-                        <div class="input-group mb-3" {{ stimulus_controller('password-visibility') }}>
-                            {{ form_widget(registrationForm.plainPassword) }}
-                            <button data-action="password-visibility#toggle" class="btn btn-outline-secondary"
-                                    type="button" id="button-addon2">
-                                <span data-password-visibility-target="icon" class="bi bi-eye-fill fs-4"></span>
-                                <span data-password-visibility-target="icon"
-                                      class="hidden bi bi-eye-slash-fill fs-4"></span>
-                            </button>
+                </div>
+                <div class="col-md-5">
+                    <div class="card my-3">
+                        <div class="card-header bg-white">
+                            <div class="card- bg-white">{{ include('security/_social-auth.html.twig') }}</div>
                         </div>
-                        <div class="text-center">
-                            <div class="cf-turnstile" data-sitekey="{{ turnstile_public_key }}"></div>
+                        <div class="card-body">
+                            {{ form_start(registrationForm) }}
+                            {{ form_row(registrationForm.firstName) }}
+                            {{ form_row(registrationForm.lastName) }}
+                            {{ form_row(registrationForm.email) }}
+                            <div class="input-group mb-3" {{ stimulus_controller('password-visibility') }}>
+                                {{ form_widget(registrationForm.plainPassword) }}
+                                <button data-action="password-visibility#toggle" class="btn btn-outline-secondary"
+                                        type="button" id="button-addon2">
+                                    <span data-password-visibility-target="icon" class="bi bi-eye-fill fs-4"></span>
+                                    <span data-password-visibility-target="icon"
+                                          class="hidden bi bi-eye-slash-fill fs-4"></span>
+                                </button>
+                            </div>
+                            <div class="text-center">
+                                <div class="cf-turnstile" data-sitekey="{{ turnstile_public_key }}"></div>
+                            </div>
+                            <button type="submit"
+                                    class="btn btn-lg mt-5 btn-primary w-100">{{ 'register'|trans }}</button>
+
+                            {{ form_end(registrationForm) }}
+
                         </div>
-                        <button type="submit" class="btn btn-lg mt-5 btn-primary w-100">{{ 'register'|trans }}</button>
-
-                        {{ form_end(registrationForm) }}
-
                     </div>
                 </div>
             </div>

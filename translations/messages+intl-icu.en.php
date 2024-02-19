@@ -106,4 +106,5 @@ return [
     'create-group' => 'create group',
     'multiple-email-account-explainer' => 'Tired of trying to remember which email address you registered with? No worries! Add all you email addresses here and login with any of them.',
     'phone-number-login-explainer' => 'Add your  phone numbers, you can also use these to login',
+    'app-explainer' => ' An event management tool designed for your time, not advertisers. Join the truly social revolution, escape the screen and connect in the real world.'
 ];
