@@ -78,7 +78,7 @@ class UserContactRepository extends ServiceEntityRepository
 
         $qb->leftJoin('user_contact.email', 'email');
         $qb->andWhere(
-            $qb->expr()->like('email.content', ':email')
+            $qb->expr()->like('email.address', ':email')
         )->setParameter('email', '%' . $emailAddress . '%');
 
         $qb->orderBy('user_contact.createdAt', Criteria::DESC);

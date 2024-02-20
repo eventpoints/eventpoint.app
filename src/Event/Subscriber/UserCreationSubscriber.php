@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Event\Subscriber;
 
 use App\Entity\User;
+use App\Enum\RegionalEnum;
+use App\Model\RegionalConfiguration;
+use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Service\EmailEventService\EmailEventService;
 use App\Service\EmailService\EmailToUserConnectorService;
@@ -19,17 +22,24 @@ readonly class UserCreationSubscriber
 {
     public function __construct(
         private EmailEventService           $emailEventService,
+        private UserRepository              $userRepository,
         private EmailToUserConnectorService $emailToUserConnectorService,
         private EmailVerifier               $emailVerifier,
+        private RegionalConfiguration       $regionalConfiguration,
     ) {
     }
 
     public function postPersist(User $user, PostPersistEventArgs $event): void
     {
         // All processes that must happen when a need user object its created
-
         $this->emailEventService->process(user: $user);
         $this->emailToUserConnectorService->connect(user: $user);
+
+        $user->setTimezone($this->regionalConfiguration->getBrowserRegionalData()?->getTimezone());
+        $user->setCountry($this->regionalConfiguration->getBrowserRegionalData()?->getCountryCode());
+        $user->setCurrency(RegionalEnum::REGIONAL_CURRECNY->value);
+
+        $this->userRepository->save($user, true);
 
         $this->emailVerifier->sendEmailConfirmation(
             'app_verify_email',

@@ -9,12 +9,14 @@ use App\Entity\User;
 use App\Enum\FlashEnum;
 use App\Factory\EmailFactory;
 use App\Form\Form\RegistrationFormType;
+use App\Repository\EmailRepository;
 use App\Repository\UserRepository;
 use App\Security\CustomAuthenticator;
 use App\Security\EmailVerifier;
 use App\Service\AvatarService\AvatarService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -32,6 +34,7 @@ class RegistrationController extends AbstractController
         private readonly HttpClientInterface $cloudflareTurnstileClient,
         private readonly TranslatorInterface $translator,
         private readonly EmailFactory        $emailFactory,
+        private readonly EmailRepository     $emailRepository,
     ) {
     }
 
@@ -61,9 +64,23 @@ class RegistrationController extends AbstractController
             }
 
             $emailAddress = $form->get('email')->getData();
-            $email = $this->emailFactory->create(emailAddress: $emailAddress, user: $user);
-            $entityManager->persist($email);
-            $user->setEmail($email);
+            $email = $this->emailRepository->findOneBy([
+                'address' => $emailAddress,
+            ]);
+
+            if (! $email instanceof Email) {
+                $email = $this->emailFactory->create(emailAddress: $emailAddress, user: $user);
+                $user->setEmail($email);
+                $email->setOwner($user);
+                $entityManager->persist($email);
+            } else {
+                if ($email->getOwner() instanceof User) {
+                    $form->addError(new FormError(Email::DUPLICATE_EMAIL_ADDRESS));
+                } else {
+                    $user->setEmail($email);
+                    $email->setOwner($user);
+                }
+            }
 
             $user->setPassword(
                 $userPasswordHasher->hashPassword(

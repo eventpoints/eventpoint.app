@@ -13,7 +13,6 @@ use App\Factory\UserContactFactory;
 use App\Repository\EmailRepository;
 use App\Repository\Event\EventRepository;
 use App\Repository\UserContactRepository;
-use App\Repository\UserRepository;
 use App\Service\EventService\EventService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -44,7 +43,6 @@ class EmailAutocompleterComponent extends AbstractController
     public array $contacts = [];
 
     public function __construct(
-        private readonly UserRepository        $userRepository,
         private readonly UserContactRepository $userContactRepository,
         private readonly EmailRepository       $emailRepository,
         private readonly UserContactFactory    $userContactFactory,
@@ -108,18 +106,15 @@ class EmailAutocompleterComponent extends AbstractController
     private function createEmail(string $emailAddress): Email
     {
         $email = $this->emailRepository->findOneBy([
-            'content' => $emailAddress,
-        ]);
-        $user = $this->userRepository->findOneBy([
-            'email' => $emailAddress,
+            'address' => $emailAddress,
         ]);
 
         if (! $email instanceof Email) {
             $email = $this->emailFactory->create(emailAddress: $emailAddress);
-        }
 
-        if ($user instanceof User) {
-            $email->setOwner($user);
+            if ($email->getOwner() instanceof User) {
+                $email->setOwner($email->getOwner());
+            }
         }
 
         return $email;

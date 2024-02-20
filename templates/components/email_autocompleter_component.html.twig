@@ -25,7 +25,7 @@
                             </div>
                             <div>
                                 <div>{{ contact.email.owner.fullName }}</div>
-                                <div>{{ contact.email.content }}</div>
+                                <div>{{ contact.email.address }}</div>
                             </div>
                         </div>
                     {% else %}
@@ -34,7 +34,7 @@
                                 <div class="mdi mdi-at fs-1 me-3"></div>
                             </div>
                             <div>
-                                <div>{{ contact.email.content }}</div>
+                                <div>{{ contact.email.address }}</div>
                             </div>
                         </div>
                     {% endif %}
@@ -44,7 +44,7 @@
                         <a class="text-dark-grey">
                             <span class="bi bi-send-check-fill fs-3"></span>
                         </a>
-                    {% elseif event.hasEmailBeenInvited(contact.email.content) %}
+                    {% elseif event.hasEmailBeenInvited(contact.email.address) %}
                         <a class="text-dark-grey">
                             <span class="bi bi-send-check-fill fs-3"></span>
                         </a>

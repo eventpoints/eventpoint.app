@@ -13,9 +13,11 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EmailRepository::class)]
-#[UniqueEntity(fields: ['address'], message: 'There is already an account with this email address')]
+#[UniqueEntity(fields: ['address'], message: self::DUPLICATE_EMAIL_ADDRESS)]
 class Email implements \Stringable
 {
+    final public const DUPLICATE_EMAIL_ADDRESS = 'There is already an account with this email address';
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\Column(type: 'uuid', unique: true)]

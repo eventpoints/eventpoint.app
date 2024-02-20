@@ -272,14 +272,14 @@
                                                 </div>
                                             {% elseif invitation|instanceof('App\\Entity\\Event\\EventEmailInvitation') %}
                                                 <div {{ stimulus_target('list-group-search', 'item') }}
-                                                        data-searchable-content="{{ invitation.email.content }}"
+                                                        data-searchable-content="{{ invitation.email.address }}"
                                                         class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                                     <div class="d-flex justify-content-start align-items-center">
                                                         <div>
                                                             <div class="mdi mdi-at fs-1 me-3"></div>
                                                         </div>
                                                         <div>
-                                                            <div>{{ invitation.email.content }}</div>
+                                                            <div>{{ invitation.email.address }}</div>
                                                             <div>{{ invitation.createdAt|time_ago }}</div>
                                                         </div>
                                                     </div>

@@ -9,6 +9,7 @@ use App\Entity\PhoneNumber;
 use App\Entity\User;
 use App\Repository\EmailRepository;
 use App\Repository\PhoneNumberRepository;
+use App\Service\EmailService\EmailHelperService;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
@@ -20,6 +21,7 @@ readonly class UserProvider implements UserProviderInterface
     public function __construct(
         private EmailRepository       $emailRepository,
         private PhoneNumberRepository $phoneNumberRepository,
+        private EmailHelperService    $emailHelperService,
     ) {
     }
 
@@ -28,24 +30,27 @@ readonly class UserProvider implements UserProviderInterface
      */
     public function loadUserByIdentifier(string $identifier): UserInterface
     {
-        $email = $this->emailRepository->findOneBy([
-            'address' => $identifier,
-        ]);
+        if ($this->emailHelperService->isEmail($identifier)) {
+            $email = $this->emailRepository->findOneBy([
+                'address' => $identifier,
+            ]);
 
-        if (! $email instanceof Email) {
-            $phoneNumber = $this->phoneNumberRepository->findByFullNumber($identifier);
-            if ($phoneNumber instanceof PhoneNumber) {
-                return $phoneNumber->getOwner();
+            if (! $email instanceof Email) {
+                throw new UserNotFoundException('User Not Found');
             }
 
+            if (! $email->getOwner() instanceof User) {
+                throw new UserNotFoundException('User Not Found');
+            }
+
+            return $email->getOwner();
+        }
+        $phoneNumber = $this->phoneNumberRepository->findByFullNumber($identifier);
+        if (! $phoneNumber instanceof PhoneNumber) {
             throw new UserNotFoundException('User Not Found');
         }
 
-        if (! $email->getOwner() instanceof User) {
-            throw new UserNotFoundException('User Not Found');
-        }
-
-        return $email->getOwner();
+        return $phoneNumber->getOwner();
     }
 
     public function supportsClass(string $class): bool

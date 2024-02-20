@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Security;
 
-use App\Entity\Email;
 use App\Entity\User;
 use App\Repository\EmailRepository;
 use App\Repository\PhoneNumberRepository;
 use App\Repository\UserRepository;
+use App\Service\EmailService\EmailHelperService;
 use Carbon\CarbonImmutable;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,27 +28,25 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
 {
     use TargetPathTrait;
 
-    final public const LOGIN_ROUTE = 'app_login';
-
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly UserRepository        $userRepository,
         private readonly EmailRepository       $emailRepository,
-        private readonly PhoneNumberRepository $phoneNumberRepository
+        private readonly PhoneNumberRepository $phoneNumberRepository,
+        private readonly EmailHelperService    $emailHelperService
     ) {
     }
 
     public function authenticate(Request $request): Passport
     {
         $emailAddressOrPhoneNumber = preg_replace('/\s+/', '', $request->request->get('email', ''));
-        ;
-        $email = $this->emailRepository->findOneBy([
-            'address' => $emailAddressOrPhoneNumber,
-        ]);
-
-        if (! $email instanceof Email) {
+        if ($this->emailHelperService->isEmail($emailAddressOrPhoneNumber)) {
+            $email = $this->emailRepository->findOneBy([
+                'address' => $emailAddressOrPhoneNumber,
+            ]);
+        } else {
             $phoneNumber = $this->phoneNumberRepository->findByFullNumber($emailAddressOrPhoneNumber);
-            $email = $phoneNumber->getOwner()->getEmail();
+            $email = $phoneNumber->getOwner()?->getEmail();
         }
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email->getAddress());
@@ -82,6 +80,6 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
 
     protected function getLoginUrl(Request $request): string
     {
-        return $this->urlGenerator->generate(self::LOGIN_ROUTE);
+        return $this->urlGenerator->generate('app_login');
     }
 }

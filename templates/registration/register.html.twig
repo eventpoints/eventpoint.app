@@ -33,6 +33,8 @@
                             <div class="card- bg-white">{{ include('security/_social-auth.html.twig') }}</div>
                         </div>
                         <div class="card-body">
+                            {{ form_errors(registrationForm.email) }}
+
                             {{ form_start(registrationForm) }}
                             {{ form_row(registrationForm.firstName) }}
                             {{ form_row(registrationForm.lastName) }}

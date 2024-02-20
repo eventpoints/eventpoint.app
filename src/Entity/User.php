@@ -8,6 +8,7 @@ use App\Entity\Contract\UpdatedAtInterface;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventInvitation;
 use App\Entity\Event\EventOrganiser;
+use App\Entity\Event\EventParticipant;
 use App\Entity\Event\EventRequest;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventGroup\EventGroupInvitation;
@@ -80,6 +81,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventGroupMember::class)]
     private Collection $eventGroupMembers;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventParticipant::class, cascade: ['persist'])]
+    private Collection $eventParticipations;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventRequest::class)]
     private Collection $eventRequests;
@@ -171,6 +175,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     public function __construct()
     {
+        $this->eventParticipations = new ArrayCollection();
         $this->eventRequests = new ArrayCollection();
         $this->eventOrganisers = new ArrayCollection();
         $this->imageCollections = new ArrayCollection();
@@ -472,6 +477,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     public function removeEventRequest(EventRequest $eventRequest): static
     {
         $this->eventRequests->removeElement($eventRequest);
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventParticipant>
+     */
+    public function getEventParticipations(): Collection
+    {
+        return $this->eventParticipations;
+    }
+
+    public function addEventParticipant(EventParticipant $eventParticipant): static
+    {
+        if (! $this->eventParticipations->contains($eventParticipant)) {
+            $this->eventParticipations->add($eventParticipant);
+            $eventParticipant->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventParticipant(EventParticipant $eventParticipant): static
+    {
+        $this->eventParticipations->removeElement($eventParticipant);
         return $this;
     }
 
@@ -1167,5 +1196,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->email = $defaultEmail;
 
         return $this;
+    }
+
+    public function getFutureEvents(): ArrayCollection
+    {
+        $now = new CarbonImmutable();
+        $events = new ArrayCollection([...$this->eventParticipations, ...$this->eventOrganisers]);
+        return $events->filter(fn (EventOrganiser|EventParticipant $eventParticipantOrOrganiser) => $now < $eventParticipantOrOrganiser->getEvent()->getStartAt())->map(fn (EventOrganiser|EventParticipant $eventParticipantOrOrganiser) => $eventParticipantOrOrganiser->getEvent());
+    }
+
+    public function getPastEvents(): ArrayCollection
+    {
+        $now = new CarbonImmutable();
+        $events = new ArrayCollection([...$this->eventParticipations, ...$this->eventOrganisers]);
+        return $events->filter(fn (EventOrganiser|EventParticipant $eventParticipantOrOrganiser) => $now > $eventParticipantOrOrganiser->getEvent()->getEndAt())->map(fn (EventOrganiser|EventParticipant $eventParticipantOrOrganiser) => $eventParticipantOrOrganiser->getEvent());
     }
 }

@@ -28,7 +28,8 @@
                         {{ 'upcoming-events'|trans|title }}
                     </div>
                     <div class="badge rounded-pill text-bg-primary fs-5 d-flex justify-content-between align-items-center">
-                        <span class="bi bi-calendar"></span>
+                        <span class="bi bi-calendar me-3"></span>
+                        <span>{{ app.user.futureEvents.count }}</span>
                     </div>
                 </a>
                 <a href="{{ path('user_past_events') }}"
@@ -37,7 +38,8 @@
                         {{ 'past-events'|trans|title }}
                     </div>
                     <div class="badge rounded-pill text-bg-primary fs-5 d-flex justify-content-between align-items-center">
-                        <span class="bi bi-clock-history"></span>
+                        <span class="bi bi-clock-history me-3"></span>
+                        <span>{{ app.user.pastEvents.count }}</span>
                     </div>
                 </a>
                 <a href="{{ path('user_event_invitations') }}"

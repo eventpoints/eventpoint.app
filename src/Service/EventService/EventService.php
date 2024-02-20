@@ -55,7 +55,7 @@ final readonly class EventService
         $flashBag = $session->getFlashBag();
 
         $user = $this->userRepository->findOneBy([
-            'email' => $email->getAddress(),
+            'email' => $email->getId(),
         ]);
 
         if ($user instanceof User) {
