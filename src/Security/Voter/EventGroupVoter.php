@@ -7,7 +7,7 @@ namespace App\Security\Voter;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventOrganiser;
 use App\Entity\EventGroup\EventGroup;
-use App\Entity\User;
+use App\Entity\User\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 

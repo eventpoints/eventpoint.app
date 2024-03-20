@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\EmailService;
 
-use App\Entity\Email;
+use App\Entity\User\Email;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
@@ -16,7 +16,7 @@ final readonly class EmailService
     private const SENDER_EMAIL_ADDRESS = 'notifications@eventpoint.app';
 
     public function __construct(
-        private MailerInterface     $mailer,
+        private MailerInterface $mailer,
         private TranslatorInterface $translator
     ) {
     }
@@ -111,8 +111,8 @@ final readonly class EmailService
     private function compose(
         string $subject,
         string $template,
-        string  $emailAddress,
-        array  $context
+        string $emailAddress,
+        array $context
     ): TemplatedEmail {
         $templatedEmail = new TemplatedEmail();
         $templatedEmail->from(addresses: self::SENDER_EMAIL_ADDRESS);
@@ -130,8 +130,8 @@ final readonly class EmailService
     private function send(
         string $subject,
         string $template,
-        Email  $email,
-        array  $context
+        Email $email,
+        array $context
     ): void {
         try {
             $envelope = $this->compose(

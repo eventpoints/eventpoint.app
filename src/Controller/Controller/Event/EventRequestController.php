@@ -6,7 +6,7 @@ namespace App\Controller\Controller\Event;
 
 use App\Entity\Event\Event;
 use App\Entity\Event\EventRequest;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\Event\EventRequestFactory;
 use App\Repository\Event\EventRepository;
@@ -22,7 +22,7 @@ class EventRequestController extends AbstractController
     public function __construct(
         private readonly EventRequestFactory $eventRequestFactory,
         private readonly EventRequestRepository $eventRequestRepository,
-        private readonly EventRepository     $eventRepository
+        private readonly EventRepository $eventRepository
     ) {
     }
 

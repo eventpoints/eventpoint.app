@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Security;
 
-use App\Entity\User;
-use App\Repository\EmailRepository;
-use App\Repository\PhoneNumberRepository;
-use App\Repository\UserRepository;
+use App\Entity\User\User;
+use App\Repository\User\EmailRepository;
+use App\Repository\User\PhoneNumberRepository;
+use App\Repository\User\UserRepository;
 use App\Service\EmailService\EmailHelperService;
 use Carbon\CarbonImmutable;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -30,10 +30,10 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
 
     public function __construct(
         private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly UserRepository        $userRepository,
-        private readonly EmailRepository       $emailRepository,
+        private readonly UserRepository $userRepository,
+        private readonly EmailRepository $emailRepository,
         private readonly PhoneNumberRepository $phoneNumberRepository,
-        private readonly EmailHelperService    $emailHelperService
+        private readonly EmailHelperService $emailHelperService
     ) {
     }
 

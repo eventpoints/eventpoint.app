@@ -8,6 +8,7 @@ export default class extends Controller {
         token: String,
         longitude: String,
         latitude: String,
+        interactive: Boolean
     }
 
     connect() {
@@ -17,10 +18,20 @@ export default class extends Controller {
             style: 'mapbox://styles/kez2/cl46unvmd000f15o0ayowykuo',
             center: [this.longitudeValue, this.latitudeValue],
             zoom: 11,
-            interactive: false
+            interactive: this.interactiveValue
         });
 
         this.addMarker();
+
+
+        this.map.on('load', () => {
+            this.map.flyTo({
+                center: [this.longitudeValue, this.latitudeValue],
+                zoom: 15,
+                speed: 1.2,
+                curve: 1.4,
+            });
+        });
     }
 
     addMarker() {

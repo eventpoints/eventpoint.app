@@ -7,7 +7,7 @@ namespace App\Factory\Poll;
 use App\Entity\Poll\Poll;
 use App\Entity\Poll\PollAnswer;
 use App\Entity\Poll\PollOption;
-use App\Entity\User;
+use App\Entity\User\User;
 
 final class PollAnswerFactory
 {

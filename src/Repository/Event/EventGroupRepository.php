@@ -6,9 +6,9 @@ namespace App\Repository\Event;
 
 use App\DataTransferObject\EventFilterDto;
 use App\DataTransferObject\EventGroupFilterDto;
-use App\Entity\Category;
+use App\Entity\Event\Category;
 use App\Entity\EventGroup\EventGroup;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\EventFilterDateRangeEnum;
 use App\Enum\EventGroupRoleEnum;
 use App\Service\ApplicationTimeService\ApplicationTimeService;
@@ -30,7 +30,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class EventGroupRepository extends ServiceEntityRepository
 {
     public function __construct(
-        ManagerRegistry                         $registry,
+        ManagerRegistry $registry,
         private readonly ApplicationTimeService $applicationTimeService,
     ) {
         parent::__construct($registry, EventGroup::class);

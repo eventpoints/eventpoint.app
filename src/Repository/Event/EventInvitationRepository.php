@@ -6,7 +6,7 @@ namespace App\Repository\Event;
 
 use App\Entity\Event\Event;
 use App\Entity\Event\EventInvitation;
-use App\Entity\User;
+use App\Entity\User\User;
 use Carbon\CarbonImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;

@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+{# step two #}
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center my-4">
+
+            <div class="col-12 col-md-6">
+
+
+                {{ include('events/create/_step-navigation.html.twig') }}
+
+                {{ form_start(form) }}
+                <div class="card mb-3">
+                    <div class="" {{ stimulus_controller('location', {
+                        token: mapbox_token,
+                        latitude: data.latitude ?? null,
+                        longitude: data.longitude ?? null
+                    }) }}>
+                        <div class="map" id="map" {{ stimulus_target('location', 'result') }} ></div>
+                        {{ form_row(form.latitude) }}
+                        {{ form_row(form.longitude) }}
+                        <div class="card-body">
+                            <a class="btn btn-secondary" {{ stimulus_action('location', 'getCurrentLocation', 'click') }}>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="me-2">{{ 'current-location'|trans }}</span>
+                                    <span {{ stimulus_target('location', 'icon') }} class="bi bi-crosshair"></span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item"> {{ form_row(form.address) }}</div>
+                    </div>
+
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <a href="{{ path('create_event', {step: 'details'}) }}"
+                           class="btn btn-secondary">
+                            back
+                        </a>
+                        <button type="submit"
+                                class="btn btn-primary">
+                            create
+                        </button>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

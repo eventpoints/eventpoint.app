@@ -6,7 +6,7 @@ namespace App\Factory\Poll;
 
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\Poll\Poll;
-use App\Entity\User;
+use App\Entity\User\User;
 
 final class PollFactory
 {

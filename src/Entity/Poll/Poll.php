@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Entity\Poll;
 
 use App\Entity\EventGroup\EventGroup;
-use App\Entity\User;
-use App\Repository\PollRepository;
+use App\Entity\User\User;
+use App\Repository\Poll\PollRepository;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin;
 
-use App\Entity\Category;
+use App\Entity\Event\Category;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventEmailInvitation;
 use App\Entity\Event\EventInvitation;
@@ -13,7 +13,7 @@ use App\Entity\Event\EventParticipant;
 use App\Entity\Event\EventRole;
 use App\Entity\EventGroup\EventGroupMember;
 use App\Entity\EventGroup\EventGroupRole;
-use App\Entity\ImageCollection;
+use App\Entity\Image\ImageCollection;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;

@@ -30,7 +30,7 @@
                                             <a href="{{ path('show_profile', {id: contact.email.owner.id}) }}">
                                                 <div class="fw-bold text-decoration-none">{{ contact.email.owner.fullName }}</div>
                                             </a>
-                                            <div>{{ contact.email.content }}</div>
+                                            <div>{{ contact.email.address }}</div>
                                         </div>
                                     </div>
                                     <div>
@@ -47,7 +47,7 @@
                                         <div class="mdi mdi-at fs-1 me-3"></div>
                                     </div>
                                     <div>
-                                        <div>{{ contact.email.content }}</div>
+                                        <div>{{ contact.email.address }}</div>
                                     </div>
                                 </div>
                             </div>

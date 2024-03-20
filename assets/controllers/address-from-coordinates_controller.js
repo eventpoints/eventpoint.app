@@ -21,7 +21,6 @@ export default class extends Controller {
             mapboxgl: mapboxgl,
         });
 
-        console.log(geocoder.geolocation)
 
     }
 }

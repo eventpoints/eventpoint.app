@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller\User;
 
-use App\Entity\User;
-use App\Repository\UserContactRepository;
+use App\Entity\User\User;
+use App\Repository\User\UserContactRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

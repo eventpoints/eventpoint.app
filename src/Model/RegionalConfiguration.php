@@ -7,10 +7,10 @@ namespace App\Model;
 final class RegionalConfiguration
 {
     public function __construct(
-        private null|string              $locale = null,
-        private null|string              $currency = null,
-        private null|string              $region = null,
-        private null|string              $timezone = null,
+        private null|string $locale = null,
+        private null|string $currency = null,
+        private null|string $region = null,
+        private null|string $timezone = null,
         private null|BrowserRegionalData $browserRegionalData = null,
     ) {
     }

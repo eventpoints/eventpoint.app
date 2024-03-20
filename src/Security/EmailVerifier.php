@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Security;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,8 +17,8 @@ final readonly class EmailVerifier
 {
     public function __construct(
         private VerifyEmailHelperInterface $verifyEmailHelper,
-        private MailerInterface            $mailer,
-        private EntityManagerInterface     $entityManager
+        private MailerInterface $mailer,
+        private EntityManagerInterface $entityManager
     ) {
     }
 

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\DataTransferObject;
 
-use App\Entity\Category;
+use App\Entity\City;
+use App\Entity\Country;
+use App\Entity\Event\Category;
 use App\Enum\EventFilterDateRangeEnum;
 
 class EventFilterDto
@@ -14,6 +16,10 @@ class EventFilterDto
     private null|EventFilterDateRangeEnum $period = EventFilterDateRangeEnum::TODAY;
 
     private null|Category $category = null;
+
+    private null|City $city = null;
+
+    private null|Country $country = null;
 
     public function getKeyword(): ?string
     {
@@ -43,5 +49,25 @@ class EventFilterDto
     public function setCategory(?Category $category): void
     {
         $this->category = $category;
+    }
+
+    public function getCity(): ?City
+    {
+        return $this->city;
+    }
+
+    public function setCity(?City $city): void
+    {
+        $this->city = $city;
+    }
+
+    public function getCountry(): ?Country
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?Country $country): void
+    {
+        $this->country = $country;
     }
 }

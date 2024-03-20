@@ -6,12 +6,12 @@ namespace App\Factory\Event;
 
 use App\Entity\Event\Event;
 use App\Entity\Event\EventRejection;
-use App\Entity\User;
+use App\Entity\User\User;
 
 final class EventRejectionFactory
 {
     public function create(
-        User  $owner,
+        User $owner,
         Event $event
     ): EventRejection {
         $eventRejection = new EventRejection();

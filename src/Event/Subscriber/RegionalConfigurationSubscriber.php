@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Event\Subscriber;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Model\RegionalConfiguration;
 use App\Service\RegionalConfigurationService\RegionalConfigurationService;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -15,9 +15,9 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 readonly class RegionalConfigurationSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private Security                     $security,
-        private RegionalConfiguration        $regionalConfiguration,
-        private RequestStack                 $requestStack,
+        private Security $security,
+        private RegionalConfiguration $regionalConfiguration,
+        private RequestStack $requestStack,
         private RegionalConfigurationService $regionalConfigurationService
     ) {
     }

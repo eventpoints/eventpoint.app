@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Controller\Controller\Group;
 
 use App\Entity\EventGroup\EventGroup;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\Poll\PollFactory;
 use App\Factory\Poll\PollOptionFactory;
 use App\Form\Form\Poll\PollFormType;
-use App\Repository\PollRepository;
+use App\Repository\Poll\PollRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

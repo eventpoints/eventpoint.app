@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Twig\Component;
 
 use App\Entity\EventGroup\EventGroup;
-use App\Form\Form\EventGroupFormType;
+use App\Form\Form\EventGroup\EventGroupFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;

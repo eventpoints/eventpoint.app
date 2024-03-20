@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Factory\Conversation;
 
-use App\Entity\Conversation;
-use App\Entity\User;
+use App\Entity\Conversation\Conversation;
+use App\Entity\User\User;
 
 final class ConversationFactory
 {

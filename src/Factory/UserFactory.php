@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Factory;
 
-use App\Entity\Email;
-use App\Entity\User;
+use App\Entity\User\Email;
+use App\Entity\User\User;
 use App\Service\AvatarService\AvatarService;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -14,7 +14,7 @@ class UserFactory
     final public const PASSWORD_NOT_SET = 'PASSWORD_NOT_SET';
 
     public function __construct(
-        private readonly AvatarService               $avatarService,
+        private readonly AvatarService $avatarService,
         private readonly UserPasswordHasherInterface $userPasswordHasher,
     ) {
     }

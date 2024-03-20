@@ -62,7 +62,7 @@
                class="list-group-item list-group-item-action">{{ 'all-groups'|trans }}</a>
             <a href="{{ path('user_future_events') }}"
                class="list-group-item list-group-item-action">{{ 'dashboard'|trans }}</a>
-            <a href="{{ path('create_event') }}"
+            <a href="{{ path('create_event', {step: 'details'}) }}"
                class="list-group-item list-group-item-action">{{ 'create-event'|trans }}</a>
             <a href="{{ path('create_event_group') }}"
                class="list-group-item list-group-item-action">{{ 'create-group'|trans }}</a>

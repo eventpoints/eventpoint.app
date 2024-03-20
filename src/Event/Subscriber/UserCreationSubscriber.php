@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Event\Subscriber;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\RegionalEnum;
 use App\Model\RegionalConfiguration;
-use App\Repository\UserRepository;
+use App\Repository\User\UserRepository;
 use App\Security\EmailVerifier;
 use App\Service\EmailEventService\EmailEventService;
 use App\Service\EmailService\EmailToUserConnectorService;
@@ -21,11 +21,11 @@ use Symfony\Component\Mime\Address;
 readonly class UserCreationSubscriber
 {
     public function __construct(
-        private EmailEventService           $emailEventService,
-        private UserRepository              $userRepository,
+        private EmailEventService $emailEventService,
+        private UserRepository $userRepository,
         private EmailToUserConnectorService $emailToUserConnectorService,
-        private EmailVerifier               $emailVerifier,
-        private RegionalConfiguration       $regionalConfiguration,
+        private EmailVerifier $emailVerifier,
+        private RegionalConfiguration $regionalConfiguration,
     ) {
     }
 

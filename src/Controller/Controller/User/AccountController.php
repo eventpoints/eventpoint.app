@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller\User;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
-use App\Form\Form\ChangeUserPasswordFormType;
-use App\Form\Form\DefaultPhoneNumberFormType;
-use App\Form\Form\UserAccountFormType;
-use App\Form\Form\UserPasswordFormType;
-use App\Repository\UserRepository;
+use App\Form\Form\User\ChangeUserPasswordFormType;
+use App\Form\Form\User\DefaultPhoneNumberFormType;
+use App\Form\Form\User\UserAccountFormType;
+use App\Form\Form\User\UserPasswordFormType;
+use App\Repository\User\UserRepository;
 use App\Service\ImageUploadService\ImageService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,10 +24,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class AccountController extends AbstractController
 {
     public function __construct(
-        private readonly UserRepository              $userRepository,
+        private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $hasher,
-        private readonly ImageService                $imageUploadService,
-        private readonly TranslatorInterface         $translator,
+        private readonly ImageService $imageUploadService,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 

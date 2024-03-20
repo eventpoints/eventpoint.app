@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Controller;
 
 use App\Entity\Feedback;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Form\Form\FeedbackFormType;
 use App\Repository\FeedbackRepository;

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller\User;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\PhoneNumberFactory;
-use App\Form\Form\PhoneNumberFormType;
-use App\Repository\UserRepository;
+use App\Form\Form\User\PhoneNumberFormType;
+use App\Repository\User\UserRepository;
 use App\Service\PhoneNumberService\PhoneNumberHelperService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +21,7 @@ class PhoneNumberController extends AbstractController
     public function __construct(
         private readonly PhoneNumberFactory $phoneNumberFactory,
         private readonly PhoneNumberHelperService $phoneNumberHelperService,
-        private readonly UserRepository     $userRepository
+        private readonly UserRepository $userRepository
     ) {
     }
 

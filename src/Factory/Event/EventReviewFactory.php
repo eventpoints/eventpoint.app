@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Factory\Event;
 
 use App\Entity\Event\Event;
-use App\Entity\EventReview;
-use App\Entity\User;
+use App\Entity\Event\EventReview;
+use App\Entity\User\User;
 
 final class EventReviewFactory
 {

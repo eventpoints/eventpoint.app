@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Security\User;
 
-use App\Entity\Email;
-use App\Entity\PhoneNumber;
-use App\Entity\User;
-use App\Repository\EmailRepository;
-use App\Repository\PhoneNumberRepository;
+use App\Entity\User\Email;
+use App\Entity\User\PhoneNumber;
+use App\Entity\User\User;
+use App\Repository\User\EmailRepository;
+use App\Repository\User\PhoneNumberRepository;
 use App\Service\EmailService\EmailHelperService;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -19,9 +19,9 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 readonly class UserProvider implements UserProviderInterface
 {
     public function __construct(
-        private EmailRepository       $emailRepository,
+        private EmailRepository $emailRepository,
         private PhoneNumberRepository $phoneNumberRepository,
-        private EmailHelperService    $emailHelperService,
+        private EmailHelperService $emailHelperService,
     ) {
     }
 

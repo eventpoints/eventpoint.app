@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Entity\User\User;
 use App\Enum\FeedbackEnum;
 use App\Repository\FeedbackRepository;
 use DateTimeImmutable;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Factory\EventGroup;
 
-use App\Entity\EventDiscussionComment;
-use App\Entity\EventGroupDiscussion;
-use App\Entity\User;
+use App\Entity\EventGroup\EventGroupDiscussion;
+use App\Entity\EventGroup\EventGroupDiscussionComment;
+use App\Entity\User\User;
 
 final class EventGroupDiscussionCommentFactory
 {
@@ -14,8 +14,8 @@ final class EventGroupDiscussionCommentFactory
         null|string $content = null,
         null|EventGroupDiscussion $discussion = null,
         null|User $owner = null
-    ): EventDiscussionComment {
-        $eventDiscussionComment = new EventDiscussionComment();
+    ): EventGroupDiscussionComment {
+        $eventDiscussionComment = new EventGroupDiscussionComment();
         $eventDiscussionComment->setContent($content);
         $eventDiscussionComment->setDiscussion($discussion);
         $eventDiscussionComment->setOwner($owner);

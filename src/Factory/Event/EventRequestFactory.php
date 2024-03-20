@@ -7,7 +7,7 @@ namespace App\Factory\Event;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventParticipant;
 use App\Entity\Event\EventRequest;
-use App\Entity\User;
+use App\Entity\User\User;
 
 final class EventRequestFactory
 {

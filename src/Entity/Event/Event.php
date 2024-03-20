@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace App\Entity\Event;
 
-use App\Entity\Category;
-use App\Entity\EventCancellation;
 use App\Entity\EventGroup\EventGroup;
-use App\Entity\EventOrganiserInvitation;
-use App\Entity\EventReview;
-use App\Entity\Image;
-use App\Entity\ImageCollection;
-use App\Entity\User;
+use App\Entity\Image\Image;
+use App\Entity\Image\ImageCollection;
+use App\Entity\User\User;
 use App\Repository\Event\EventRepository;
 use Carbon\CarbonImmutable;
-use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Order;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
@@ -33,29 +29,8 @@ class Event implements Stringable
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(length: 255)]
-    private null|string $title = null;
-
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private null|CarbonImmutable|DateTimeImmutable $startAt = null;
-
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    private null|CarbonImmutable|DateTimeImmutable $endAt = null;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private null|string $description = null;
-
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
-    private null|string $latitude = null;
-
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
-    private null|string $longitude = null;
-
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'events')]
     private Collection $categories;
-
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private null|string $base64Image = null;
 
     /**
      * @var Collection<int, EventParticipant> $eventParticipants
@@ -87,9 +62,6 @@ class Event implements Stringable
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventOrganiser::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $eventOrganisers;
 
-    #[ORM\Column]
-    private null|bool $isPrivate = false;
-
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: ImageCollection::class)]
     #[ORM\OrderBy([
         'createdAt' => Criteria::DESC,
@@ -99,19 +71,8 @@ class Event implements Stringable
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventEmailInvitation::class, cascade: ['persist', 'remove'])]
     private Collection $eventEmailInvitations;
 
-    #[ORM\ManyToOne(inversedBy: 'events')]
-    #[ORM\JoinColumn(nullable: true)]
-    private null|EventGroup $eventGroup = null;
-
-    #[ORM\Column(length: 255)]
-    private null|string $address = null;
-
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private CarbonImmutable $createdAt;
-
-    #[ORM\ManyToOne(inversedBy: 'authoredEvents')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $owner = null;
+    private null|CarbonImmutable $createdAt;
 
     #[ORM\OneToOne(mappedBy: 'event', cascade: ['persist', 'remove'])]
     private null|EventCancellation $eventCancellation = null;
@@ -122,16 +83,55 @@ class Event implements Stringable
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventReview::class)]
     private Collection $eventReviews;
 
-    public function __construct()
-    {
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventMoment::class, cascade: ['persist'])]
+    #[ORM\OrderBy([
+        'createdAt' => Order::Descending->value,
+    ])]
+    private Collection $eventMoments;
+
+    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventTicketOption::class, cascade: ['persist'])]
+    private Collection $ticketOptions;
+
+    public function __construct(
+        #[ORM\Column(length: 255)]
+        private null|string $title = null,
+        #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+        private null|CarbonImmutable $startAt = null,
+        #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+        private null|CarbonImmutable $endAt = null,
+        #[ORM\Column(type: Types::TEXT, nullable: true)]
+        private null|string $description = null,
+        #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
+        private null|string $latitude = null,
+        #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
+        private null|string $longitude = null,
+        #[ORM\Column(type: Types::TEXT, nullable: true)]
+        private null|string $base64Image = null,
+        #[ORM\Column]
+        private null|bool $isPrivate = false,
+        #[ORM\Column(length: 255)]
+        private null|string $address = null,
+        #[ORM\ManyToOne(inversedBy: 'authoredEvents')]
+        #[ORM\JoinColumn(nullable: false)]
+        private ?User $owner = null,
+        #[ORM\ManyToOne(inversedBy: 'events')]
+        #[ORM\JoinColumn(nullable: true)]
+        private null|EventGroup $eventGroup = null
+    ) {
         $this->categories = new ArrayCollection();
         $this->images = new ArrayCollection();
         $this->eventOrganisers = new ArrayCollection();
         $this->imageCollections = new ArrayCollection();
         $this->eventEmailInvitations = new ArrayCollection();
-        $this->createdAt = new CarbonImmutable();
         $this->eventOrganiserInvitations = new ArrayCollection();
         $this->eventReviews = new ArrayCollection();
+        $this->eventParticipants = new ArrayCollection();
+        $this->eventInvitations = new ArrayCollection();
+        $this->eventRequests = new ArrayCollection();
+        $this->eventRejections = new ArrayCollection();
+        $this->eventMoments = new ArrayCollection();
+        $this->ticketOptions = new ArrayCollection();
+        $this->createdAt = new CarbonImmutable();
     }
 
     public function __toString(): string
@@ -156,24 +156,24 @@ class Event implements Stringable
         return $this;
     }
 
-    public function getStartAt(): null|CarbonImmutable|DateTimeImmutable
+    public function getStartAt(): null|CarbonImmutable
     {
         return $this->startAt;
     }
 
-    public function setStartAt(null|DateTimeImmutable|CarbonImmutable $startAt): static
+    public function setStartAt(null|CarbonImmutable $startAt): static
     {
         $this->startAt = $startAt;
 
         return $this;
     }
 
-    public function getEndAt(): null|DateTimeImmutable|CarbonImmutable
+    public function getEndAt(): null|CarbonImmutable
     {
         return $this->endAt;
     }
 
-    public function setEndAt(null|DateTimeImmutable|CarbonImmutable $endAt): static
+    public function setEndAt(null|CarbonImmutable $endAt): static
     {
         $this->endAt = $endAt;
 
@@ -226,19 +226,19 @@ class Event implements Stringable
 
     public function getDurationInHours(): float
     {
-        return round($this->startAt->diffInRealHours($this->getEndAt()) / 60, 2);
+        return round($this->startAt->diffInHours($this->getEndAt()), 2);
     }
 
-    public function getTimeRemainingInMilliseconds(): int
+    public function getTimeRemainingInMilliseconds(): float
     {
         $currentTime = CarbonImmutable::now();
         $endTime = $this->getEndAt();
-        return $currentTime->diffInRealMilliseconds($endTime);
+        return $currentTime->diffInMilliseconds($endTime);
     }
 
-    public function getElapsedTimeInMinutes(): int
+    public function getElapsedTimeInMinutes(): float
     {
-        return CarbonImmutable::now()->diffInRealMinutes($this->startAt);
+        return CarbonImmutable::now()->diffInMinutes($this->startAt);
     }
 
     public function getElapsedTimeAsInterval(): string
@@ -251,14 +251,14 @@ class Event implements Stringable
         return CarbonImmutable::now()->diffAsCarbonInterval($this->endAt)->forHumans(short: true);
     }
 
-    public function getDurationInMinutes(): int
+    public function getDurationInMinutes(): float
     {
-        return $this->startAt->diffInRealMinutes($this->endAt);
+        return $this->startAt->diffInMinutes($this->endAt);
     }
 
     public function getDurationInHour(): float
     {
-        return round($this->endAt->diffInRealMinutes($this->endAt) / 60, 2);
+        return round($this->endAt->diffInMinutes($this->endAt) / 60, 2);
     }
 
     public function isPendingStart(): bool
@@ -699,9 +699,9 @@ class Event implements Stringable
         return $this->eventOrganiserInvitations->exists(fn (int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getOwner() instanceof User && $eventOrganiserInvitation->getOwner() === $user);
     }
 
-    public function isEmailAlreadyInvitedOrganiser(string $email): bool
+    public function isEmailAlreadyInvitedOrganiser(string $emailAddress): bool
     {
-        return $this->eventOrganiserInvitations->exists(fn (int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getEmail() === $email);
+        return $this->eventOrganiserInvitations->exists(fn (int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getOwner()->getEmail()->getAddress() === $emailAddress);
     }
 
     /**
@@ -732,5 +732,75 @@ class Event implements Stringable
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, EventMoment>
+     */
+    public function getEventMoments(): Collection
+    {
+        return $this->eventMoments;
+    }
+
+    public function addEventMoment(EventMoment $eventChangeLog): static
+    {
+        if (! $this->eventMoments->contains($eventChangeLog)) {
+            $this->eventMoments->add($eventChangeLog);
+            $eventChangeLog->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventMoment(EventMoment $eventMoment): static
+    {
+        if ($this->eventMoments->removeElement($eventMoment)) {
+            // set the owning side to null (unless already changed)
+            if ($eventMoment->getEvent() === $this) {
+                $eventMoment->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EventTicketOption>
+     */
+    public function getTicketOptions(): Collection
+    {
+        return $this->ticketOptions;
+    }
+
+    public function addTicketOption(EventTicketOption $ticketOption): static
+    {
+        if (! $this->ticketOptions->contains($ticketOption)) {
+            $this->ticketOptions->add($ticketOption);
+            $ticketOption->setEvent($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTicketOption(EventTicketOption $ticketOption): static
+    {
+        if ($this->ticketOptions->removeElement($ticketOption)) {
+            // set the owning side to null (unless already changed)
+            if ($ticketOption->getEvent() === $this) {
+                $ticketOption->setEvent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getAllInvitationsCount(): int
+    {
+        return $this->getEventEmailInvitations()->count() + $this->getEventInvitations()->count();
+    }
+
+    public function getAllParticipantsCount(): int
+    {
+        return $this->getEventOrganisers()->count() + $this->getEventParticipants()->count();
     }
 }

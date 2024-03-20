@@ -10,5 +10,5 @@ return static function (RoutingConfigurator $routingConfigurator): void {
         'namespace' => 'App\Controller\Controller',
     ], 'attribute');
 
-    $routingConfigurator->import('../src/Controller/Admin', 'annotation');
+    $routingConfigurator->import('../src/Controller/Admin', 'attribute');
 };

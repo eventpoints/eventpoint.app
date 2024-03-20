@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Entity\EventGroup;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\EventGroupRoleEnum;
-use App\Repository\EventGroupMemberRepository;
+use App\Repository\EventGroup\EventGroupMemberRepository;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

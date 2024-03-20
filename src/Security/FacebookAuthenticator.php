@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Security;
 
-use App\Entity\SocialAuth;
-use App\Entity\User;
+use App\Entity\User\SocialAuth;
+use App\Entity\User\User;
 use App\Factory\EmailFactory;
 use App\Factory\SocialAuthFactory;
 use App\Factory\UserFactory;
-use App\Repository\EmailRepository;
-use App\Repository\SocialAuthRepository;
+use App\Repository\User\EmailRepository;
+use App\Repository\User\SocialAuthRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;

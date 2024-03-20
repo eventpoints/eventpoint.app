@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller\User;
 
-use App\Entity\Email;
-use App\Entity\User;
+use App\Entity\User\Email;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\EmailFactory;
-use App\Form\Form\DefaultEmailFormType;
-use App\Form\Form\EmailAddressFormType;
-use App\Repository\EmailRepository;
-use App\Repository\UserRepository;
+use App\Form\Form\User\DefaultEmailFormType;
+use App\Form\Form\User\EmailAddressFormType;
+use App\Repository\User\EmailRepository;
+use App\Repository\User\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,10 +23,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class EmailController extends AbstractController
 {
     public function __construct(
-        private readonly UserRepository         $userRepository,
-        private readonly TranslatorInterface    $translator,
-        private readonly EmailFactory           $emailFactory,
-        private readonly EmailRepository        $emailRepository,
+        private readonly UserRepository $userRepository,
+        private readonly TranslatorInterface $translator,
+        private readonly EmailFactory $emailFactory,
+        private readonly EmailRepository $emailRepository,
         private readonly EntityManagerInterface $entityManager
     ) {
     }

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Service\EmailService;
 
-use App\Entity\Email;
-use App\Entity\User;
-use App\Repository\EmailRepository;
+use App\Entity\User\Email;
+use App\Entity\User\User;
+use App\Repository\User\EmailRepository;
 
 final readonly class EmailToUserConnectorService
 {

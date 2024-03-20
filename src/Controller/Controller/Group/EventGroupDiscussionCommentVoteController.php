@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller\Group;
 
-use App\Entity\EventDiscussionComment;
-use App\Entity\EventDiscussionCommentVote;
-use App\Entity\User;
+use App\Entity\EventGroup\EventGroupDiscussionComment;
+use App\Entity\EventGroup\EventGroupDiscussionCommentVote;
+use App\Entity\User\User;
 use App\Enum\VoteEnum;
 use App\Factory\EventGroup\EventGroupDiscussionCommentVoteFactory;
-use App\Repository\EventDiscussionCommentVoteRepository;
+use App\Repository\EventGroup\EventGroupDiscussionCommentVoteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,16 +21,16 @@ class EventGroupDiscussionCommentVoteController extends AbstractController
 {
     public function __construct(
         private readonly EventGroupDiscussionCommentVoteFactory $eventGroupDiscussionCommentVoteFactory,
-        private readonly EventDiscussionCommentVoteRepository   $eventDiscussionCommentVoteRepository
+        private readonly EventGroupDiscussionCommentVoteRepository $eventDiscussionCommentVoteRepository
     ) {
     }
 
     #[Route('/create/{id}/{type}', name: 'create_discussion_comment_vote', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function create(
-        EventDiscussionComment $eventDiscussionComment,
-        string                 $type,
+        EventGroupDiscussionComment $eventDiscussionComment,
+        string $type,
         #[CurrentUser]
-        User    $currentUser
+        User $currentUser
     ): Response {
         $voteType = VoteEnum::from($type);
         $vote = $this->eventDiscussionCommentVoteRepository->findOneBy([
@@ -38,7 +38,7 @@ class EventGroupDiscussionCommentVoteController extends AbstractController
             'owner' => $currentUser,
         ]);
 
-        if ($vote instanceof EventDiscussionCommentVote) {
+        if ($vote instanceof EventGroupDiscussionCommentVote) {
             if ($voteType === $vote->getType()) {
                 $this->eventDiscussionCommentVoteRepository->remove($vote, true);
             } else {

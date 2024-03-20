@@ -5,16 +5,19 @@ declare(strict_types=1);
 namespace App\Form\Filter;
 
 use App\DataTransferObject\EventFilterDto;
-use App\Entity\Category;
+use App\Entity\City;
+use App\Entity\Country;
+use App\Entity\Event\Category;
 use App\Enum\EventFilterDateRangeEnum;
 use App\Form\Type\CustomEnumType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfonycasts\DynamicForms\DependentField;
+use Symfonycasts\DynamicForms\DynamicFormBuilder;
 
 class EventFilterType extends AbstractType
 {
@@ -25,8 +28,9 @@ class EventFilterType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $builder = new DynamicFormBuilder($builder);
+
         $builder
-            ->setMethod(Request::METHOD_GET)
             ->add('keyword', TextType::class, [
                 'label' => $this->translator->trans('event-filter-title-placeholder'),
                 'attr' => [
@@ -55,7 +59,20 @@ class EventFilterType extends AbstractType
                 'translation_domain' => true,
                 'autocomplete' => true,
                 'multiple' => false,
-            ]);
+            ])
+            ->add('country', EntityType::class, [
+                'class' => Country::class,
+                'choice_label' => 'name',
+            ])
+            ->addDependent('city', 'country', function (DependentField $field, null|Country $country) {
+                $field->add(EntityType::class, [
+                    'class' => City::class,
+                    'placeholder' => 'city',
+                    'choices' => $country?->getCities(),
+                    'choice_label' => 'name',
+                    'disabled' => $country === null,
+                ]);
+            });
     }
 
     public function configureOptions(OptionsResolver $resolver): void

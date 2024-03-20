@@ -17,7 +17,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class RegionFilterType extends AbstractType
 {
     public function __construct(
-        private readonly TranslatorInterface   $translator,
+        private readonly TranslatorInterface $translator,
         private readonly RegionalConfiguration $regionalSetting,
     ) {
     }

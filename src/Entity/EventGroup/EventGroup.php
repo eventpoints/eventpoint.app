@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity\EventGroup;
 
-use App\Entity\Category;
+use App\Entity\Event\Category;
 use App\Entity\Event\Event;
-use App\Entity\EventGroupDiscussion;
 use App\Entity\Poll\Poll;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\EventGroupRoleEnum;
 use App\Repository\Event\EventGroupRepository;
 use Carbon\CarbonImmutable;

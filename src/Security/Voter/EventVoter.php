@@ -7,7 +7,7 @@ namespace App\Security\Voter;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventRole;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\EventOrganiserRoleEnum;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -60,8 +60,7 @@ class EventVoter extends Voter
             return false;
         }
 
-        $isPermited = $currentUserEventOrgniser->getRoles()->exists(fn (int $key, EventRole $eventRole) => $eventRole->getTitle() === EventOrganiserRoleEnum::ROLE_EVENT_ADMIN ||
-            $eventRole->getTitle() === EventOrganiserRoleEnum::ROLE_EVENT_MANAGER);
+        $isPermited = $currentUserEventOrgniser->getRoles()->exists(fn (int $key, EventRole $eventRole) => $eventRole->getTitle() === EventOrganiserRoleEnum::ROLE_EVENT_ADMIN);
 
         if (! $isPermited) {
             return false;
@@ -81,8 +80,7 @@ class EventVoter extends Voter
             return false;
         }
 
-        $isPermited = $currentUserEventOrgniser->getRoles()->exists(fn (int $key, EventRole $eventRole) => $eventRole->getTitle() === EventOrganiserRoleEnum::ROLE_EVENT_ADMIN ||
-            $eventRole->getTitle() === EventOrganiserRoleEnum::ROLE_EVENT_MANAGER);
+        $isPermited = $currentUserEventOrgniser->getRoles()->exists(fn (int $key, EventRole $eventRole) => $eventRole->getTitle() === EventOrganiserRoleEnum::ROLE_EVENT_ADMIN);
 
         if (! $isPermited) {
             return false;

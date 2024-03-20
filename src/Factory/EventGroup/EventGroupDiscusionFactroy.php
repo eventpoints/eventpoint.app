@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace App\Factory\EventGroup;
 
 use App\Entity\EventGroup\EventGroup;
-use App\Entity\EventGroupDiscussion;
-use App\Entity\User;
+use App\Entity\EventGroup\EventGroupDiscussion;
+use App\Entity\User\User;
 
 final class EventGroupDiscusionFactroy
 {
     public function create(
-        null|string     $agenda = null,
-        bool            $isResolved = false,
-        null|User       $owner = null,
+        null|string $agenda = null,
+        bool $isResolved = false,
+        null|User $owner = null,
         null|EventGroup $eventGroup = null
     ): EventGroupDiscussion {
         $discussion = new EventGroupDiscussion();

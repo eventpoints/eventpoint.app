@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Controller\Controller\Group;
 
 use App\Entity\EventGroup\EventGroup;
-use App\Entity\EventGroupDiscussion;
-use App\Entity\User;
+use App\Entity\EventGroup\EventGroupDiscussion;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\EventGroup\EventGroupDiscusionFactroy;
 use App\Factory\EventGroup\EventGroupDiscussionCommentFactory;
-use App\Form\Form\EventDiscussionCommentFormType;
-use App\Form\Form\EventDiscussionFormType;
-use App\Repository\EventDiscussionRepository;
+use App\Form\Form\EventGroup\EventGroupDiscussionCommentFormType;
+use App\Form\Form\EventGroup\EventGroupDiscussionFormType;
+use App\Repository\EventGroup\EventGroupDiscussionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,10 +24,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class EventGroupDiscussionController extends AbstractController
 {
     public function __construct(
-        private readonly EventGroupDiscusionFactroy         $eventGroupDiscusionFactroy,
+        private readonly EventGroupDiscusionFactroy $eventGroupDiscusionFactroy,
         private readonly EventGroupDiscussionCommentFactory $eventGroupDiscussionCommentFactory,
-        private readonly EventDiscussionRepository          $discussionRepository,
-        private readonly TranslatorInterface                $translator
+        private readonly EventGroupDiscussionRepository $discussionRepository,
+        private readonly TranslatorInterface $translator
     ) {
     }
 
@@ -35,7 +35,7 @@ class EventGroupDiscussionController extends AbstractController
     public function show(EventGroupDiscussion $eventGroupDiscussion, Request $request, #[CurrentUser] User $currentUser): Response
     {
         $comment = $this->eventGroupDiscussionCommentFactory->create(discussion: $eventGroupDiscussion, owner: $currentUser);
-        $eventDiscussionCommentForm = $this->createForm(EventDiscussionCommentFormType::class, $comment);
+        $eventDiscussionCommentForm = $this->createForm(EventGroupDiscussionCommentFormType::class, $comment);
         $eventDiscussionCommentForm->handleRequest($request);
         if ($eventDiscussionCommentForm->isSubmitted() && $eventDiscussionCommentForm->isValid()) {
             $eventGroupDiscussion->addComment($comment);
@@ -56,7 +56,7 @@ class EventGroupDiscussionController extends AbstractController
     public function create(EventGroup $eventGroup, Request $request, #[CurrentUser] User $currentUser): Response
     {
         $discussion = $this->eventGroupDiscusionFactroy->create(owner: $currentUser, eventGroup: $eventGroup);
-        $eventDiscussionForm = $this->createForm(EventDiscussionFormType::class, $discussion);
+        $eventDiscussionForm = $this->createForm(EventGroupDiscussionFormType::class, $discussion);
         $eventDiscussionForm->handleRequest($request);
         if ($eventDiscussionForm->isSubmitted() && $eventDiscussionForm->isValid()) {
             $this->discussionRepository->save($discussion, true);

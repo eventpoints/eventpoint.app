@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller\Group;
 
-use App\Entity\EventGroupDiscussion;
-use App\Entity\User;
+use App\Entity\EventGroup\EventGroupDiscussion;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\EventGroup\EventGroupDiscussionCommentFactory;
-use App\Form\Form\EventDiscussionCommentFormType;
-use App\Repository\EventDiscussionRepository;
+use App\Form\Form\EventGroup\EventGroupDiscussionCommentFormType;
+use App\Repository\EventGroup\EventGroupDiscussionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,9 +21,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class EventGroupDiscussionCommentController extends AbstractController
 {
     public function __construct(
-        private readonly EventDiscussionRepository          $discussionRepository,
+        private readonly EventGroupDiscussionRepository $discussionRepository,
         private readonly EventGroupDiscussionCommentFactory $eventGroupDiscussionCommentFactory,
-        private readonly TranslatorInterface                $translator
+        private readonly TranslatorInterface $translator
     ) {
     }
 
@@ -31,7 +31,7 @@ class EventGroupDiscussionCommentController extends AbstractController
     public function create(EventGroupDiscussion $eventGroupDiscussion, Request $request, #[CurrentUser] User $currentUser): Response
     {
         $discussionComment = $this->eventGroupDiscussionCommentFactory->create(owner: $currentUser);
-        $eventDiscussionCommentForm = $this->createForm(EventDiscussionCommentFormType::class, $discussionComment);
+        $eventDiscussionCommentForm = $this->createForm(EventGroupDiscussionCommentFormType::class, $discussionComment);
         $eventDiscussionCommentForm->handleRequest($request);
         if ($eventDiscussionCommentForm->isSubmitted() && $eventDiscussionCommentForm->isValid()) {
             $eventGroupDiscussion->addComment($discussionComment);

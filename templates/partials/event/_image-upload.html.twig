@@ -1,0 +1,48 @@
+{% if event.isAfterStart %}
+    <div class="card mb-3">
+        <div class="card-body">
+            {{ form_start(imageForm) }}
+            <div class="input-group">
+                {{ form_widget(imageForm.images) }}
+                <button type="submit" class="btn btn-primary">{{ 'upload'|trans }}</button>
+            </div>
+            {{ form_end(imageForm) }}
+        </div>
+    </div>
+    <div>
+        <div class="position-relative">
+            {% for imageCollection in event.imageCollections %}
+                <div class="card border-0 text-bg-dark-grey">
+                    <div class="card-body">
+                        <div class='position-relative' {{ stimulus_controller('lightbox image-grid') }}
+                             data-lightbox-options-value='{"thumbnails": true}'
+                        >
+                            {% for image in imageCollection.images %}
+                                <img class="object-fit-cover rounded" src="{{ image.dataUrl }}"
+                                     alt="event image"/>
+                            {% endfor %}
+                        </div>
+                        <div class="text-center mt-3">
+                            <img class="rounded-circle"
+                                 src="{{ imageCollection.owner.avatar }}"
+                                 width="30"
+                                 height="30 mb-2"/>
+                            <div>
+                                <div class="">{{ imageCollection.owner.fullName|title }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center text-muted small mb-3">{{ imageCollection.createdAt|time_ago }}</div>
+
+                {% if not loop.last %}
+                    <div class="text-center">
+                        <div class="vr vh-5"></div>
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

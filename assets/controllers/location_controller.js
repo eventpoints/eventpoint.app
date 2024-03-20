@@ -10,6 +10,7 @@ export default class extends Controller {
     };
 
     connect() {
+
         this.lat = this.latitudeValue || '50.0755';
         this.lng = this.longitudeValue || '14.4378';
 
@@ -21,6 +22,7 @@ export default class extends Controller {
             center: [parseFloat(this.lng), parseFloat(this.lat)],
         });
 
+
         this.map.on('load', () => {
             this.marker = new mapboxgl.Marker({
                 color: '#000000',
@@ -29,11 +31,20 @@ export default class extends Controller {
                 .setLngLat([parseFloat(this.lng), parseFloat(this.lat)])
                 .addTo(this.map);
 
+
             this.marker.on('dragend', async () => {
                 const lngLat = this.marker.getLngLat();
                 this.latitudeTarget.setAttribute('value', lngLat.lat);
                 this.longitudeTarget.setAttribute('value', lngLat.lng);
                 this.addressTarget.setAttribute('value', await this.reverseGeocode(lngLat.lng, lngLat.lat));
+            });
+
+
+            this.map.flyTo({
+                center: [this.lng, this.lat],
+                zoom: 15,
+                speed: 1.2,
+                curve: 1.4,
             });
         });
     }
@@ -48,7 +59,7 @@ export default class extends Controller {
                 navigator.geolocation.getCurrentPosition(resolve, reject);
             });
 
-            const { latitude, longitude } = position.coords;
+            const {latitude, longitude} = position.coords;
             this.marker.setLngLat([longitude, latitude]);
             this.latitudeTarget.setAttribute('value', latitude);
             this.longitudeTarget.setAttribute('value', longitude);

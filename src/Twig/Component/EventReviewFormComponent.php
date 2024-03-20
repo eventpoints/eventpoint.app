@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Twig\Component;
 
 use App\Entity\Event\Event;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Factory\Event\EventReviewFactory;
-use App\Repository\EventReviewRepository;
+use App\Repository\Event\EventReviewRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
@@ -41,7 +41,7 @@ class EventReviewFormComponent extends AbstractController
 
     public function __construct(
         private readonly EventReviewRepository $eventReviewRepository,
-        private readonly EventReviewFactory    $eventReviewFactory
+        private readonly EventReviewFactory $eventReviewFactory
     ) {
     }
 

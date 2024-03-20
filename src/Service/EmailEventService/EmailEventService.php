@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Service\EmailEventService;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Factory\Event\EventInvitationFactory;
+use App\Repository\Event\EventEmailInvitationRepository;
 use App\Repository\Event\EventInvitationRepository;
-use App\Repository\EventEmailInvitationRepository;
 
 final readonly class EmailEventService
 {

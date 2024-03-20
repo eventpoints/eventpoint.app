@@ -10,6 +10,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
 
     $parameters = $containerConfigurator->parameters();
     $parameters->set('CLOUDFLARE_TURNSTILE_PRIVATE_KEY', '%env(CLOUDFLARE_TURNSTILE_PRIVATE_KEY)%');
+    $parameters->set('MAPBOX_TOKEN', '%env(MAPBOX_TOKEN)%');
 
     $services->defaults()
         ->autowire()

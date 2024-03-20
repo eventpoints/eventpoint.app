@@ -6,7 +6,7 @@ namespace App\Factory\EventGroup;
 
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventGroup\EventGroupMember;
-use App\Entity\User;
+use App\Entity\User\User;
 
 class EventGroupMemberFactory
 {

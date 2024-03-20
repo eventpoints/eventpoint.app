@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Service\EventService;
 
-use App\Entity\Email;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventEmailInvitation;
 use App\Entity\Event\EventRequest;
-use App\Entity\User;
+use App\Entity\User\Email;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\Event\EventEmailInvitationFactory;
 use App\Factory\Event\EventInvitationFactory;
 use App\Factory\Event\EventRequestFactory;
+use App\Repository\Event\EventEmailInvitationRepository;
 use App\Repository\Event\EventParticipantRepository;
 use App\Repository\Event\EventRequestRepository;
-use App\Repository\EventEmailInvitationRepository;
-use App\Repository\UserRepository;
+use App\Repository\User\UserRepository;
 use App\Service\EmailService\EmailService;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
@@ -28,16 +28,16 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 final readonly class EventService
 {
     public function __construct(
-        private EventInvitationFactory         $eventInvitationFactory,
-        private EventEmailInvitationFactory    $eventEmailInvitationFactory,
-        private UserRepository                 $userRepository,
-        private EmailService                   $emailService,
-        private UrlGeneratorInterface          $urlGenerator,
-        private EventRequestFactory            $eventRequestFactory,
-        private EventRequestRepository         $eventRequestRepository,
-        private EventParticipantRepository     $eventParticipantRepository,
+        private EventInvitationFactory $eventInvitationFactory,
+        private EventEmailInvitationFactory $eventEmailInvitationFactory,
+        private UserRepository $userRepository,
+        private EmailService $emailService,
+        private UrlGeneratorInterface $urlGenerator,
+        private EventRequestFactory $eventRequestFactory,
+        private EventRequestRepository $eventRequestRepository,
+        private EventParticipantRepository $eventParticipantRepository,
         private EventEmailInvitationRepository $eventEmailInvitationRepository,
-        private TranslatorInterface            $translator,
+        private TranslatorInterface $translator,
     ) {
     }
 

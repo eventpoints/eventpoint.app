@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity\Poll;
 
-use App\Entity\User;
-use App\Repository\PollAnswerRepository;
+use App\Entity\User\User;
+use App\Repository\Poll\PollAnswerRepository;
 use Carbon\CarbonImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Factory;
 
-use App\Entity\Email;
-use App\Entity\User;
+use App\Entity\User\Email;
+use App\Entity\User\User;
 
 final class EmailFactory
 {

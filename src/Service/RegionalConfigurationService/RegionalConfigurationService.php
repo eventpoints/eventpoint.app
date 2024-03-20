@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service\RegionalConfigurationService;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\RegionalEnum;
 use App\Model\RegionalConfiguration;
 use Symfony\Component\HttpFoundation\RequestStack;

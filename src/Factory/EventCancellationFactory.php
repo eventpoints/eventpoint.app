@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Factory;
 
 use App\Entity\Event\Event;
-use App\Entity\EventCancellation;
-use App\Entity\User;
+use App\Entity\Event\EventCancellation;
+use App\Entity\User\User;
 use App\Enum\EventCancellationReasonEnum;
 
 final class EventCancellationFactory

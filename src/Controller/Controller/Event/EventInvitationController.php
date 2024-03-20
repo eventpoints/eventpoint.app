@@ -7,8 +7,8 @@ namespace App\Controller\Controller\Event;
 use App\Entity\Event\EventEmailInvitation;
 use App\Entity\Event\EventInvitation;
 use App\Enum\FlashEnum;
+use App\Repository\Event\EventEmailInvitationRepository;
 use App\Repository\Event\EventInvitationRepository;
-use App\Repository\EventEmailInvitationRepository;
 use App\Security\Voter\EventVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,8 +22,8 @@ class EventInvitationController extends AbstractController
 {
     public function __construct(
         private readonly EventEmailInvitationRepository $emailInvitationRepository,
-        private readonly EventInvitationRepository      $eventInvitationRepository,
-        private readonly TranslatorInterface            $translator,
+        private readonly EventInvitationRepository $eventInvitationRepository,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 

@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace App\Controller\Controller\Event;
 
 use App\Entity\Event\Event;
-use App\Entity\EventOrganiserInvitation;
-use App\Entity\User;
+use App\Entity\Event\EventOrganiserInvitation;
 use App\Enum\FlashEnum;
 use App\Factory\Event\EventOrganiserInvitationFactory;
-use App\Form\Form\EventOrganiserInviationFormType;
-use App\Repository\EventOrganiserInvitationRepository;
-use App\Repository\UserRepository;
+use App\Form\Form\Event\EventOrganiserInviationFormType;
+use App\Repository\Event\EventOrganiserInvitationRepository;
 use App\Security\Voter\EventVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,9 +21,8 @@ class EventOrganiserInvitationController extends AbstractController
 {
     public function __construct(
         private readonly EventOrganiserInvitationRepository $eventOrganiserInvitationRepository,
-        private readonly UserRepository                     $userRepository,
-        private readonly EventOrganiserInvitationFactory    $eventOrganiserInvitationFactory,
-        private readonly TranslatorInterface    $translator
+        private readonly EventOrganiserInvitationFactory $eventOrganiserInvitationFactory,
+        private readonly TranslatorInterface $translator
     ) {
     }
 
@@ -36,39 +33,24 @@ class EventOrganiserInvitationController extends AbstractController
         $eventOrganiserInvitationForm = $this->createForm(EventOrganiserInviationFormType::class);
         $eventOrganiserInvitationForm->handleRequest($request);
         if ($eventOrganiserInvitationForm->isSubmitted() && $eventOrganiserInvitationForm->isValid()) {
-            $email = $eventOrganiserInvitationForm->get('email')->getData();
-            $user = $this->userRepository->findOneBy([
-                'email' => $email,
-            ]);
-
+            $owner = $eventOrganiserInvitationForm->get('owner')->getData();
             $roles = $eventOrganiserInvitationForm->get('roles')->getData();
             foreach ($roles as $role) {
                 $eventOrganiserInvitation->addRole($role);
             }
 
-            if ($user instanceof User) {
-                if ($event->isAlreadyInvitedOrganiser($user)) {
-                    $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('user-already-invited'));
-                    return $this->redirectToRoute('invite_event_organiser', [
-                        'id' => $event->getId(),
-                    ]);
-                }
-
-                $eventOrganiserInvitation->setOwner($user);
-                $event->addEventOrganiserInvitation($eventOrganiserInvitation);
-            } else {
-                if ($event->isEmailAlreadyInvitedOrganiser($email)) {
-                    $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('user-already-invited'));
-                    return $this->redirectToRoute('invite_event_organiser', [
-                        'id' => $event->getId(),
-                    ]);
-                }
-
-                $eventOrganiserInvitation->setEmail($email);
-                $event->addEventOrganiserInvitation($eventOrganiserInvitation);
+            if ($event->isAlreadyInvitedOrganiser($owner)) {
+                $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('user-already-invited'));
+                return $this->redirectToRoute('invite_event_organiser', [
+                    'id' => $event->getId(),
+                ]);
             }
-            $this->eventOrganiserInvitationRepository->save($eventOrganiserInvitation, true);
+
+            $eventOrganiserInvitation->setOwner($owner);
+
+            $event->addEventOrganiserInvitation($eventOrganiserInvitation);
             $this->addFlash(FlashEnum::MESSAGE->value, 'invitation sent');
+            $this->eventOrganiserInvitationRepository->save($eventOrganiserInvitation, true);
             return $this->redirectToRoute('manage_event_organisers', [
                 'id' => $event->getId(),
             ]);
@@ -80,7 +62,8 @@ class EventOrganiserInvitationController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/event/{id}/invite/organiser/remove', name: 'remove_invite_event_organiser', methods: [Request::METHOD_GET])]
+    #[
+        Route(path: '/event/{id}/invite/organiser/remove', name: 'remove_invite_event_organiser', methods: [Request::METHOD_GET])]
     public function delete(EventOrganiserInvitation $eventOrganiserInvitation): Response
     {
         $event = $eventOrganiserInvitation->getEvent();

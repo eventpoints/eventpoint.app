@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Twig\Component;
 
-use App\Entity\Email;
 use App\Entity\Event\Event;
-use App\Entity\User;
-use App\Entity\UserContact;
+use App\Entity\User\Email;
+use App\Entity\User\User;
+use App\Entity\User\UserContact;
 use App\Factory\EmailFactory;
 use App\Factory\UserContactFactory;
-use App\Repository\EmailRepository;
 use App\Repository\Event\EventRepository;
-use App\Repository\UserContactRepository;
+use App\Repository\User\EmailRepository;
+use App\Repository\User\UserContactRepository;
 use App\Service\EventService\EventService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -44,12 +44,12 @@ class EmailAutocompleterComponent extends AbstractController
 
     public function __construct(
         private readonly UserContactRepository $userContactRepository,
-        private readonly EmailRepository       $emailRepository,
-        private readonly UserContactFactory    $userContactFactory,
-        private readonly EmailFactory          $emailFactory,
-        private readonly EventService          $eventService,
-        private readonly EventRepository       $eventRepository,
-        private readonly RequestStack          $requestStack,
+        private readonly EmailRepository $emailRepository,
+        private readonly UserContactFactory $userContactFactory,
+        private readonly EmailFactory $emailFactory,
+        private readonly EventService $eventService,
+        private readonly EventRepository $eventRepository,
+        private readonly RequestStack $requestStack,
     ) {
     }
 

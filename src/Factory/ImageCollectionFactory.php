@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Factory;
 
 use App\Entity\Event\Event;
-use App\Entity\Image;
-use App\Entity\ImageCollection;
-use App\Entity\User;
+use App\Entity\Image\Image;
+use App\Entity\Image\ImageCollection;
+use App\Entity\User\User;
 
 class ImageCollectionFactory
 {

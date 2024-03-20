@@ -6,12 +6,12 @@ namespace App\Factory\Event;
 
 use App\Entity\Event\Event;
 use App\Entity\Event\EventParticipant;
-use App\Entity\User;
+use App\Entity\User\User;
 
 final class EventParticpantFactory
 {
     public function create(
-        User  $owner,
+        User $owner,
         Event $event
     ): EventParticipant {
         $eventParticipant = new EventParticipant();

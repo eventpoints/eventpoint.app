@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+{# step two #}
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center my-4">
+            <div class="col-12 col-md-6">
+
+                {{ include('events/create/_step-navigation.html.twig') }}
+
+                {{ form_start(form) }}
+                <div class="card mb-3" {{ stimulus_controller('image-form-display', { image: data.base64image }) }}>
+
+                    <img {{ stimulus_target('image-form-display', 'displayImage') }} src="#" class="card-img-top"/>
+
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item"> {{ form_row(form.title) }}</div>
+                        <div class="list-group-item">
+                            {{ form_row(form.image) }}
+                        </div>
+                        <div class="list-group-item"> {{ form_row(form.description) }}</div>
+                        <div class="list-group-item">
+                            <div class="row">
+                                <div class="col-6">
+                                    {{ form_row(form.startAt) }}
+                                </div>
+                                <div class="col-6">
+                                    {{ form_row(form.endAt) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">{{ form_row(form.eventGroup) }}</div>
+                        <div class="list-group-item">{{ form_row(form.isPrivate) }}</div>
+                    </div>
+
+                    <div class="card-body">
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            next
+                        </button>
+                    </div>
+
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

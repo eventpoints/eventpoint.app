@@ -8,24 +8,24 @@ use App\DataTransferObject\EventGroupFilterDto;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventGroup\EventGroupJoinRequest;
 use App\Entity\EventGroup\EventGroupMember;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\EventGroupRoleEnum;
 use App\Enum\FlashEnum;
 use App\Factory\EventGroup\EventGroupFactory;
 use App\Factory\EventGroup\EventGroupJoinRequestFactory;
 use App\Factory\EventGroup\EventGroupMemberFactory;
 use App\Form\Filter\EventGroupFilterType;
-use App\Form\Form\EventGroupFormType;
-use App\Form\Form\EventGroupSettingsFormType;
+use App\Form\Form\EventGroup\EventGroupFormType;
+use App\Form\Form\EventGroup\EventGroupSettingsFormType;
 use App\Repository\Event\EventGroupRepository;
 use App\Repository\Event\EventRepository;
-use App\Repository\EventDiscussionCommentRepository;
-use App\Repository\EventDiscussionRepository;
-use App\Repository\EventGroupInvitationRepository;
-use App\Repository\EventGroupJoinRequestRepository;
-use App\Repository\EventGroupMemberRepository;
-use App\Repository\EventGroupRoleRepository;
-use App\Repository\PollRepository;
+use App\Repository\EventGroup\EventGroupDiscussionCommentRepository;
+use App\Repository\EventGroup\EventGroupDiscussionRepository;
+use App\Repository\EventGroup\EventGroupInvitationRepository;
+use App\Repository\EventGroup\EventGroupJoinRequestRepository;
+use App\Repository\EventGroup\EventGroupMemberRepository;
+use App\Repository\EventGroup\EventGroupRoleRepository;
+use App\Repository\Poll\PollRepository;
 use App\Security\Voter\EventGroupVoter;
 use App\Service\EventGroupAnalyzer\EventActivityAnalyzer;
 use App\Service\ImageUploadService\ImageService;
@@ -43,22 +43,22 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class EventGroupController extends AbstractController
 {
     public function __construct(
-        private readonly EventGroupRepository             $eventGroupRepository,
-        private readonly EventGroupJoinRequestRepository  $eventGroupJoinRequestRepository,
-        private readonly EventGroupInvitationRepository   $eventGroupInvitationRepository,
-        private readonly EventGroupMemberRepository       $eventGroupMemberRepository,
-        private readonly EventGroupJoinRequestFactory     $eventGroupJoinRequestFactory,
-        private readonly EventRepository                  $eventRepository,
-        private readonly EventGroupFactory                $eventGroupFactory,
-        private readonly EventGroupMemberFactory          $eventGroupMemberFactory,
-        private readonly EventGroupRoleRepository         $eventGroupRoleRepository,
-        private readonly PollRepository                   $pollRepository,
-        private readonly EventDiscussionRepository        $eventDiscussionRepository,
-        private readonly EventDiscussionCommentRepository $eventDiscussionCommentRepository,
-        private readonly PaginatorInterface               $paginator,
-        private readonly TranslatorInterface              $translator,
-        private readonly EventActivityAnalyzer            $eventGroupAnalyzer,
-        private readonly ImageService                     $imageUploadService
+        private readonly EventGroupRepository $eventGroupRepository,
+        private readonly EventGroupJoinRequestRepository $eventGroupJoinRequestRepository,
+        private readonly EventGroupInvitationRepository $eventGroupInvitationRepository,
+        private readonly EventGroupMemberRepository $eventGroupMemberRepository,
+        private readonly EventGroupJoinRequestFactory $eventGroupJoinRequestFactory,
+        private readonly EventRepository $eventRepository,
+        private readonly EventGroupFactory $eventGroupFactory,
+        private readonly EventGroupMemberFactory $eventGroupMemberFactory,
+        private readonly EventGroupRoleRepository $eventGroupRoleRepository,
+        private readonly PollRepository $pollRepository,
+        private readonly EventGroupDiscussionRepository $eventDiscussionRepository,
+        private readonly EventGroupDiscussionCommentRepository $eventDiscussionCommentRepository,
+        private readonly PaginatorInterface $paginator,
+        private readonly TranslatorInterface $translator,
+        private readonly EventActivityAnalyzer $eventGroupAnalyzer,
+        private readonly ImageService $imageUploadService
     ) {
     }
 

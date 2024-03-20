@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Event;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Repository\Event\EventInvitationRepository;
 use Carbon\CarbonImmutable;
 use Doctrine\DBAL\Types\Types;

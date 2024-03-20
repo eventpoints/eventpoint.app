@@ -25,10 +25,10 @@ class EventInvitationResponseFormComponent extends AbstractController
     public null|EventInvitation $eventInvitation = null;
 
     public function __construct(
-        private readonly EventRepository        $eventRepository,
+        private readonly EventRepository $eventRepository,
         private readonly EventInvitationRepository $eventInvitationRepository,
         private readonly EventParticpantFactory $eventParticipantFactory,
-        private readonly EventRejectionFactory  $eventRejectionFactory,
+        private readonly EventRejectionFactory $eventRejectionFactory,
     ) {
     }
 

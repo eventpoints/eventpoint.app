@@ -25,10 +25,10 @@ class EventReqestResponseFormComponent extends AbstractController
     public null|EventRequest $eventRequest = null;
 
     public function __construct(
-        private readonly EventRepository        $eventRepository,
+        private readonly EventRepository $eventRepository,
         private readonly EventRequestRepository $eventRequestRepository,
         private readonly EventParticpantFactory $eventParticipantFactory,
-        private readonly EventRejectionFactory  $eventRejectionFactory,
+        private readonly EventRejectionFactory $eventRejectionFactory,
     ) {
     }
 

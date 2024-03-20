@@ -2,6 +2,7 @@ import {Controller} from '@hotwired/stimulus'
 import mapboxgl from 'mapbox-gl'
 
 export default class extends Controller {
+
     static values = {
         token: String,
         events: Array
@@ -9,29 +10,33 @@ export default class extends Controller {
 
     static targets = ['map', 'event-card', 'mapInstance']
 
+
     connect() {
+
         mapboxgl.accessToken = this.tokenValue;
-        this.map = new mapboxgl.Map({
+        this.mapbox = new mapboxgl.Map({
             container: this.mapTarget,
             style: 'mapbox://styles/kez2/cl46unvmd000f15o0ayowykuo',
             center: [14.4378, 50.0755],
-            zoom: 8
-        })
-        window.mapInstance = this.map
-        this.map.addControl(new mapboxgl.FullscreenControl())
-        this.map.addControl(new mapboxgl.NavigationControl())
-
-        this.map.on('render', (e) => {
-            let center = this.map.getCenter()
+            zoom: 8,
         })
 
-        this.map.on('load', () => {
+        window.mapInstance = this.mapbox
+        this.mapbox.addControl(new mapboxgl.FullscreenControl())
+        this.mapbox.addControl(new mapboxgl.NavigationControl())
+
+        this.mapbox.on('render', (e) => {
+            let center = this.mapbox.getCenter()
+        })
+
+        this.mapbox.on('load', () => {
+
             const featuresWithIds = this.eventsValue.map((feature, index) => ({
                 ...feature,
                 id: `event-${feature.id}`
             }))
 
-            this.map.addSource('points', {
+            this.mapbox.addSource('points', {
                 type: 'geojson',
                 data: {
                     type: 'FeatureCollection',
@@ -42,7 +47,7 @@ export default class extends Controller {
                 clusterRadius: 50
             })
 
-            this.map.addLayer({
+            this.mapbox.addLayer({
                 id: 'clusters',
                 type: 'circle',
                 source: 'points',
@@ -71,7 +76,7 @@ export default class extends Controller {
                 }
             })
 
-            this.map.addLayer({
+            this.mapbox.addLayer({
                 id: 'cluster-count',
                 type: 'symbol',
                 source: 'points',
@@ -86,7 +91,7 @@ export default class extends Controller {
                 }
             })
 
-            this.map.addLayer({
+            this.mapbox.addLayer({
                 id: 'unclustered-point',
                 type: 'circle',
                 source: 'points',
@@ -99,15 +104,30 @@ export default class extends Controller {
                 }
             })
 
-            this.map.on('click', 'unclustered-point', (event) => {
+            this.mapbox.on('click', 'unclustered-point', (event) => {
                 let id = event.features[0].properties.id
                 let card = document.querySelector(`#asset-${id}`)
                 if (card != null) {
                     card.classList.toggle('text-bg-primary')
                 }
             })
-
         })
+    }
+
+    eventsValueChanged(current, old) {
+        const featuresWithIds = current.map((feature, index) => ({
+            ...feature,
+            id: `event-${feature.id}`
+        }));
+
+        if (this.mapbox === undefined) {
+            return;
+        }
+
+        this.mapbox.getSource('points').setData({
+            type: 'FeatureCollection',
+            features: featuresWithIds
+        });
     }
 
     flyToAssetOnMap(event) {
@@ -115,14 +135,14 @@ export default class extends Controller {
         let longitude = event.params.longitude
         let latitude = event.params.latitude
 
-        this.map.setPaintProperty('unclustered-point', 'circle-color', [
+        this.mapbox.setPaintProperty('unclustered-point', 'circle-color', [
             'case',
             ['==', ['get', 'id'], id],
             '#39775A',
             '#777777',
         ]);
 
-        this.map.flyTo({
+        this.mapbox.flyTo({
             center: [longitude, latitude],
             zoom: 18,
             speed: 1.2,
@@ -132,7 +152,7 @@ export default class extends Controller {
 
     onMouseLeave(event) {
         let id = event.params.id
-        this.map.setPaintProperty('unclustered-point', 'circle-color', [
+        this.mapbox.setPaintProperty('unclustered-point', 'circle-color', [
             'case',
             ['==', 'get', 'id', id],
             '#39775A',

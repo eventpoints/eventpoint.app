@@ -1,5 +1,5 @@
 import './bootstrap.js';
-import {Tooltip, Toast, Tab} from 'bootstrap'
+import {Tooltip, Toast, Tab, Modal} from 'bootstrap'
 import 'bootstrap';
 import 'chartjs-adapter-date-fns';
 /*
@@ -39,6 +39,27 @@ document.addEventListener('turbo:load', function () {
     let tabTrigger = new Tab(document.querySelector(`a[href='${selectedTab}']`));
     tabTrigger.show();
 });
+
+
+document.addEventListener('turbo:load', function () {
+
+    const modals = document.querySelectorAll('a[data-bs-toggle="modal"]');
+
+
+    modals.forEach((modal) => {
+        let modalLinkBootStrapTarget = modal.getAttribute('data-bs-target').substring(1)
+        let hash = window.location.hash.substring(1)
+
+        console.log(modalLinkBootStrapTarget, hash)
+        if (modalLinkBootStrapTarget === hash) {
+            let modalEl = document.getElementById(modalLinkBootStrapTarget)
+            new Modal(modalEl).show()
+        }
+    });
+
+})
+;
+
 
 document.addEventListener('turbo:load', function (e) {
     const toastElList = document.querySelectorAll('.toast')

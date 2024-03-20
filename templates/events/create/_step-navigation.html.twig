@@ -1,0 +1,12 @@
+<div class="d-flex justify-content-around align-items-center mb-3">
+    <a class="btn w-100 {{ app.request.get('_route_params')|first == 'details' ? 'btn-primary' : 'btn-outline-primary' }}"
+       href="{{ path('create_event', {step: 'details'}) }}">
+        <div class="bi bi-text-left fs-4"></div>
+        <div>{{ 'details'|trans|title }}</div>
+    </a>
+    <a class="btn w-100 mx-3 {{ app.request.get('_route_params')|first == 'location' ? 'btn-primary' : 'btn-outline-primary' }}"
+       href="{{ path('create_event', {step: 'location'}) }}">
+        <div class="bi bi-geo fs-4"></div>
+        <div>{{ 'location'|trans|title }}</div>
+    </a>
+</div>

@@ -7,7 +7,7 @@ namespace App\Factory\Event;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventRole;
-use App\Entity\User;
+use App\Entity\User\User;
 
 final class EventOrganiserFactory
 {
@@ -15,7 +15,7 @@ final class EventOrganiserFactory
      * @param array<int, EventRole> $roles
      */
     public function create(
-        User  $owner,
+        User $owner,
         Event $event,
         array $roles
     ): EventOrganiser {

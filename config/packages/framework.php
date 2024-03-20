@@ -23,6 +23,12 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                         'Accept' => 'application/json',
                     ],
                 ],
+                'mapbox.client' => [
+                    'base_uri' => 'https://api.mapbox.com',
+                    'headers' => [
+                        'Accept' => 'application/json',
+                    ],
+                ],
             ],
         ],
         'php_errors' => [

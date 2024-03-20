@@ -6,12 +6,12 @@ namespace App\Controller\Controller\Group;
 
 use App\Entity\EventGroup\EventGroupMember;
 use App\Entity\EventGroup\EventGroupRole;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\EventGroupRoleEnum;
 use App\Enum\FlashEnum;
-use App\Form\Form\EventGroupMemberRoleFormType;
-use App\Repository\EventGroupMemberRepository;
-use App\Repository\EventGroupRoleRepository;
+use App\Form\Form\EventGroup\EventGroupMemberRoleFormType;
+use App\Repository\EventGroup\EventGroupMemberRepository;
+use App\Repository\EventGroup\EventGroupRoleRepository;
 use App\Security\Voter\EventGroupVoter;
 use Doctrine\ORM\PersistentCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,8 +27,8 @@ class EventGroupRoleController extends AbstractController
 {
     public function __construct(
         private readonly EventGroupMemberRepository $eventGroupMemberRepository,
-        private readonly EventGroupRoleRepository   $eventGroupRoleRepository,
-        private readonly TranslatorInterface        $translator
+        private readonly EventGroupRoleRepository $eventGroupRoleRepository,
+        private readonly TranslatorInterface $translator
     ) {
     }
 
@@ -43,9 +43,7 @@ class EventGroupRoleController extends AbstractController
             $maintainerRole = $this->eventGroupRoleRepository->findOneBy([
                 'title' => EventGroupRoleEnum::ROLE_GROUP_MAINTAINER,
             ]);
-            /**
-             * @var PersistentCollection $roles
-             */
+            /** @var PersistentCollection $roles */
             $roles = $eventGroupMemberRoleForm->get('roles')->getData();
 
             if (

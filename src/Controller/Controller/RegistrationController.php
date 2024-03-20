@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller;
 
-use App\Entity\Email;
-use App\Entity\User;
+use App\Entity\User\Email;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\EmailFactory;
-use App\Form\Form\RegistrationFormType;
-use App\Repository\EmailRepository;
-use App\Repository\UserRepository;
+use App\Form\Form\User\RegistrationFormType;
+use App\Repository\User\EmailRepository;
+use App\Repository\User\UserRepository;
 use App\Security\CustomAuthenticator;
 use App\Security\EmailVerifier;
 use App\Service\AvatarService\AvatarService;
@@ -29,12 +29,12 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 class RegistrationController extends AbstractController
 {
     public function __construct(
-        private readonly AvatarService       $avatarService,
-        private readonly EmailVerifier       $emailVerifier,
+        private readonly AvatarService $avatarService,
+        private readonly EmailVerifier $emailVerifier,
         private readonly HttpClientInterface $cloudflareTurnstileClient,
         private readonly TranslatorInterface $translator,
-        private readonly EmailFactory        $emailFactory,
-        private readonly EmailRepository     $emailRepository,
+        private readonly EmailFactory $emailFactory,
+        private readonly EmailRepository $emailRepository,
     ) {
     }
 

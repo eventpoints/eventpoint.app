@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller\Conversation;
 
-use App\Entity\Conversation;
-use App\Entity\ConversationParticipant;
-use App\Entity\Message;
-use App\Entity\User;
+use App\Entity\Conversation\Conversation;
+use App\Entity\Conversation\ConversationParticipant;
+use App\Entity\Conversation\Message;
+use App\Entity\User\User;
 use App\Exception\ShouldNotHappenException;
 use App\Factory\Conversation\ConversationFactory;
 use App\Factory\Conversation\ConversationParticipantFactory;
-use App\Form\Form\MessageFormType;
-use App\Repository\ConversationRepository;
+use App\Form\Form\Conversation\MessageFormType;
+use App\Repository\Conversation\ConversationRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,9 +23,9 @@ use Symfony\Component\Security\Http\Attribute\CurrentUser;
 class ConversationController extends AbstractController
 {
     public function __construct(
-        private readonly ConversationFactory            $conversationFactory,
+        private readonly ConversationFactory $conversationFactory,
         private readonly ConversationParticipantFactory $conversationParticipantFactory,
-        private readonly ConversationRepository         $conversationRepository,
+        private readonly ConversationRepository $conversationRepository,
     ) {
     }
 

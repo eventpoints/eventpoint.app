@@ -6,7 +6,7 @@ namespace App\Factory\EventGroup;
 
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventGroup\EventGroupInvitation;
-use App\Entity\User;
+use App\Entity\User\User;
 use Carbon\CarbonImmutable;
 
 final class EventGroupInvitationFactory

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller;
 
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Form\Filter\RegionFilterType;
 use App\Model\RegionalConfiguration;
-use App\Repository\UserRepository;
+use App\Repository\User\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +19,7 @@ class RegionalConfigurationController extends AbstractController
 {
     public function __construct(
         private readonly RegionalConfiguration $regionalSetting,
-        private readonly UserRepository        $userRepository,
+        private readonly UserRepository $userRepository,
     ) {
     }
 

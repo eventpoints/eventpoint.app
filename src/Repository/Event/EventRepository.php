@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Repository\Event;
 
 use App\DataTransferObject\EventFilterDto;
-use App\Entity\Category;
+use App\Entity\Event\Category;
 use App\Entity\Event\Event;
 use App\Entity\EventGroup\EventGroup;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\EventFilterDateRangeEnum;
 use App\Service\ApplicationTimeService\ApplicationTimeService;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Order;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
@@ -31,7 +31,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class EventRepository extends ServiceEntityRepository
 {
     public function __construct(
-        private readonly ManagerRegistry        $registry,
+        private readonly ManagerRegistry $registry,
         private readonly ApplicationTimeService $applicationTimeService,
     ) {
         parent::__construct($this->registry, Event::class);
@@ -135,16 +135,12 @@ class EventRepository extends ServiceEntityRepository
             $this->findByTitle(keyword: $eventFilterDto->getKeyword(), qb: $qb);
         }
 
+        if (! empty($eventFilterDto->getCity())) {
+            $this->findByCoordinates(latitude: $eventFilterDto->getCity()->getLatitude(), longitude: $eventFilterDto->getCity()->getLongitude(), qb: $qb);
+        }
+
         $qb->leftJoin('event.eventGroup', 'event_group');
-        $qb->andWhere(
-            $qb->expr()->eq('event_group.isPrivate', ':false')
-        )->setParameter('false', false);
-
-        $qb->andWhere(
-            $qb->expr()->eq('event.isPrivate', ':false')
-        )->setParameter('false', false);
-
-        $qb->orderBy('event.startAt', Criteria::ASC);
+        $qb->orderBy('event.startAt', Order::Ascending->value);
 
         if ($isQuery) {
             return $qb->getQuery();
@@ -292,7 +288,7 @@ class EventRepository extends ServiceEntityRepository
             $qb->expr()->eq('event.eventGroup', ':group')
         )->setParameter('group', $eventGroup->getId(), 'uuid');
 
-        $qb->orderBy('event.createdAt', Criteria::DESC);
+        $qb->orderBy('event.createdAt', Order::Descending->value);
 
         if ($isQuery) {
             return $qb->getQuery();
@@ -337,5 +333,38 @@ class EventRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return array<int, Event>|Query
+     */
+    public function findByCoordinates(float $latitude, float $longitude, QueryBuilder|null $qb = null, int $radius = 50, bool $isQuery = false): array|Query
+    {
+        if (! $qb instanceof QueryBuilder) {
+            $qb = $this->createQueryBuilder('event');
+        }
+
+        $result = $qb;
+
+        $minLat = $latitude - ($radius / 111);
+        $maxLat = $latitude + ($radius / 111);
+        $minLng = $longitude - ($radius / (111 * cos(deg2rad($latitude))));
+        $maxLng = $longitude + ($radius / (111 * cos(deg2rad($latitude))));
+
+        $qb->andWhere(
+            $qb->expr()->between('event.latitude', ':minLat', ':maxLat')
+        )->setParameter('minLat', $minLat)
+            ->setParameter('maxLat', $maxLat);
+
+        $qb->andWhere(
+            $qb->expr()->between('event.longitude', ':minLng', ':maxLng')
+        )->setParameter('minLng', $minLng)
+            ->setParameter('maxLng', $maxLng);
+
+        if ($isQuery) {
+            return $result->getQuery();
+        }
+
+        return $result->getQuery()->getResult();
     }
 }

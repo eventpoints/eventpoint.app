@@ -6,7 +6,7 @@ namespace App\Entity\EventGroup;
 
 use App\Entity\Contract\StaticEntityInterface;
 use App\Enum\EventGroupRoleEnum;
-use App\Repository\EventGroupRoleRepository;
+use App\Repository\EventGroup\EventGroupRoleRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;

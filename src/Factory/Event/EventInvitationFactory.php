@@ -8,15 +8,15 @@ use App\Entity\Event\Event;
 use App\Entity\Event\EventInvitation;
 use App\Entity\Event\EventParticipant;
 use App\Entity\Event\EventRejection;
-use App\Entity\User;
+use App\Entity\User\User;
 use Carbon\CarbonImmutable;
 
 final class EventInvitationFactory
 {
     public function create(
-        User                 $owner,
-        User                 $target,
-        Event                $event,
+        User $owner,
+        User $target,
+        Event $event,
         null|CarbonImmutable $createdAt = null
     ): EventInvitation {
         $eventInvite = new EventInvitation();

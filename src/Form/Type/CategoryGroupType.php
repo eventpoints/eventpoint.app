@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form\Type;
 
-use App\Entity\Category;
+use App\Entity\Event\Category;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;

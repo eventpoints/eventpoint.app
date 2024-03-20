@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Twig\Component;
 
 use App\Entity\Poll\Poll;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\Poll\PollAnswerFactory;
-use App\Repository\PollAnswerRepository;
-use App\Repository\PollOptionRepository;
+use App\Repository\Poll\PollAnswerRepository;
+use App\Repository\Poll\PollOptionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
@@ -27,7 +27,7 @@ class PollAnswerFormComponent extends AbstractController
 
     public function __construct(
         private readonly PollAnswerRepository $pollAnswerRepository,
-        private readonly PollAnswerFactory    $pollAnswerFactory,
+        private readonly PollAnswerFactory $pollAnswerFactory,
         private readonly PollOptionRepository $pollOptionRepository
     ) {
     }

@@ -3,7 +3,7 @@
         <div class="row text-center g-0 justify-content-center align-items-center">
 
             <div class="col-4">
-                <a href="{{ path('create_event') }}" class="btn btn-light rounded-0 w-100 text-center">
+                <a href="{{ path('create_event', {step: 'details'}) }}" class="btn btn-light rounded-0 w-100 text-center">
                     <div class="bi bi-calendar-plus-fill fs-4"></div>
                     <div>{{ 'create-event'|trans }}</div>
                 </a>

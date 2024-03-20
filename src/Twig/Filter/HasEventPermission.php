@@ -7,7 +7,7 @@ namespace App\Twig\Filter;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventRole;
-use App\Entity\User;
+use App\Entity\User\User;
 use App\Enum\EventOrganiserRoleEnum;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;

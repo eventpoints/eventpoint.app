@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DataTransferObject;
 
-use App\Entity\Category;
+use App\Entity\Event\Category;
 
 final class EventGroupFilterDto
 {
