@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Twig\Component;
 
 use App\DataTransferObject\EventFilterDto;
+use App\Entity\City;
 use App\Entity\Event\Event;
 use App\Entity\EventGroup\EventGroup;
 use App\Form\Filter\EventFilterType;
+use App\Repository\CountryRepository;
 use App\Repository\Event\EventGroupRepository;
 use App\Repository\Event\EventRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,12 +48,20 @@ class EventSearchFilterComponent extends AbstractController
         private readonly EventGroupRepository $eventGroupRepository,
         private readonly EventRepository $eventRepository,
         private readonly SerializerInterface $serializer,
+        private readonly CountryRepository $countryRepository,
     ) {
     }
 
     public function instantiateForm(): FormInterface
     {
         $this->eventFilterDto = new EventFilterDto();
+        $country = $this->countryRepository->findOneBy([
+            'alpha2' => 'CZ',
+        ]);
+        $prauge = $country->getCities()->findFirst(fn (int $key, City $city) => $city->isCapital());
+
+        $this->eventFilterDto->setCountry($country);
+        $this->eventFilterDto->setCity($prauge);
         $events = $this->eventRepository->findByFilter(eventFilterDto: $this->eventFilterDto);
         $this->jsonEvents = $this->serializer->serialize(data: $events, format: JsonEncoder::FORMAT);
         $this->events = $events;

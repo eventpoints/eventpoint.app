@@ -139,7 +139,6 @@ class EventRepository extends ServiceEntityRepository
             $this->findByCoordinates(latitude: $eventFilterDto->getCity()->getLatitude(), longitude: $eventFilterDto->getCity()->getLongitude(), qb: $qb);
         }
 
-        $qb->leftJoin('event.eventGroup', 'event_group');
         $qb->orderBy('event.startAt', Order::Ascending->value);
 
         if ($isQuery) {
@@ -187,8 +186,8 @@ class EventRepository extends ServiceEntityRepository
 
         $qb->leftJoin('event.eventGroup', 'event_group');
         $qb->orWhere(
-            $qb->expr()->like($qb->expr()->lower('event_group.title'), ':title')
-        )->setParameter('title', '%' . strtolower($keyword) . '%');
+            $qb->expr()->like($qb->expr()->lower('event_group.name'), ':name')
+        )->setParameter('name', '%' . strtolower($keyword) . '%');
 
         if ($isQuery) {
             return $result->getQuery();

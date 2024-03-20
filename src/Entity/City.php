@@ -28,7 +28,9 @@ class City
         #[ORM\Column]
         private float $longitude,
         #[ORM\ManyToOne(inversedBy: 'cities')]
-        private Country $country
+        private Country $country,
+        #[ORM\Column]
+        private bool $isCapital = false,
     ) {
         $this->createdAt = new DateTimeImmutable();
     }
@@ -86,5 +88,15 @@ class City
     public function setCountry(Country $country): void
     {
         $this->country = $country;
+    }
+
+    public function isCapital(): bool
+    {
+        return $this->isCapital;
+    }
+
+    public function setIsCapital(bool $isCapital): void
+    {
+        $this->isCapital = $isCapital;
     }
 }

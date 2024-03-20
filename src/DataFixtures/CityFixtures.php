@@ -35,7 +35,7 @@ class CityFixtures extends Fixture implements DependentFixtureInterface
 
             foreach ($cities as $cityData) {
                 $city = new City(
-                    name: $cityData['name'],
+                    name: strtolower((string) $cityData['name']),
                     latitude: $cityData['latitude'],
                     longitude: $cityData['longitude'],
                     country: $country
