@@ -72,7 +72,7 @@ class EventGroupRoleController extends AbstractController
                 if ($roles->exists(fn (int $key, EventGroupRole $eventGroupRole) => in_array($eventGroupRole->getTitle(), $conflictingRoles, true))) {
                     $errorMessage = 'Cannot have admin role and member role';
                     $eventGroupMemberRoleForm->get('roles')->addError(new FormError($errorMessage));
-                    return $this->render('events/group/members/edit.html.twig', [
+                    return $this->render('groups/members/edit.html.twig', [
                         'eventGroupMember' => $eventGroupMember,
                         'eventGroupMemberRoleForm' => $eventGroupMemberRoleForm,
                     ]);
@@ -92,7 +92,7 @@ class EventGroupRoleController extends AbstractController
                 $errorMessage = 'At least group manager is required';
                 $eventGroupMemberRoleForm->get('roles')->addError(new FormError($errorMessage));
 
-                return $this->render('events/group/members/edit.html.twig', [
+                return $this->render('groups/members/edit.html.twig', [
                     'eventGroupMember' => $eventGroupMember,
                     'eventGroupMemberRoleForm' => $eventGroupMemberRoleForm,
                 ]);
@@ -105,7 +105,7 @@ class EventGroupRoleController extends AbstractController
             ]);
         }
 
-        return $this->render('events/group/members/edit.html.twig', [
+        return $this->render('groups/members/edit.html.twig', [
             'eventGroupMember' => $eventGroupMember,
             'eventGroupMemberRoleForm' => $eventGroupMemberRoleForm,
         ]);

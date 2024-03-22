@@ -46,7 +46,7 @@ class EventGroupDiscussionController extends AbstractController
             ]);
         }
 
-        return $this->render('events/group/discussion/show.html.twig', [
+        return $this->render('groups/discussion/show.html.twig', [
             'eventGroupDiscussion' => $eventGroupDiscussion,
             'eventDiscussionCommentForm' => $eventDiscussionCommentForm,
         ]);
@@ -66,7 +66,7 @@ class EventGroupDiscussionController extends AbstractController
             ]);
         }
 
-        return $this->render('events/group/discussion/create.html.twig', [
+        return $this->render('groups/discussion/create.html.twig', [
             'eventDiscussionForm' => $eventDiscussionForm,
         ]);
     }

@@ -41,7 +41,7 @@ class PollController extends AbstractController
             ]);
         }
 
-        return $this->render('events/group/poll/create.html.twig', [
+        return $this->render('groups/poll/create.html.twig', [
             'poll' => $poll,
             'pollForm' => '$pollForm',
             'eventGroup' => $eventGroup,
