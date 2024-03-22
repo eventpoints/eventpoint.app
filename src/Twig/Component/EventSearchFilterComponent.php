@@ -8,12 +8,19 @@ use App\DataTransferObject\EventFilterDto;
 use App\Entity\City;
 use App\Entity\Event\Event;
 use App\Entity\EventGroup\EventGroup;
+use App\Entity\User\User;
+use App\Enum\CountryCodeEnum;
 use App\Form\Filter\EventFilterType;
+use App\Model\BrowserRegionalData;
+use App\Model\RegionalConfiguration;
 use App\Repository\CountryRepository;
 use App\Repository\Event\EventGroupRepository;
 use App\Repository\Event\EventRepository;
+use App\Service\RegionalConfigurationService\RegionalConfigurationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
@@ -49,19 +56,21 @@ class EventSearchFilterComponent extends AbstractController
         private readonly EventRepository $eventRepository,
         private readonly SerializerInterface $serializer,
         private readonly CountryRepository $countryRepository,
+        private readonly RegionalConfiguration $regionalConfiguration,
     ) {
     }
 
     public function instantiateForm(): FormInterface
     {
         $this->eventFilterDto = new EventFilterDto();
+
+        $browserCountryCode = $this->regionalConfiguration->getBrowserRegionalData()->getCountryCode();
         $country = $this->countryRepository->findOneBy([
-            'alpha2' => 'CZ',
+            'alpha2' => CountryCodeEnum::tryFrom($browserCountryCode)->value,
         ]);
-        $prauge = $country->getCities()->findFirst(fn (int $key, City $city) => $city->isCapital());
 
         $this->eventFilterDto->setCountry($country);
-        $this->eventFilterDto->setCity($prauge);
+        $this->eventFilterDto->setCity($country->getCapitalCity());
         $events = $this->eventRepository->findByFilter(eventFilterDto: $this->eventFilterDto);
         $this->jsonEvents = $this->serializer->serialize(data: $events, format: JsonEncoder::FORMAT);
         $this->events = $events;

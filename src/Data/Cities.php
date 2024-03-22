@@ -92,6 +92,34 @@ class Cities
                 'country_code' => 'CZ',
                 'capital' => false,
             ],
+            [
+                'name' => 'Karlovy Vary',
+                'latitude' => 50.2310,
+                'longitude' => 12.8713,
+                'country_code' => 'CZ',
+                'capital' => false,
+            ],
+            [
+                'name' => 'Český Krumlov',
+                'latitude' => 48.8116,
+                'longitude' => 14.3140,
+                'country_code' => 'CZ',
+                'capital' => false,
+            ],
+            [
+                'name' => 'Zlín',
+                'latitude' => 49.2264,
+                'longitude' => 17.6677,
+                'country_code' => 'CZ',
+                'capital' => false,
+            ],
+            [
+                'name' => 'Česká Lípa',
+                'latitude' => 50.6855,
+                'longitude' => 14.5390,
+                'country_code' => 'CZ',
+                'capital' => false,
+            ],
         ];
     }
 

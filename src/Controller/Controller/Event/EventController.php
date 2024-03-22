@@ -23,6 +23,7 @@ use App\Form\Form\Event\EventDetailsFormType;
 use App\Form\Form\Event\EventFormType;
 use App\Form\Form\Event\EventLocationFormType;
 use App\Form\Form\Image\ImageFormType;
+use App\Repository\CountryRepository;
 use App\Repository\Event\EventEmailInvitationRepository;
 use App\Repository\Event\EventInvitationRepository;
 use App\Repository\Event\EventRepository;
@@ -32,6 +33,8 @@ use App\Service\ImageUploadService\ImageService;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,6 +67,10 @@ class EventController extends AbstractController
     ) {
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     #[Route(path: '/', name: 'events')]
     public function index(Request $request): Response
     {

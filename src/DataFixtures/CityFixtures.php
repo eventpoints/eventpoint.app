@@ -26,14 +26,18 @@ class CityFixtures extends Fixture implements DependentFixtureInterface
         $countries = $this->countryRepository->findAll();
         foreach ($countries as $country) {
             $cities = $this->cities->getCountryCities(alpha2: $country->getAlpha2());
-
-            if (count($this->cityRepository->findBy([
-                'country' => $country,
-            ])) === count($cities)) {
+            $count = $this->cityRepository->count(['country' => $country]);
+            if ($count === count($cities)) {
                 continue;
             }
 
             foreach ($cities as $cityData) {
+
+                $city = $this->cityRepository->findOneBy(['country' => $country, 'name' => strtolower($cityData['name'])]);
+                if($city instanceof City){
+                    continue;
+                }
+
                 $city = new City(
                     name: strtolower((string) $cityData['name']),
                     latitude: $cityData['latitude'],

@@ -12,6 +12,8 @@ use App\Enum\EventFilterDateRangeEnum;
 use App\Form\Type\CustomEnumType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\RangeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -23,7 +25,8 @@ class EventFilterType extends AbstractType
 {
     public function __construct(
         private readonly TranslatorInterface $translator
-    ) {
+    )
+    {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -63,15 +66,37 @@ class EventFilterType extends AbstractType
             ->add('country', EntityType::class, [
                 'class' => Country::class,
                 'choice_label' => 'name',
+                'row_attr' => [
+                    'class' => 'form-floating',
+                ],
             ])
-            ->addDependent('city', 'country', function (DependentField $field, null|Country $country) {
+            ->addDependent('city', 'country', function (DependentField $field, Country $country) {
                 $field->add(EntityType::class, [
                     'class' => City::class,
                     'placeholder' => 'city',
+                    'data' => $country->getCapitalCity(),
                     'choices' => $country?->getCities(),
-                    'choice_label' => 'name',
+                    'choice_label' => function (City $city): string {
+                        return ucfirst($city->getName());
+                    },
                     'disabled' => $country === null,
+                    'row_attr' => [
+                        'class' => 'form-floating',
+                    ],
                 ]);
+            })
+            ->addDependent('radius', 'city', function (DependentField $field, null|City $city) {
+                if ($city instanceof City) {
+                    $field->add(RangeType::class, [
+                        'label' => false,
+                        'required' => false,
+                        'data' => 50,
+                        'attr' => [
+                            'min' => 5,
+                            'max' => 100
+                        ]
+                    ]);
+                }
             });
     }
 

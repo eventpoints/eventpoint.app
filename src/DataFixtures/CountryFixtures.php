@@ -13,16 +13,16 @@ use Doctrine\Persistence\ObjectManager;
 class CountryFixtures extends Fixture
 {
     public function __construct(
-        private readonly Countries $countries,
+        private readonly Countries         $countries,
         private readonly CountryRepository $countryRepository
-    ) {
+    )
+    {
     }
 
     public function load(ObjectManager $manager): void
     {
-        if ($this->countryRepository->findOneBy([
-            'alpha2' => 'ZWE',
-        ])) {
+        $count = $this->countryRepository->count([]);
+        if ($count === 249) {
             return;
         }
 

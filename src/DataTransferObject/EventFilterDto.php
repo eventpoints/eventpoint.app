@@ -21,6 +21,8 @@ class EventFilterDto
 
     private null|Country $country = null;
 
+    private null|int $radius = null;
+
     public function getKeyword(): ?string
     {
         return $this->keyword;
@@ -70,4 +72,15 @@ class EventFilterDto
     {
         $this->country = $country;
     }
+
+    public function getRadius(): ?int
+    {
+        return $this->radius;
+    }
+
+    public function setRadius(?int $radius): void
+    {
+        $this->radius = $radius;
+    }
+
 }
