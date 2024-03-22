@@ -8,11 +8,11 @@ use App\Entity\Event\Category;
 use App\Entity\Event\Event;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
-use App\Form\Type\CategoryGroupType;
 use App\Form\Type\CustomCheckBoxType;
 use App\Form\Type\EntitySelectionGroupType;
 use App\Repository\Event\EventGroupRepository;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -84,14 +84,13 @@ class EventFormType extends AbstractType
                     'data-calendar-target' => 'dateInput',
                 ],
             ])
-            ->add('categories', CategoryGroupType::class, [
-                'expanded' => true,
+            ->add('categories', EntityType::class, [
+                'label' => false,
                 'multiple' => true,
-                'searchable' => true,
                 'class' => Category::class,
                 'choice_label' => 'title',
-                'label' => 'categories',
                 'choice_translation_domain' => true,
+                'autocomplete' => true,
             ])
             ->add('isPrivate', CustomCheckBoxType::class, [
                 'label' => $this->translator->trans('is-event-private'),

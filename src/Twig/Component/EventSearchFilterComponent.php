@@ -57,11 +57,17 @@ class EventSearchFilterComponent extends AbstractController
     public function instantiateForm(): FormInterface
     {
         $this->eventFilterDto = new EventFilterDto();
+        $browserCountryCode = $this->regionalConfiguration->getBrowserRegionalData()?->getCountryCode();
 
-        $browserCountryCode = $this->regionalConfiguration->getBrowserRegionalData()->getCountryCode();
-        $country = $this->countryRepository->findOneBy([
-            'alpha2' => CountryCodeEnum::tryFrom($browserCountryCode)->value,
-        ]);
+        if (! empty($browserCountryCode)) {
+            $country = $this->countryRepository->findOneBy([
+                'alpha2' => CountryCodeEnum::tryFrom($browserCountryCode)->value,
+            ]);
+        } else {
+            $country = $this->countryRepository->findOneBy([
+                'alpha2' => CountryCodeEnum::CzechRepublic,
+            ]);
+        }
 
         $this->eventFilterDto->setCountry($country);
         $this->eventFilterDto->setCity($country->getCapitalCity());

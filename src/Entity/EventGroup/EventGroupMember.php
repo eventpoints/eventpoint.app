@@ -24,12 +24,6 @@ class EventGroupMember
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\ManyToOne(inversedBy: 'eventGroupMembers')]
-    private ?User $owner = null;
-
-    #[ORM\ManyToOne(inversedBy: 'eventGroupMembers')]
-    private ?EventGroup $eventGroup = null;
-
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
@@ -39,11 +33,14 @@ class EventGroupMember
     #[ORM\ManyToMany(targetEntity: EventGroupRole::class)]
     private Collection $roles;
 
-    #[ORM\Column]
-    private bool $isApproved = false;
-
-    public function __construct()
-    {
+    public function __construct(
+        #[ORM\ManyToOne(inversedBy: 'eventGroupMembers')]
+        private ?User $owner = null,
+        #[ORM\ManyToOne(inversedBy: 'eventGroupMembers')]
+        private ?EventGroup $eventGroup = null,
+        #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+        private null|CarbonImmutable $approvedAt = null
+    ) {
         $this->createdAt = new CarbonImmutable();
         $this->roles = new ArrayCollection();
     }
@@ -89,16 +86,14 @@ class EventGroupMember
         return $this;
     }
 
-    public function isIsApproved(): ?bool
+    public function getApprovedAt(): ?CarbonImmutable
     {
-        return $this->isApproved;
+        return $this->approvedAt;
     }
 
-    public function setIsApproved(bool $isApproved): static
+    public function setApprovedAt(?CarbonImmutable $approvedAt): void
     {
-        $this->isApproved = $isApproved;
-
-        return $this;
+        $this->approvedAt = $approvedAt;
     }
 
     /**

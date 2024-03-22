@@ -51,15 +51,13 @@ class EventFilterType extends AbstractType
                 'multiple' => false,
             ])
             ->add('category', EntityType::class, [
-                'required' => false,
+                'class' => Category::class,
+                'choice_label' => 'title',
+                'choice_translation_domain' => true,
+                'autocomplete' => true,
                 'row_attr' => [
                     'class' => 'form-floating',
                 ],
-                'class' => Category::class,
-                'choice_label' => 'title',
-                'translation_domain' => true,
-                'autocomplete' => true,
-                'multiple' => false,
             ])
             ->add('country', EntityType::class, [
                 'class' => Country::class,

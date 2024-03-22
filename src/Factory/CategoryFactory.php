@@ -12,9 +12,6 @@ final class CategoryFactory
     {
         $category = new Category();
         $category->setTitle($title);
-        if ($parent instanceof Category) {
-            $category->addCategory($parent);
-        }
         return $category;
     }
 }

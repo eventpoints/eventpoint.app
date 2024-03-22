@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Form\Form\EventGroup;
 
+use App\Entity\City;
+use App\Entity\Country;
 use App\Entity\Event\Category;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
-use App\Form\Type\CategoryGroupType;
+use App\Form\Type\CustomCheckBoxType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\LanguageType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -18,6 +19,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfonycasts\DynamicForms\DependentField;
+use Symfonycasts\DynamicForms\DynamicFormBuilder;
 
 class EventGroupFormType extends AbstractType
 {
@@ -28,6 +31,7 @@ class EventGroupFormType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $builder = new DynamicFormBuilder($builder);
         $builder
             ->add('name', TextType::class, [
                 'row_attr' => [
@@ -58,21 +62,6 @@ class EventGroupFormType extends AbstractType
                 ],
                 'autocomplete' => true,
             ])
-            ->add('country', CountryType::class, [
-                'required' => false,
-                'help' => $this->translator->trans('leave-blank-if-not-applicable'),
-                'row_attr' => [
-                    'class' => 'form-floating',
-                ],
-                'autocomplete' => true,
-            ])
-            ->add('city', TextType::class, [
-                'required' => false,
-                'help' => $this->translator->trans('leave-blank-if-not-applicable'),
-                'row_attr' => [
-                    'class' => 'form-floating',
-                ],
-            ])
             ->add('entityIdentificationNumber', TextType::class, [
                 'help' => $this->translator->trans('entity-identification-number-explainer'),
                 'row_attr' => [
@@ -85,22 +74,38 @@ class EventGroupFormType extends AbstractType
                     'class' => 'form-floating',
                 ],
             ])
-            ->add('isPrivate', CheckboxType::class, [
+            ->add('isPrivate', CustomCheckBoxType::class, [
                 'required' => false,
                 'label' => $this->translator->trans('is-private-group-input-label'),
-                'label_attr' => [
-                    'class' => 'checkbox-switch',
-                ],
             ])
-            ->add('categories', CategoryGroupType::class, [
-                'label' => false,
-                'expanded' => true,
-                'multiple' => true,
-                'searchable' => true,
+            ->add('categories', EntityType::class, [
                 'class' => Category::class,
                 'choice_label' => 'title',
                 'choice_translation_domain' => true,
-            ]);
+                'autocomplete' => true,
+                'row_attr' => [
+                    'class' => 'form-floating',
+                ],
+            ])
+            ->add('country', EntityType::class, [
+                'class' => Country::class,
+                'choice_label' => 'name',
+                'row_attr' => [
+                    'class' => 'form-floating',
+                ],
+            ])
+            ->addDependent('city', 'country', function (DependentField $field, null|Country $country) {
+                $field->add(EntityType::class, [
+                    'class' => City::class,
+                    'placeholder' => 'city',
+                    'disabled' => ! $country instanceof Country,
+                    'choices' => $country?->getCities(),
+                    'choice_label' => fn (City $city): string => ucfirst($city->getName()),
+                    'row_attr' => [
+                        'class' => 'form-floating',
+                    ],
+                ]);
+            });
     }
 
     public function configureOptions(OptionsResolver $resolver): void

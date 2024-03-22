@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity\EventGroup;
 
+use App\Entity\City;
+use App\Entity\Country;
 use App\Entity\Event\Category;
 use App\Entity\Event\Event;
 use App\Entity\Poll\Poll;
@@ -32,15 +34,6 @@ class EventGroup
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    private null|string $name = null;
-
-    #[ORM\Column(type: Types::STRING, length: 140)]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 20, max: 140)]
-    private null|string $purpose = null;
-
     #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: Event::class, cascade: ['persist'])]
     #[ORM\OrderBy([
         'startAt' => Criteria::DESC,
@@ -50,40 +43,18 @@ class EventGroup
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
-    #[ORM\ManyToOne(inversedBy: 'eventGroups')]
-    private null|User $owner = null;
-
     #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: EventGroupMember::class, cascade: ['persist'])]
     private Collection $eventGroupMembers;
 
     #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: EventGroupDiscussion::class)]
     private Collection $eventGroupDiscussions;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    private null|string $entityIdentificationNumber = null;
-
     #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: Poll::class)]
     private Collection $polls;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private null|string $base64Image = null;
-
     #[ORM\ManyToMany(targetEntity: Category::class)]
+    #[Assert\Count(min: 1, max: 5)]
     private Collection $categories;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Country]
-    private null|string $country = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private null|string $city = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private null|string $language = null;
-
-    #[ORM\Column(nullable: true)]
-    private null|bool $isPrivate = false;
 
     #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: EventGroupInvitation::class)]
     private Collection $eventGroupInvitations;
@@ -91,8 +62,30 @@ class EventGroup
     #[ORM\OneToMany(mappedBy: 'eventGroup', targetEntity: EventGroupJoinRequest::class)]
     private Collection $eventGroupJoinRequests;
 
-    public function __construct()
-    {
+    public function __construct(
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank]
+        private null|string $name = null,
+        #[ORM\Column(type: Types::STRING, length: 140)]
+        #[Assert\NotBlank]
+        #[Assert\Length(min: 20, max: 140)]
+        private null|string $purpose = null,
+        #[ORM\ManyToOne(inversedBy: 'eventGroups')]
+        private null|User $owner = null,
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank]
+        private null|string $entityIdentificationNumber = null,
+        #[ORM\Column(type: Types::TEXT, nullable: true)]
+        private null|string $base64Image = null,
+        #[ORM\ManyToOne(targetEntity: Country::class)]
+        private null|Country $country = null,
+        #[ORM\ManyToOne(targetEntity: City::class)]
+        private null|City $city = null,
+        #[ORM\Column(length: 255, nullable: true)]
+        private null|string $language = null,
+        #[ORM\Column(nullable: true)]
+        private null|bool $isPrivate = null,
+    ) {
         $this->events = new ArrayCollection();
         $this->eventGroupMembers = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
@@ -345,28 +338,24 @@ class EventGroup
         return $this;
     }
 
-    public function getCountry(): null|string
+    public function getCountry(): ?Country
     {
         return $this->country;
     }
 
-    public function setCountry(null|string $country): static
+    public function setCountry(?Country $country): void
     {
         $this->country = $country;
-
-        return $this;
     }
 
-    public function getCity(): null|string
+    public function getCity(): null|City
     {
         return $this->city;
     }
 
-    public function setCity(null|string $city): static
+    public function setCity(?City $city): void
     {
         $this->city = $city;
-
-        return $this;
     }
 
     public function getLanguage(): null|string
