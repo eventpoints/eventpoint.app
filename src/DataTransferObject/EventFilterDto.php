@@ -82,5 +82,4 @@ class EventFilterDto
     {
         $this->radius = $radius;
     }
-
 }

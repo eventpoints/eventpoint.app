@@ -23,7 +23,6 @@ use App\Form\Form\Event\EventDetailsFormType;
 use App\Form\Form\Event\EventFormType;
 use App\Form\Form\Event\EventLocationFormType;
 use App\Form\Form\Image\ImageFormType;
-use App\Repository\CountryRepository;
 use App\Repository\Event\EventEmailInvitationRepository;
 use App\Repository\Event\EventInvitationRepository;
 use App\Repository\Event\EventRepository;

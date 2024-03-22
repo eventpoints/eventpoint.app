@@ -12,7 +12,6 @@ use App\Enum\EventFilterDateRangeEnum;
 use App\Form\Type\CustomEnumType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\RangeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -25,8 +24,7 @@ class EventFilterType extends AbstractType
 {
     public function __construct(
         private readonly TranslatorInterface $translator
-    )
-    {
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -75,11 +73,8 @@ class EventFilterType extends AbstractType
                     'class' => City::class,
                     'placeholder' => 'city',
                     'data' => $country->getCapitalCity(),
-                    'choices' => $country?->getCities(),
-                    'choice_label' => function (City $city): string {
-                        return ucfirst($city->getName());
-                    },
-                    'disabled' => $country === null,
+                    'choices' => $country->getCities(),
+                    'choice_label' => fn (City $city): string => ucfirst($city->getName()),
                     'row_attr' => [
                         'class' => 'form-floating',
                     ],
@@ -93,8 +88,8 @@ class EventFilterType extends AbstractType
                         'data' => 50,
                         'attr' => [
                             'min' => 5,
-                            'max' => 100
-                        ]
+                            'max' => 100,
+                        ],
                     ]);
                 }
             });

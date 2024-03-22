@@ -13,10 +13,9 @@ use Doctrine\Persistence\ObjectManager;
 class CountryFixtures extends Fixture
 {
     public function __construct(
-        private readonly Countries         $countries,
+        private readonly Countries $countries,
         private readonly CountryRepository $countryRepository
-    )
-    {
+    ) {
     }
 
     public function load(ObjectManager $manager): void

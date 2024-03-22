@@ -87,5 +87,4 @@ class City
     {
         $this->country = $country;
     }
-
 }
