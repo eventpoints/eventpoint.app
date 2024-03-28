@@ -167,7 +167,7 @@ class Event implements Stringable
 
     public function setStartAt(null|DateTimeImmutable|CarbonImmutable $startAt): static
     {
-        $startAt instanceof DateTimeImmutable ? $this->startAt = CarbonImmutable::create($startAt) : $this->endAt = $startAt;
+        $startAt instanceof DateTimeImmutable ? $this->startAt = CarbonImmutable::parse($startAt->format('Y-m-d H:i:s')) : $this->startAt = $startAt;
         return $this;
     }
 
@@ -178,7 +178,7 @@ class Event implements Stringable
 
     public function setEndAt(null|DateTimeImmutable|CarbonImmutable $endAt): static
     {
-        $endAt instanceof DateTimeImmutable ? $this->startAt = CarbonImmutable::create($endAt) : $this->endAt = $endAt;
+        $endAt instanceof DateTimeImmutable ? $this->endAt = CarbonImmutable::parse($endAt->format('Y-m-d H:i:s')) : $this->endAt = $endAt;
         return $this;
     }
 
