@@ -132,6 +132,12 @@ class EventController extends AbstractController
         ]);
         $invitations = $invitations->matching($criteria);
 
+        if (! empty($event->getUrl())) {
+            return $this->render('events/show-external-event.html.twig', [
+                'event' => $event,
+            ]);
+        }
+
         return $this->render('events/show.html.twig', [
             'imageForm' => $imageForm,
             'event' => $event,

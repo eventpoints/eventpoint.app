@@ -172,7 +172,10 @@ $card-border-width: $border-width !default;
 $card-border-radius: 0 !default;
 $card-inner-border-radius: 0 !default;
 
-// Toasts
+$card-cap-bg: $white !default;
+$card-bg: $white !default;
+
+  // Toasts
 
 $toast-header-color: $headings-color !default;
 
