@@ -24,7 +24,8 @@ class EventFilterType extends AbstractType
 {
     public function __construct(
         private readonly TranslatorInterface $translator
-    ) {
+    )
+    {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -51,6 +52,7 @@ class EventFilterType extends AbstractType
                 'multiple' => false,
             ])
             ->add('category', EntityType::class, [
+                'required' => false,
                 'class' => Category::class,
                 'choice_label' => 'title',
                 'choice_translation_domain' => true,
@@ -72,7 +74,7 @@ class EventFilterType extends AbstractType
                     'placeholder' => 'city',
                     'data' => $country->getCapitalCity(),
                     'choices' => $country->getCities(),
-                    'choice_label' => fn (City $city): string => ucfirst($city->getName()),
+                    'choice_label' => fn(City $city): string => ucfirst($city->getName()),
                     'row_attr' => [
                         'class' => 'form-floating',
                     ],
