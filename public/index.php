@@ -6,4 +6,6 @@ use App\Kernel;
 
 require_once dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
+date_default_timezone_set('UTC');
+
 return fn (array $context) => new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);

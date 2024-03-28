@@ -10,6 +10,7 @@ use App\Entity\Image\ImageCollection;
 use App\Entity\User\User;
 use App\Repository\Event\EventRepository;
 use Carbon\CarbonImmutable;
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -92,6 +93,9 @@ class Event implements Stringable
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventTicketOption::class, cascade: ['persist'])]
     private Collection $ticketOptions;
 
+    #[ORM\Column(nullable: true)]
+    private null|string $url = null;
+
     public function __construct(
         #[ORM\Column(length: 255)]
         private null|string $title = null,
@@ -161,10 +165,9 @@ class Event implements Stringable
         return $this->startAt;
     }
 
-    public function setStartAt(null|CarbonImmutable $startAt): static
+    public function setStartAt(null|DateTimeImmutable|CarbonImmutable $startAt): static
     {
-        $this->startAt = $startAt;
-
+        $startAt instanceof DateTimeImmutable ? $this->startAt = CarbonImmutable::create($startAt) : $this->endAt = $startAt;
         return $this;
     }
 
@@ -173,10 +176,9 @@ class Event implements Stringable
         return $this->endAt;
     }
 
-    public function setEndAt(null|CarbonImmutable $endAt): static
+    public function setEndAt(null|DateTimeImmutable|CarbonImmutable $endAt): static
     {
-        $this->endAt = $endAt;
-
+        $endAt instanceof DateTimeImmutable ? $this->startAt = CarbonImmutable::create($endAt) : $this->endAt = $endAt;
         return $this;
     }
 
@@ -802,5 +804,15 @@ class Event implements Stringable
     public function getAllParticipantsCount(): int
     {
         return $this->getEventOrganisers()->count() + $this->getEventParticipants()->count();
+    }
+
+    public function getUrl(): ?string
+    {
+        return $this->url;
+    }
+
+    public function setUrl(?string $url): void
+    {
+        $this->url = $url;
     }
 }

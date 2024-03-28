@@ -12,7 +12,7 @@ use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Events;
 
 #[AsEntityListener(event: Events::postUpdate, method: 'postUpdate', entity: Event::class)]
-class EventPostUpdateEventSubscriber
+class EventMomentSubscriber
 {
     public function postUpdate(Event $event, PostUpdateEventArgs $args): void
     {

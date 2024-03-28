@@ -28,12 +28,15 @@ class EventFormType extends AbstractType
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
-        private readonly Security $security
+        private readonly Security $security,
     ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        /** @var User $currentUser */
+        $currentUser = $this->security->getUser();
+
         $event = $options['event'];
         $builder
             ->add('address', TextType::class, [
@@ -59,7 +62,9 @@ class EventFormType extends AbstractType
             ])
             ->add('description', TextareaType::class)
             ->add('startAt', DateTimeType::class, [
+                'view_timezone' => $currentUser->getTimezone(),
                 'html5' => false,
+                'format' => 'yyyy-MM-dd HH:mm',
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
                 'row_attr' => [
@@ -72,6 +77,8 @@ class EventFormType extends AbstractType
                 ],
             ])
             ->add('endAt', DateTimeType::class, [
+                'view_timezone' => $currentUser->getTimezone(),
+                'format' => 'yyyy-MM-dd HH:mm',
                 'html5' => false,
                 'widget' => 'single_text',
                 'input' => 'datetime_immutable',
@@ -97,7 +104,6 @@ class EventFormType extends AbstractType
                 'required' => false,
             ]);
 
-        $currentUser = $this->security->getUser();
         if ($currentUser instanceof User) {
             $builder->add('eventGroup', EntitySelectionGroupType::class, [
                 'required' => false,
