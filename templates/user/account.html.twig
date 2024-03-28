@@ -26,7 +26,7 @@
                             <div class="text-muted mb-3">{{ 'multiple-email-account-explainer'|trans }}</div>
                             <div class="d-flex justify-content-start align-items-center mb-3">
                                 {% for email in app.user.emails %}
-                                    <div class="badge rounded-pill {{ email == app.user.email ? 'text-bg-primary' : 'text-bg-secondary' }}">{{ app.user.email.address }}</div>
+                                    <div class="badge m-1 rounded-pill {{ email == app.user.email ? 'text-bg-primary' : 'text-bg-secondary' }}">{{ email.address }}</div>
                                 {% endfor %}
                             </div>
                         </a>
