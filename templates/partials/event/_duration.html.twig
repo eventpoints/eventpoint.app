@@ -1,0 +1,19 @@
+{% if event.startAt.isSameDay(event.endAt) %}
+    <div class="d-flex justify-content-between align-items-center">
+        <div>{{ event.startAt|format_date(timezone=regional.timezone,pattern=day_date_pattern) }}</div>
+        <div>{{ event.startAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}
+            - {{ event.endAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}</div>
+    </div>
+{% else %}
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            {{ event.startAt|format_date(timezone=regional.timezone,pattern=short_day_date_pattern) }}
+            {{ event.startAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}
+        </div>
+        <div>-</div>
+        <div>
+            {{ event.endAt|format_date(timezone=regional.timezone,pattern=short_day_date_pattern) }}
+            {{ event.endAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}
+        </div>
+    </div>
+{% endif %}

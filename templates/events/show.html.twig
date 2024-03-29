@@ -92,10 +92,8 @@
                                 <div class="fw-bold">{{ event.eventGroup.name }}</div>
                             </a>
                         {% endif %}
-                        <div class="list-group-item d-flex justify-content-start align-items-center">
-                            <div class="me-2">{{ event.startAt|format_date(timezone=regional.timezone,pattern=day_date_pattern) }} </div>
-                            <div>{{ event.startAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}
-                                - {{ event.endAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}</div>
+                        <div class="list-group-item">
+                            {{ include('partials/event/_duration.html.twig') }}
                         </div>
                         <div class="list-group-item d-flex d-flex justify-content-between align-items-center"
                                 {{ stimulus_controller('clipboard', {

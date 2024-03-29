@@ -209,11 +209,7 @@
                                             <div class="d-flex justify-content-between">
                                                 <div>
                                                     <div class="fw-bold">{{ event.title }}</div>
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                                        <div>{{ event.startAt|format_date(timezone=regional.timezone,pattern=day_date_pattern) }}</div>
-                                                        <div>{{ event.startAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}
-                                                            - {{ event.endAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}</div>
-                                                    </div>
+                                                    {{ include('partials/event/_duration.html.twig') }}
                                                     <div class="text-muted">{{ event.address }}</div>
                                                 </div>
                                                 <div>
