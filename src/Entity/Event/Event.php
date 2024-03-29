@@ -275,7 +275,8 @@ class Event implements Stringable
 
     public function getIsComplete(): bool
     {
-        return CarbonImmutable::now()->isAfter($this->getEndAt());
+        $now = CarbonImmutable::now();
+        return $now->isAfter($this->getEndAt());
     }
 
     public function getBase64Image(): null|string

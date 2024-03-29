@@ -20,7 +20,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
             'date_pattern' => 'dd MM yy',
             'date_time_pattern' => 'dd MM yy HH:mm',
             'time_pattern' => 'HH:mm',
-            'short_day_date_pattern' => 'E, dd MMM yy',
+            'short_day_date_pattern' => 'E, dd MMM yyyy',
             'day_date_pattern' => 'E, dd MMM yyyy',
             'mapbox_token' => '%env(MAPBOX_TOKEN)%',
             'turnstile_public_key' => '%env(CLOUDFLARE_TURNSTILE_PUBLIC_KEY)%',

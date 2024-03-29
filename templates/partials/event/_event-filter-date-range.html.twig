@@ -1,0 +1,98 @@
+<div class="d-flex justify-content-between fs-4">
+    <div class="text-danger text-center">
+        {% if eventFilterDto.period.value == 'recently' %}
+            <div class="fw-bold">{{ 'recently'|trans|upper }}</div>
+        {% elseif eventFilterDto.period.value == 'in-progress' %}
+            <div class="fw-bold">{{ 'in-progress'|trans|upper }}</div>
+        {% elseif eventFilterDto.period.value == 'today' %}
+            <div class="fw-bold">{{ 'today'|trans|upper }}</div>
+        {% elseif eventFilterDto.period.value == 'tomorrow' %}
+            <div class="fw-bold">{{ 'tomorrow'|trans|upper }}</div>
+        {% elseif eventFilterDto.period.value == 'this-weekend' %}
+            <div class="fw-bold">{{ 'this-weekend'|trans|upper }}</div>
+        {% elseif eventFilterDto.period.value == 'this-week' %}
+            <div class="fw-bold">{{ 'this-week'|trans|upper }}</div>
+        {% elseif eventFilterDto.period.value == 'next-week' %}
+            <div class="fw-bold">{{ 'next-week'|trans|upper }}</div>
+        {% elseif eventFilterDto.period.value == 'next-month' %}
+            <div class="fw-bold">{{ 'next-month'|trans|upper }}</div>
+        {% else %}
+        {% endif %}
+    </div>
+    <div class="text-end">
+        <div class="d-flex justify-content-between">
+            <div>
+                {% if eventFilterDto.period.value == 'recently' %}
+                    <div class="fw-bold">
+                        {{ app_time.now.subWeek.startOfWeek.dayName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.startOfWeek.day|timezone_name(regional.timezone) }}
+                        -
+                        {{ app_time.now.subWeek.endOfWeek.dayName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.endOfWeek.day|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
+                    </div>
+                {% elseif eventFilterDto.period.value == 'in-progress' %}
+                    <div class="fw-bold">
+                        <div class="fw-bold">
+                            {{ app_time.now.dayName|timezone_name(regional.timezone) }}
+                            {{ app_time.now.day|timezone_name(regional.timezone) }}
+                            {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                            {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
+                        </div>
+                    </div>
+                {% elseif eventFilterDto.period.value == 'today' %}
+                    <div class="fw-bold">
+                        <div class="fw-bold">
+                            {{ app_time.now.dayName|timezone_name(regional.timezone) }}
+                            {{ app_time.now.day|timezone_name(regional.timezone) }}
+                            {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                            {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
+                        </div>
+                    </div>
+                {% elseif eventFilterDto.period.value == 'tomorrow' %}
+                    <div class="fw-bold">
+                        {{ app_time.now.addDay.dayName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.addDay.day|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
+                    </div>
+                {% elseif eventFilterDto.period.value == 'this-weekend' %}
+                    <div class="fw-bold">
+                        {{ app_time.now.next('SATURDAY').dayName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.next('SATURDAY').day|timezone_name(regional.timezone) }}
+                        -
+                        {{ app_time.now.next('SUNDAY').dayName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.next('SUNDAY').day|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
+                    </div>
+                {% elseif eventFilterDto.period.value == 'this-week' %}
+                    <div class="fw-bold">
+                        {{ app_time.now.previous('MONDAY').dayName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.previous('MONDAY').day|timezone_name(regional.timezone) }}
+                        -
+                        {{ app_time.now.next('FRIDAY').dayName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.next('FRIDAY').day|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
+                    </div>
+                {% elseif eventFilterDto.period.value == 'next-week' %}
+                    <div class="fw-bold">
+                        {{ app_time.now.addWeek.startOfWeek.dayName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.addWeek.startOfWeek.day|timezone_name(regional.timezone) }}
+                        -
+                        {{ app_time.now.addWeek.endOfWeek.dayName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.addWeek.endOfWeek.day|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
+                        {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
+                    </div>
+                {% else %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<hr/>
+
+

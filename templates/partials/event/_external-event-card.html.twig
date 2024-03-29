@@ -1,0 +1,22 @@
+<div class="card mb-2">
+    {% if event.base64Image %}
+        <img src="{{ event.base64Image }}"
+             class="card-img-top"
+             alt="{{ event.title }}">
+    {% endif %}
+
+    <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <div>
+                <div class="fw-bold">{{ event.title }}</div>
+                {{ include('partials/event/_duration.html.twig') }}
+                <div class="text-muted">{{ event.address }}</div>
+            </div>
+            <div>
+                <span class="badge rounded-pill text-bg-warning">{{ 'external-event'|trans }}</span>
+            </div>
+        </div>
+        <a class="stretched-link"
+           href="{{ path('show_event', {id: event.id}) }}"></a>
+    </div>
+</div>

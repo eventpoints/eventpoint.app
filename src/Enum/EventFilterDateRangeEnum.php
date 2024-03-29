@@ -7,6 +7,7 @@ namespace App\Enum;
 enum EventFilterDateRangeEnum: string
 {
     case RECENTLY = 'recently';
+    case IN_PROGRESS = 'in-progress';
     case TODAY = 'today';
     case TOMORROW = 'tomorrow';
     case THIS_WEEK = 'this-week';

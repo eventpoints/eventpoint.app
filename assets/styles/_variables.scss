@@ -31,7 +31,7 @@ $teal: #20c997 !default;
 $cyan: #287bb5 !default;
 
 $primary: #00695c !default;
-$secondary: $gray-400 !default;
+$secondary: $gray-100 !default;
 $thirdly: $white !default;
 $success: #00695c !default;
 $info: $cyan !default;
@@ -112,6 +112,7 @@ $form-select-focus-box-shadow: 0 !default;
 .nav .nav-link:hover, .nav .nav-link:focus {
   background-color: $light;
 }
+
 $nav-link-color: $black !default;
 $nav-link-disabled-color: $secondary !default;
 $nav-link-hover-color: $dark !default;
@@ -175,7 +176,7 @@ $card-inner-border-radius: 0 !default;
 $card-cap-bg: $white !default;
 $card-bg: $white !default;
 
-  // Toasts
+// Toasts
 
 $toast-header-color: $headings-color !default;
 
