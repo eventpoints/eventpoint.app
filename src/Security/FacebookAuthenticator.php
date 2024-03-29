@@ -73,7 +73,7 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
                 $user = $this->emailRepository->findOneBy([
                     'address' => $emailAddress,
                 ])?->getOwner();
-                
+
                 if (! $user instanceof User) {
                     // 3) Maybe you just want to "register" them
                     $email = $this->emailFactory->create(emailAddress: $emailAddress, user: $user);
