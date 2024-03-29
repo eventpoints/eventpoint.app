@@ -30,7 +30,6 @@ class EventFilterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder = new DynamicFormBuilder($builder);
-
         $builder
             ->add('keyword', TextType::class, [
                 'label' => $this->translator->trans('event-filter-title-placeholder'),
