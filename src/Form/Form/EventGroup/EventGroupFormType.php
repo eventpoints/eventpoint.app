@@ -82,6 +82,7 @@ class EventGroupFormType extends AbstractType
                 'class' => Category::class,
                 'choice_label' => 'title',
                 'choice_translation_domain' => true,
+                'multiple' => true,
                 'autocomplete' => true,
                 'row_attr' => [
                     'class' => 'form-floating',

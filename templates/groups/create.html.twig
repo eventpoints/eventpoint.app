@@ -4,7 +4,9 @@
     <div class="container">
         <div class="row justify-content-center mt-3">
             <div class="col-12 col-md-6">
-                {{ component('event_group_form_component') }}
+                {{ component('event_group_form_component', {
+                    eventGroup: null
+                }) }}
             </div>
         </div>
     </div>
