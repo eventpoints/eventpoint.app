@@ -4,6 +4,7 @@ namespace App\Form\DataTransformer;
 
 use App\Entity\Event\Category;
 use App\Repository\Event\CategoryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
@@ -48,6 +49,6 @@ readonly class CategoriesTransformer implements DataTransformerInterface
             $categories[] = $category;
         }
 
-        return $categories;
+        return new ArrayCollection($categories);
     }
 }
