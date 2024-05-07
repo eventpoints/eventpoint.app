@@ -69,4 +69,4 @@ jobs:
               coverage: none # default is xdebug
 
         -   run: composer install --dev --no-progress
-        -   run: composer run-script phpstan
+        -   run: composer run-script ps
