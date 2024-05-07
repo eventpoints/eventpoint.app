@@ -256,5 +256,5 @@ return [
     'external-event' => 'external event',
     'external-event-explainer' => 'Looks like this is an external event, we collect them together in one place so you don\'t miss anything that\'s happening',
     'open-external-event' => 'view event',
-    'free-admission' => 'free admission'
+    'free-admission' => 'free admission',
 ];
