@@ -2,9 +2,11 @@
 
 namespace App\DataTransferObject\Event;
 
+use App\Entity\Event\Category;
 use App\Entity\EventGroup\EventGroup;
 use Carbon\CarbonImmutable;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
 
 final class EventDetailsFormDto
 {
@@ -24,8 +26,11 @@ final class EventDetailsFormDto
 
     private CarbonImmutable $createdAt;
 
+    private ArrayCollection $categories;
+
     public function __construct()
     {
+        $this->categories = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
     }
 
@@ -108,4 +113,15 @@ final class EventDetailsFormDto
     {
         $this->createdAt = $createdAt;
     }
+
+    public function getCategories(): ArrayCollection
+    {
+        return $this->categories;
+    }
+
+    public function setCategories(ArrayCollection $categories): void
+    {
+        $this->categories = $categories;
+    }
+
 }

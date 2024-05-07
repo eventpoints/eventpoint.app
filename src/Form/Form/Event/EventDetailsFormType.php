@@ -3,14 +3,19 @@
 namespace App\Form\Form\Event;
 
 use App\DataTransferObject\Event\EventDetailsFormDto;
+use App\Entity\Event\Category;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
+use App\Form\DataTransformer\CategoriesTransformer;
 use App\Form\Type\CustomCheckBoxType;
 use App\Form\Type\EntitySelectionGroupType;
+use App\Repository\Event\CategoryRepository;
 use App\Repository\Event\EventGroupRepository;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -22,9 +27,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class EventDetailsFormType extends AbstractType
 {
     public function __construct(
-        private readonly Security $security,
-        private readonly TranslatorInterface $translator
-    ) {
+        private readonly Security            $security,
+        private readonly TranslatorInterface $translator,
+        private readonly CategoryRepository  $categoryRepository
+    )
+    {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -75,10 +82,23 @@ class EventDetailsFormType extends AbstractType
                     'data-calendar-target' => 'dateInput',
                 ],
             ])
+            ->add('categories', EntityType::class, [
+                'label' => false,
+                'multiple' => true,
+                'class' => Category::class,
+                'choice_label' => 'title',
+                'choice_value' => 'id',
+                'choice_translation_domain' => true,
+                'autocomplete' => true,
+                'data_class' => null, // Ensure no data class is set
+            ])
             ->add('isPrivate', CustomCheckBoxType::class, [
                 'label' => $this->translator->trans('is-event-private'),
                 'required' => false,
             ]);
+
+        $builder->get('categories')->addModelTransformer(new CategoriesTransformer($this->categoryRepository));
+
 
         if ($currentUser instanceof User) {
             $builder->add('eventGroup', EntitySelectionGroupType::class, [

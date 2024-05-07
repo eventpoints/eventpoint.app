@@ -6,6 +6,7 @@ namespace App\Controller\Controller\Event;
 
 use App\DataTransferObject\Event\EventDetailsFormDto;
 use App\DataTransferObject\Event\EventLocationFormDto;
+use App\Entity\Event\Category;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventEmailInvitation;
 use App\Entity\Event\EventMoment;
@@ -50,20 +51,21 @@ class EventController extends AbstractController
     public const EVENT_FORM_STEP_TWO = 'location';
 
     public function __construct(
-        private readonly EventRepository $eventRepository,
-        private readonly ImageService $imageUploadService,
-        private readonly ImageFactory $imageFactory,
-        private readonly ImageCollectionFactory $imageCollectionFactory,
-        private readonly ImageCollectionRepository $imageCollectionRepository,
-        private readonly EventOrganiserFactory $eventCrewMemberFactory,
-        private readonly EventRoleRepository $eventRoleRepository,
-        private readonly EventFactory $eventFactory,
-        private readonly EventCancellationFactory $eventCancellationFactory,
-        private readonly TranslatorInterface $translator,
+        private readonly EventRepository                $eventRepository,
+        private readonly ImageService                   $imageUploadService,
+        private readonly ImageFactory                   $imageFactory,
+        private readonly ImageCollectionFactory         $imageCollectionFactory,
+        private readonly ImageCollectionRepository      $imageCollectionRepository,
+        private readonly EventOrganiserFactory          $eventCrewMemberFactory,
+        private readonly EventRoleRepository            $eventRoleRepository,
+        private readonly EventFactory                   $eventFactory,
+        private readonly EventCancellationFactory       $eventCancellationFactory,
+        private readonly TranslatorInterface            $translator,
         private readonly EventEmailInvitationRepository $eventEmailInvitationRepository,
-        private readonly EventInvitationRepository $eventInvitationRepository,
-        private readonly RequestStack $requestStack,
-    ) {
+        private readonly EventInvitationRepository      $eventInvitationRepository,
+        private readonly RequestStack                   $requestStack,
+    )
+    {
     }
 
     /**
@@ -86,7 +88,7 @@ class EventController extends AbstractController
         if ($eventForm->isSubmitted() && $eventForm->isValid()) {
             $image = $eventForm->get('image')->getData();
 
-            if (! empty($image)) {
+            if (!empty($image)) {
                 /** @var Event $event */
                 $event = $eventForm->getData();
                 $event->setBase64Image(
@@ -132,7 +134,7 @@ class EventController extends AbstractController
         ]);
         $invitations = $invitations->matching($criteria);
 
-        if (! empty($event->getUrl())) {
+        if (!empty($event->getUrl())) {
             return $this->render('events/show-external-event.html.twig', [
                 'event' => $event,
             ]);
@@ -198,6 +200,7 @@ class EventController extends AbstractController
     #[Route(path: '/events/create/{step}', name: 'create_event')]
     public function create(Request $request, #[CurrentUser] User $currentUser, string $step): Response
     {
+
         $handle = $this->handleStep($step);
         if ($handle instanceof Response) {
             return $handle;
@@ -213,6 +216,7 @@ class EventController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+
             return match (true) {
                 $step === self::EVENT_FORM_STEP_ONE => $this->handleEventFormStepOne($form),
                 $step === self::EVENT_FORM_STEP_TWO => $this->handleEventFormStepTwo($form, $currentUser),
@@ -250,9 +254,10 @@ class EventController extends AbstractController
     {
         $eventDetailsFormDto = $this->requestStack->getSession()->get('event-form-step-one');
 
-        if (! $eventDetailsFormDto instanceof EventDetailsFormDto) {
+        if (!$eventDetailsFormDto instanceof EventDetailsFormDto) {
             $eventDetailsFormDto = new EventDetailsFormDto();
         }
+
 
         return $this->createForm(EventDetailsFormType::class, $eventDetailsFormDto);
     }
@@ -261,7 +266,7 @@ class EventController extends AbstractController
     {
         $eventLocationFormDto = $this->requestStack->getSession()->get('event-form-step-two');
 
-        if (! $eventLocationFormDto instanceof EventLocationFormDto) {
+        if (!$eventLocationFormDto instanceof EventLocationFormDto) {
             $eventLocationFormDto = new EventLocationFormDto();
         }
 
@@ -270,7 +275,7 @@ class EventController extends AbstractController
 
     private function handleEventFormStepOne(FormInterface $form): Response
     {
-        if (! empty($form->get('image')->getData())) {
+        if (!empty($form->get('image')->getData())) {
             $base64Image = $this->imageUploadService->processPhoto($form->get('image')->getData());
             $form->getData()->setBase64image($base64Image->getEncoded());
         }
@@ -324,7 +329,7 @@ class EventController extends AbstractController
     {
         $eventDetailsFormDto = $this->requestStack->getSession()->get('event-form-step-one');
 
-        if (! $eventDetailsFormDto instanceof EventDetailsFormDto) {
+        if (!$eventDetailsFormDto instanceof EventDetailsFormDto) {
             return $this->redirectToRoute('create_event', [
                 'step' => self::EVENT_FORM_STEP_ONE,
             ]);

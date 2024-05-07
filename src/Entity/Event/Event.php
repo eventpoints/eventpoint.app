@@ -98,30 +98,31 @@ class Event implements Stringable
 
     public function __construct(
         #[ORM\Column(length: 255)]
-        private null|string $title = null,
+        private null|string          $title = null,
         #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
         private null|CarbonImmutable $startAt = null,
         #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
         private null|CarbonImmutable $endAt = null,
         #[ORM\Column(type: Types::TEXT, nullable: true)]
-        private null|string $description = null,
+        private null|string          $description = null,
         #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
-        private null|string $latitude = null,
+        private null|string          $latitude = null,
         #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
-        private null|string $longitude = null,
+        private null|string          $longitude = null,
         #[ORM\Column(type: Types::TEXT, nullable: true)]
-        private null|string $base64Image = null,
+        private null|string          $base64Image = null,
         #[ORM\Column]
-        private null|bool $isPrivate = false,
+        private null|bool            $isPrivate = false,
         #[ORM\Column(length: 255)]
-        private null|string $address = null,
+        private null|string          $address = null,
         #[ORM\ManyToOne(inversedBy: 'authoredEvents')]
         #[ORM\JoinColumn(nullable: false)]
-        private ?User $owner = null,
+        private ?User                $owner = null,
         #[ORM\ManyToOne(inversedBy: 'events')]
         #[ORM\JoinColumn(nullable: true)]
-        private null|EventGroup $eventGroup = null
-    ) {
+        private null|EventGroup      $eventGroup = null,
+    )
+    {
         $this->categories = new ArrayCollection();
         $this->images = new ArrayCollection();
         $this->eventOrganisers = new ArrayCollection();
@@ -140,7 +141,7 @@ class Event implements Stringable
 
     public function __toString(): string
     {
-        return (string) $this->getTitle();
+        return (string)$this->getTitle();
     }
 
     public function getId(): null|Uuid
@@ -204,7 +205,7 @@ class Event implements Stringable
 
     public function addCategory(Category $category): static
     {
-        if (! $this->categories->contains($category)) {
+        if (!$this->categories->contains($category)) {
             $this->categories->add($category);
         }
 
@@ -309,7 +310,7 @@ class Event implements Stringable
 
     public function addEventParticipant(EventParticipant $user): self
     {
-        if (! $this->getEventParticipants()->contains($user)) {
+        if (!$this->getEventParticipants()->contains($user)) {
             $this->eventParticipants->add($user);
             $user->setEvent($this);
         }
@@ -327,7 +328,7 @@ class Event implements Stringable
 
     public function addEventRequest(EventRequest $eventRequest): self
     {
-        if (! $this->getEventRequests()->contains($eventRequest)) {
+        if (!$this->getEventRequests()->contains($eventRequest)) {
             $this->eventRequests->add($eventRequest);
             $eventRequest->setEvent($this);
         }
@@ -352,7 +353,7 @@ class Event implements Stringable
 
     public function addEventInvitation(EventInvitation $eventInvite): self
     {
-        if (! $this->getEventParticipants()->exists(fn (int $key, EventParticipant $eventParticipant) => $eventParticipant->getEvent() === $eventInvite->getEvent() && $eventParticipant->getOwner() === $eventInvite->getTarget()) && ! $this->eventInvitations->exists(fn (int $key, EventInvitation $existingEventInvite) => $existingEventInvite->getEvent() === $eventInvite->getEvent() && $existingEventInvite->getTarget() === $eventInvite->getTarget())) {
+        if (!$this->getEventParticipants()->exists(fn(int $key, EventParticipant $eventParticipant) => $eventParticipant->getEvent() === $eventInvite->getEvent() && $eventParticipant->getOwner() === $eventInvite->getTarget()) && !$this->eventInvitations->exists(fn(int $key, EventInvitation $existingEventInvite) => $existingEventInvite->getEvent() === $eventInvite->getEvent() && $existingEventInvite->getTarget() === $eventInvite->getTarget())) {
             $this->eventInvitations->add($eventInvite);
             $eventInvite->setEvent($this);
         }
@@ -380,7 +381,7 @@ class Event implements Stringable
 
     public function addEventRejection(EventRejection $eventRejection): self
     {
-        if (! $this->getEventRejections()->contains($eventRejection)) {
+        if (!$this->getEventRejections()->contains($eventRejection)) {
             $this->eventRejections->add($eventRejection);
             $eventRejection->setEvent($this);
         }
@@ -407,7 +408,7 @@ class Event implements Stringable
 
     public function addImage(Image $image): static
     {
-        if (! $this->images->contains($image)) {
+        if (!$this->images->contains($image)) {
             $this->images->add($image);
         }
 
@@ -435,7 +436,7 @@ class Event implements Stringable
 
     public function addEventOrganiser(EventOrganiser $eventOrganiser): static
     {
-        if (! $this->getEventOrganisers()->contains($eventOrganiser)) {
+        if (!$this->getEventOrganisers()->contains($eventOrganiser)) {
             $this->eventOrganisers->add($eventOrganiser);
             $eventOrganiser->setEvent($this);
         }
@@ -477,7 +478,7 @@ class Event implements Stringable
 
     public function addImageCollection(ImageCollection $imageCollection): static
     {
-        if (! $this->getImageCollections()->contains($imageCollection)) {
+        if (!$this->getImageCollections()->contains($imageCollection)) {
             $this->imageCollections->add($imageCollection);
             $imageCollection->setEvent($this);
         }
@@ -527,7 +528,7 @@ class Event implements Stringable
 
     public function addEmailInvitation(EventEmailInvitation $emailInvitation): static
     {
-        if (! $this->getEventEmailInvitations()->contains($emailInvitation)) {
+        if (!$this->getEventEmailInvitations()->contains($emailInvitation)) {
             $this->eventEmailInvitations->add($emailInvitation);
             $emailInvitation->setEvent($this);
         }
@@ -566,7 +567,7 @@ class Event implements Stringable
 
     public function getUnansweredInvitation(User $user): null|EventInvitation
     {
-        return $this->getEventInvitations()->findFirst(fn (int $key, EventInvitation $eventInvitation) => $eventInvitation->getTarget() === $user);
+        return $this->getEventInvitations()->findFirst(fn(int $key, EventInvitation $eventInvitation) => $eventInvitation->getTarget() === $user);
     }
 
     public function getAddress(): null|string
@@ -637,7 +638,7 @@ class Event implements Stringable
 
     public function addEventOrganiserInvitation(EventOrganiserInvitation $eventOrganiserInvitation): static
     {
-        if (! $this->eventOrganiserInvitations->contains($eventOrganiserInvitation)) {
+        if (!$this->eventOrganiserInvitations->contains($eventOrganiserInvitation)) {
             $this->eventOrganiserInvitations->add($eventOrganiserInvitation);
             $eventOrganiserInvitation->setEvent($this);
         }
@@ -659,52 +660,52 @@ class Event implements Stringable
 
     public function hasRequestedToAttend(User $user): bool
     {
-        return $this->getEventRequests()->exists(fn (int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
+        return $this->getEventRequests()->exists(fn(int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
     }
 
     public function hasBeenInvited(User $user): bool
     {
-        return $this->getEventInvitations()->exists(fn (int $key, EventInvitation $eventInvitation) => $eventInvitation->getTarget() === $user);
+        return $this->getEventInvitations()->exists(fn(int $key, EventInvitation $eventInvitation) => $eventInvitation->getTarget() === $user);
     }
 
     public function hasEmailBeenInvited(string $emailAddress): bool
     {
-        return $this->getEventEmailInvitations()->exists(fn (int $key, EventEmailInvitation $eventEmailInvitation) => $eventEmailInvitation->getEmail()->getAddress() === $emailAddress);
+        return $this->getEventEmailInvitations()->exists(fn(int $key, EventEmailInvitation $eventEmailInvitation) => $eventEmailInvitation->getEmail()->getAddress() === $emailAddress);
     }
 
     public function getRequestToAttend(User $user): null|EventRequest
     {
-        return $this->getEventRequests()->findFirst(fn (int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
+        return $this->getEventRequests()->findFirst(fn(int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
     }
 
     public function attendRequest(User $user): null|EventRequest
     {
-        return $this->getEventRequests()->findFirst(fn (int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
+        return $this->getEventRequests()->findFirst(fn(int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
     }
 
     public function getIsAttending(User $user): bool
     {
-        return $this->getEventParticipants()->exists(fn (int $key, EventParticipant $eventParticipant) => $eventParticipant->getOwner() === $user);
+        return $this->getEventParticipants()->exists(fn(int $key, EventParticipant $eventParticipant) => $eventParticipant->getOwner() === $user);
     }
 
     public function hasRated(User $user): bool
     {
-        return $this->getEventReviews()->exists(fn (int $key, EventReview $eventReview) => $eventReview->getOwner() === $user);
+        return $this->getEventReviews()->exists(fn(int $key, EventReview $eventReview) => $eventReview->getOwner() === $user);
     }
 
     public function getIsOrganiser(User $user): bool
     {
-        return $this->getEventOrganisers()->exists(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $user);
+        return $this->getEventOrganisers()->exists(fn(int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $user);
     }
 
     public function isAlreadyInvitedOrganiser(User $user): bool
     {
-        return $this->eventOrganiserInvitations->exists(fn (int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getOwner() instanceof User && $eventOrganiserInvitation->getOwner() === $user);
+        return $this->eventOrganiserInvitations->exists(fn(int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getOwner() instanceof User && $eventOrganiserInvitation->getOwner() === $user);
     }
 
     public function isEmailAlreadyInvitedOrganiser(string $emailAddress): bool
     {
-        return $this->eventOrganiserInvitations->exists(fn (int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getOwner()->getEmail()->getAddress() === $emailAddress);
+        return $this->eventOrganiserInvitations->exists(fn(int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getOwner()->getEmail()->getAddress() === $emailAddress);
     }
 
     /**
@@ -717,7 +718,7 @@ class Event implements Stringable
 
     public function addEventReview(EventReview $eventReview): static
     {
-        if (! $this->eventReviews->contains($eventReview)) {
+        if (!$this->eventReviews->contains($eventReview)) {
             $this->eventReviews->add($eventReview);
             $eventReview->setEvent($this);
         }
@@ -747,7 +748,7 @@ class Event implements Stringable
 
     public function addEventMoment(EventMoment $eventChangeLog): static
     {
-        if (! $this->eventMoments->contains($eventChangeLog)) {
+        if (!$this->eventMoments->contains($eventChangeLog)) {
             $this->eventMoments->add($eventChangeLog);
             $eventChangeLog->setEvent($this);
         }
@@ -777,7 +778,7 @@ class Event implements Stringable
 
     public function addTicketOption(EventTicketOption $ticketOption): static
     {
-        if (! $this->ticketOptions->contains($ticketOption)) {
+        if (!$this->ticketOptions->contains($ticketOption)) {
             $this->ticketOptions->add($ticketOption);
             $ticketOption->setEvent($this);
         }

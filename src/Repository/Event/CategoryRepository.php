@@ -6,7 +6,10 @@ namespace App\Repository\Event;
 
 use App\Entity\Event\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<Category>
@@ -21,5 +24,19 @@ class CategoryRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Category::class);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function findByUuid(Uuid $id): null|Category
+    {
+        $qb = $this->createQueryBuilder('category');
+
+        $qb->andWhere(
+            $qb->expr()->eq('category.id', ':id')
+        )->setParameter('id', $id, 'uuid');
+
+        return $qb->getQuery()->getOneOrNullResult();
     }
 }

@@ -6,6 +6,7 @@ namespace App\Factory\Event;
 
 use App\DataTransferObject\Event\EventDetailsFormDto;
 use App\DataTransferObject\Event\EventLocationFormDto;
+use App\Entity\Event\Category;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventInvitation;
 use App\Entity\Event\EventOrganiser;
@@ -14,23 +15,32 @@ use App\Entity\Event\EventRejection;
 use App\Entity\Event\EventRequest;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
+use App\Repository\Event\CategoryRepository;
 use Carbon\CarbonImmutable;
 
 final class EventFactory
 {
+
+    public function __construct(
+        private readonly CategoryRepository $categoryRepository
+    )
+    {
+    }
+
     public function create(
-        null|string $title = null,
-        null|string $address = null,
+        null|string          $title = null,
+        null|string          $address = null,
         null|CarbonImmutable $startAt = null,
         null|CarbonImmutable $endAt = null,
-        null|string $base64Image = null,
-        null|string $latitude = null,
-        null|string $longitude = null,
-        null|string $description = null,
-        null|bool $isPrivate = null,
-        null|User $owner = null,
-        null|EventGroup $eventGroup = null
-    ): Event {
+        null|string          $base64Image = null,
+        null|string          $latitude = null,
+        null|string          $longitude = null,
+        null|string          $description = null,
+        null|bool            $isPrivate = null,
+        null|User            $owner = null,
+        null|EventGroup      $eventGroup = null
+    ): Event
+    {
         $event = new Event();
         $event->setTitle($title);
         $event->setAddress($address);
@@ -102,11 +112,12 @@ final class EventFactory
     }
 
     public function createFromDTOs(
-        User $owner,
-        EventDetailsFormDto $eventFormDetailsDto,
+        User                 $owner,
+        EventDetailsFormDto  $eventFormDetailsDto,
         EventLocationFormDto $eventFormLocationDto,
-    ): Event {
-        return new Event(
+    ): Event
+    {
+        $event = new Event(
             title: $eventFormDetailsDto->getTitle(),
             startAt: CarbonImmutable::create($eventFormDetailsDto->getStartAt()),
             endAt: CarbonImmutable::create($eventFormDetailsDto->getEndAt()),
@@ -119,5 +130,12 @@ final class EventFactory
             owner: $owner,
             eventGroup: $eventFormDetailsDto->getEventGroup(),
         );
+
+        foreach ($eventFormDetailsDto->getCategories() as $id) {
+            $category = $this->categoryRepository->find($id);
+            $event->addCategory($category);
+        }
+
+        return $event;
     }
 }
