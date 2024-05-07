@@ -126,12 +126,13 @@
                                 {% for ticket in event.ticketOptions %}
                                     <div class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>{{ ticket.title|title }}</div>
-                                        <div>{{ ticket.price|format_currency(ticket.currency) }}</div>
+                                        {% if ticket.currency %}
+                                            <div>{{ ticket.price|format_currency(ticket.currency) }}</div>
+                                        {% endif %}
                                     </div>
                                 {% else %}
                                     <div class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>{{ 'free'|trans|upper }}</div>
-                                        <div>{{ '0'|format_currency(app.user.currency) }}</div>
+                                        <div>{{ 'free-admission'|trans|upper }}</div>
                                     </div>
                                 {% endfor %}
                             </div>
