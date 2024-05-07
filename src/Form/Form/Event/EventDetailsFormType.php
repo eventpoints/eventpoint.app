@@ -15,7 +15,6 @@ use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -27,11 +26,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class EventDetailsFormType extends AbstractType
 {
     public function __construct(
-        private readonly Security            $security,
+        private readonly Security $security,
         private readonly TranslatorInterface $translator,
-        private readonly CategoryRepository  $categoryRepository
-    )
-    {
+        private readonly CategoryRepository $categoryRepository
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -98,7 +96,6 @@ class EventDetailsFormType extends AbstractType
             ]);
 
         $builder->get('categories')->addModelTransformer(new CategoriesTransformer($this->categoryRepository));
-
 
         if ($currentUser instanceof User) {
             $builder->add('eventGroup', EntitySelectionGroupType::class, [

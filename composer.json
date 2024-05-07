@@ -98,7 +98,7 @@
     "scripts": {
         "rector": "vendor/bin/rector p --ansi",
         "rector-dry": "vendor/bin/rector p --dry-run --ansi",
-        "phpstan": "php -d memory_limit=256M vendor/bin/phpstan analyze",
+        "ps": "php -d memory_limit=256M vendor/bin/phpstan analyze",
         "check-cs": "vendor/bin/ecs check --ansi",
         "fix-cs": "vendor/bin/ecs check --fix --ansi",
         "test": "vendor/bin/phpunit",

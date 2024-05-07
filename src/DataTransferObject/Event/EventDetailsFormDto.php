@@ -2,7 +2,6 @@
 
 namespace App\DataTransferObject\Event;
 
-use App\Entity\Event\Category;
 use App\Entity\EventGroup\EventGroup;
 use Carbon\CarbonImmutable;
 use DateTimeImmutable;
@@ -123,5 +122,4 @@ final class EventDetailsFormDto
     {
         $this->categories = $categories;
     }
-
 }
