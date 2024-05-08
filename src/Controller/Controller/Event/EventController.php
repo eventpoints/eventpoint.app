@@ -51,22 +51,21 @@ class EventController extends AbstractController
     public const EVENT_FORM_STEP_TWO = 'location';
 
     public function __construct(
-            private readonly EventRepository                $eventRepository,
-            private readonly ImageService                   $imageUploadService,
-            private readonly ImageFactory                   $imageFactory,
-            private readonly ImageCollectionFactory         $imageCollectionFactory,
-            private readonly ImageCollectionRepository      $imageCollectionRepository,
-            private readonly EventOrganiserFactory          $eventCrewMemberFactory,
-            private readonly EventRoleRepository            $eventRoleRepository,
-            private readonly EventFactory                   $eventFactory,
-            private readonly EventCancellationFactory       $eventCancellationFactory,
-            private readonly TranslatorInterface            $translator,
-            private readonly EventEmailInvitationRepository $eventEmailInvitationRepository,
-            private readonly EventInvitationRepository      $eventInvitationRepository,
-            private readonly RequestStack                   $requestStack,
-            private readonly EventGroupRepository           $eventGroupRepository,
-    )
-    {
+        private readonly EventRepository $eventRepository,
+        private readonly ImageService $imageUploadService,
+        private readonly ImageFactory $imageFactory,
+        private readonly ImageCollectionFactory $imageCollectionFactory,
+        private readonly ImageCollectionRepository $imageCollectionRepository,
+        private readonly EventOrganiserFactory $eventCrewMemberFactory,
+        private readonly EventRoleRepository $eventRoleRepository,
+        private readonly EventFactory $eventFactory,
+        private readonly EventCancellationFactory $eventCancellationFactory,
+        private readonly TranslatorInterface $translator,
+        private readonly EventEmailInvitationRepository $eventEmailInvitationRepository,
+        private readonly EventInvitationRepository $eventInvitationRepository,
+        private readonly RequestStack $requestStack,
+        private readonly EventGroupRepository $eventGroupRepository,
+    ) {
     }
 
     /**
@@ -83,30 +82,30 @@ class EventController extends AbstractController
     public function edit(Event $event, Request $request): Response
     {
         $eventForm = $this->createForm(EventFormType::class, $event, [
-                'event' => $event,
+            'event' => $event,
         ]);
         $eventForm->handleRequest($request);
         if ($eventForm->isSubmitted() && $eventForm->isValid()) {
             $image = $eventForm->get('image')->getData();
 
-            if (!empty($image)) {
+            if (! empty($image)) {
                 /** @var Event $event */
                 $event = $eventForm->getData();
                 $event->setBase64Image(
-                        $this->imageUploadService->processPhoto($image)->getEncoded()
+                    $this->imageUploadService->processPhoto($image)->getEncoded()
                 );
             }
 
             $this->eventRepository->save(entity: $event, flush: true);
 
             return $this->redirectToRoute('edit_event', [
-                    'id' => $event->getId(),
+                'id' => $event->getId(),
             ]);
         }
 
         return $this->render('events/edit.html.twig', [
-                'eventForm' => $eventForm,
-                'event' => $event,
+            'eventForm' => $eventForm,
+            'event' => $event,
         ]);
     }
 
@@ -117,7 +116,7 @@ class EventController extends AbstractController
         $invitation = null;
         if ($invitationToken) {
             $invitation = $this->eventEmailInvitationRepository->findOneBy([
-                    'token' => $invitationToken,
+                'token' => $invitationToken,
             ]);
         }
 
@@ -131,21 +130,21 @@ class EventController extends AbstractController
         $emailInvitations = $this->eventInvitationRepository->findByEvent(event: $event);
         $invitations = new ArrayCollection([...$userInvitations, ...$emailInvitations]);
         $criteria = Criteria::create()->orderBy([
-                'createdAt' => Criteria::DESC,
+            'createdAt' => Criteria::DESC,
         ]);
         $invitations = $invitations->matching($criteria);
 
-        if (!empty($event->getUrl())) {
+        if (! empty($event->getUrl())) {
             return $this->render('events/show-external-event.html.twig', [
-                    'event' => $event,
+                'event' => $event,
             ]);
         }
 
         return $this->render('events/show.html.twig', [
-                'imageForm' => $imageForm,
-                'event' => $event,
-                'invitation' => $invitation,
-                'invitations' => $invitations,
+            'imageForm' => $imageForm,
+            'event' => $event,
+            'invitation' => $invitation,
+            'invitations' => $invitations,
         ]);
     }
 
@@ -153,7 +152,7 @@ class EventController extends AbstractController
     public function emailInvitation(EventEmailInvitation $emailInvitation): Response
     {
         return $this->render('events/email-invitation.html.twig', [
-                'emailInvitation' => $emailInvitation,
+            'emailInvitation' => $emailInvitation,
         ]);
     }
 
@@ -161,7 +160,7 @@ class EventController extends AbstractController
     public function settings(Event $event, Request $request, #[CurrentUser] User $currentUser): Response
     {
         return $this->render('events/settings.html.twig', [
-                'event' => $event,
+            'event' => $event,
         ]);
     }
 
@@ -175,15 +174,15 @@ class EventController extends AbstractController
             if (CarbonImmutable::now()->diffInMinutes($event->getStartAt()) < 30) {
                 $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('too-close-to-event-to-cancel'));
                 return $this->redirectToRoute('show_event', [
-                        'id' => $event->getId(),
+                    'id' => $event->getId(),
                 ]);
             }
 
             $eventChangeLog = new EventMoment(
-                    event: $event,
-                    type: EventMomentTypeEnum::EVENT_CANCELED,
-                    oldValue: null,
-                    newValue: null
+                event: $event,
+                type: EventMomentTypeEnum::EVENT_CANCELED,
+                oldValue: null,
+                newValue: null
             );
 
             $event->setEventCancellation($eventCancellation);
@@ -193,8 +192,8 @@ class EventController extends AbstractController
         }
 
         return $this->render('events/cancel.html.twig', [
-                'eventCancellationForm' => $eventCancellationForm,
-                'event' => $event,
+            'eventCancellationForm' => $eventCancellationForm,
+            'event' => $event,
         ]);
     }
 
@@ -210,7 +209,7 @@ class EventController extends AbstractController
             $step == self::EVENT_FORM_STEP_ONE => $this->renderEventFormStepOne($request),
             $step === self::EVENT_FORM_STEP_TWO => $this->renderEventFormStepTwo(),
             default => $this->redirectToRoute('create_event', [
-                    'step' => self::EVENT_FORM_STEP_ONE,
+                'step' => self::EVENT_FORM_STEP_ONE,
             ]),
         };
 
@@ -220,14 +219,14 @@ class EventController extends AbstractController
                 $step === self::EVENT_FORM_STEP_ONE => $this->handleEventFormStepOne($form),
                 $step === self::EVENT_FORM_STEP_TWO => $this->handleEventFormStepTwo($form, $currentUser),
                 default => $this->redirectToRoute('create_event', [
-                        'step' => self::EVENT_FORM_STEP_ONE,
+                    'step' => self::EVENT_FORM_STEP_ONE,
                 ]),
             };
         }
 
         return $this->render(sprintf('events/create/step-%s.html.twig', $step), [
-                'form' => $form,
-                'data' => $form->getData(),
+            'form' => $form,
+            'data' => $form->getData(),
         ]);
     }
 
@@ -245,7 +244,7 @@ class EventController extends AbstractController
 
         $this->addFlash('message', 'images uploaded');
         return $this->redirectToRoute('show_event', [
-                'id' => $event->getId(),
+            'id' => $event->getId(),
         ]);
     }
 
@@ -253,13 +252,12 @@ class EventController extends AbstractController
     {
         $eventDetailsFormDto = $this->requestStack->getSession()->get('event-form-step-one');
 
-
-        if (!$eventDetailsFormDto instanceof EventDetailsFormDto) {
+        if (! $eventDetailsFormDto instanceof EventDetailsFormDto) {
             $eventDetailsFormDto = new EventDetailsFormDto();
         }
 
         $eventGroupId = $request->get('g');
-        if (!empty($eventGroupId)) {
+        if (! empty($eventGroupId)) {
             $eventGroup = $this->eventGroupRepository->find($eventGroupId);
             $eventDetailsFormDto->setEventGroup($eventGroup);
         }
@@ -271,7 +269,7 @@ class EventController extends AbstractController
     {
         $eventLocationFormDto = $this->requestStack->getSession()->get('event-form-step-two');
 
-        if (!$eventLocationFormDto instanceof EventLocationFormDto) {
+        if (! $eventLocationFormDto instanceof EventLocationFormDto) {
             $eventLocationFormDto = new EventLocationFormDto();
         }
 
@@ -280,14 +278,14 @@ class EventController extends AbstractController
 
     private function handleEventFormStepOne(FormInterface $form): Response
     {
-        if (!empty($form->get('image')->getData())) {
+        if (! empty($form->get('image')->getData())) {
             $base64Image = $this->imageUploadService->processPhoto($form->get('image')->getData());
             $form->getData()->setBase64image($base64Image->getEncoded());
         }
 
         $this->requestStack->getSession()->set('event-form-step-one', $form->getData());
         return $this->redirectToRoute('create_event', [
-                'step' => self::EVENT_FORM_STEP_TWO,
+            'step' => self::EVENT_FORM_STEP_TWO,
         ]);
     }
 
@@ -300,13 +298,13 @@ class EventController extends AbstractController
         $eventFormLocationDto = $this->requestStack->getSession()->get('event-form-step-two');
 
         $event = $this->eventFactory->createFromDTOs(
-                owner: $currentUser,
-                eventFormDetailsDto: $eventFormDetailsDto,
-                eventFormLocationDto: $eventFormLocationDto,
+            owner: $currentUser,
+            eventFormDetailsDto: $eventFormDetailsDto,
+            eventFormLocationDto: $eventFormLocationDto,
         );
 
         $adminRole = $this->eventRoleRepository->findOneBy([
-                'title' => EventOrganiserRoleEnum::ROLE_EVENT_ADMIN,
+            'title' => EventOrganiserRoleEnum::ROLE_EVENT_ADMIN,
         ]);
         $eventOrganiser = $this->eventCrewMemberFactory->create(owner: $currentUser, event: $event, roles: [$adminRole]);
         $event->addEventOrganiser($eventOrganiser);
@@ -317,8 +315,8 @@ class EventController extends AbstractController
         $this->requestStack->getSession()->set('event-form-step-two', null);
 
         return $this->redirectToRoute('show_event', [
-                'id' => $event->getId(),
-                '_fragment' => 'invitations',
+            'id' => $event->getId(),
+            '_fragment' => 'invitations',
         ]);
     }
 
@@ -334,9 +332,9 @@ class EventController extends AbstractController
     {
         $eventDetailsFormDto = $this->requestStack->getSession()->get('event-form-step-one');
 
-        if (!$eventDetailsFormDto instanceof EventDetailsFormDto) {
+        if (! $eventDetailsFormDto instanceof EventDetailsFormDto) {
             return $this->redirectToRoute('create_event', [
-                    'step' => self::EVENT_FORM_STEP_ONE,
+                'step' => self::EVENT_FORM_STEP_ONE,
             ]);
         }
         return null;

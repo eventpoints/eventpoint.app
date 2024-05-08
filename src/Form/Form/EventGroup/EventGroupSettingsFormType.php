@@ -7,7 +7,6 @@ namespace App\Form\Form\EventGroup;
 use App\Entity\Event\Category;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
-use App\Form\Type\CategoryGroupType;
 use App\Form\Type\CustomCheckBoxType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -98,7 +97,7 @@ class EventGroupSettingsFormType extends AbstractType
                 'class' => Category::class,
                 'choice_label' => 'title',
                 'choice_translation_domain' => true,
-                'autocomplete' => true
+                'autocomplete' => true,
             ]);
     }
 
