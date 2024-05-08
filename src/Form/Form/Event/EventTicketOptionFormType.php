@@ -18,10 +18,28 @@ class EventTicketOptionFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title', TextType::class)
-            ->add('quantityAvailable', NumberType::class)
-            ->add('price', MoneyType::class)
-            ->add('currency', CurrencyType::class);
+            ->add('title', TextType::class, [
+                'row_attr' => [
+                    'class' => 'form-floating mb-3',
+                ],
+            ])
+            ->add('quantityAvailable', NumberType::class, [
+                'row_attr' => [
+                    'class' => 'form-floating mb-3',
+                ],
+                'required' => false,
+            ])
+            ->add('price', MoneyType::class, [
+                'currency' => false,
+                'row_attr' => [
+                    'class' => 'form-floating',
+                ],
+            ])
+            ->add('currency', CurrencyType::class, [
+                'row_attr' => [
+                    'class' => 'form-floating mb-3',
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -22,8 +22,8 @@ class EventTicketOption
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private null|CarbonImmutable|DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
-    private ?int $quantityAvailable = null;
+    #[ORM\Column(nullable: true)]
+    private null|int $quantityAvailable = null;
 
     public function __construct(
         #[ORM\ManyToOne(inversedBy: 'ticketOptions')]
