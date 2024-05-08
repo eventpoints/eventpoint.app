@@ -25,7 +25,7 @@ class ContactController extends AbstractController
     public function index(Request $request, #[CurrentUser] User $currentUser): Response
     {
         $contactsQuery = $this->userContactRepository->findByOwner(user: $currentUser, isQuery: true);
-        $contactsPagination = $this->paginator->paginate(target: $contactsQuery, page: $request->query->getInt('page', 1), limit: 2);
+        $contactsPagination = $this->paginator->paginate(target: $contactsQuery, page: $request->query->getInt('page', 1));
         return $this->render('user/contacts.html.twig', [
             'contactsPagination' => $contactsPagination,
         ]);

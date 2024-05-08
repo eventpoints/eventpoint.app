@@ -9,6 +9,7 @@ use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
 use App\Form\Type\CategoryGroupType;
 use App\Form\Type\CustomCheckBoxType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -91,14 +92,13 @@ class EventGroupSettingsFormType extends AbstractType
             ->add('isPrivate', CustomCheckBoxType::class, [
                 'label' => $this->translator->trans('is-private-group-input-label'),
             ])
-            ->add('categories', CategoryGroupType::class, [
+            ->add('categories', EntityType::class, [
                 'label' => false,
-                'expanded' => true,
                 'multiple' => true,
-                'searchable' => true,
                 'class' => Category::class,
                 'choice_label' => 'title',
                 'choice_translation_domain' => true,
+                'autocomplete' => true
             ]);
     }
 

@@ -15,14 +15,14 @@
         </div>
         {% if app.user and eventGroup.isMember(app.user) or app.user and eventGroup.isMaintainer(app.user) %}
             <a href="{{ path('event_group_show', {id: eventGroup.id}) }}"
-               class="{{ app.request.get('_route') == 'event_group_show' ? 'text-bg-dark' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+               class="{{ app.request.get('_route') == 'event_group_show' ? 'text-bg-dark-grey' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <div>{{ 'group-feed'|trans }}</div>
                 <div class="badge rounded-pill text-bg-primary">
                     <div class="bi bi-collection fs-4"></div>
                 </div>
             </a>
             <a href="{{ path('event_group_members', {id: eventGroup.id}) }}"
-               class="{{ app.request.get('_route') == 'event_group_members' ? 'text-bg-dark' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+               class="{{ app.request.get('_route') == 'event_group_members' ? 'text-bg-dark-grey' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <div class="d-flex justify-content-start align-items-center">
                     <div class="me-3 lh-1">{{ 'memebers'|trans|title }}</div>
                 </div>
@@ -34,7 +34,7 @@
                 </div>
             </a>
             <a href="{{ path('event_group_events', {id: eventGroup.id}) }}"
-               class="{{ app.request.get('_route') == 'event_group_events' ? 'text-bg-dark' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+               class="{{ app.request.get('_route') == 'event_group_events' ? 'text-bg-dark-grey' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <div class="d-flex justify-content-start align-items-center">
                     <div class="me-3 lh-1">{{ 'events'|trans|title }}</div>
                 </div>
@@ -46,7 +46,7 @@
                 </div>
             </a>
             <a href="{{ path('event_group_discussion', {id: eventGroup.id}) }}"
-               class="{{ app.request.get('_route') == 'event_group_discussion' ? 'text-bg-dark' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+               class="{{ app.request.get('_route') == 'event_group_discussion' ? 'text-bg-dark-grey' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <div>{{ 'discussions'|trans|capitalize }}</div>
                 <div>
                     <div class="badge rounded-pill text-bg-primary fs-6 d-flex justify-content-between align-items-center">
@@ -58,7 +58,7 @@
         {% endif %}
         {% if app.user and eventGroup.isMaintainer(app.user) %}
             <a href="{{ path('event_group_settings', {id: eventGroup.id}) }}"
-               class="{{ app.request.get('_route') == 'event_group_settings' ? 'text-bg-dark' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+               class="{{ app.request.get('_route') == 'event_group_settings' ? 'text-bg-dark-grey' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <div>{{ 'group-settings'|trans }}</div>
                 <div class="badge rounded-pill text-bg-primary">
                     <div class="bi bi-gear-fill fs-5"></div>

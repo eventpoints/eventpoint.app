@@ -26,22 +26,21 @@
                 </div>
 
                 {% if app.user and eventGroup.isMember(app.user) or app.user and eventGroup.isMaintainer(app.user) %}
-                    <div class="list-group mb-3 list-group-horizontal d-flex justify-content-between">
-                        <a href="{{ path('create_event', {step: 'details', eventGroup: eventGroup.id}) }}"
-                           class="list-group-item list-group-item-action text-center">
-                            <div class="mdi mdi-calendar fs-4"></div>
-                            <div>{{ 'create-event'|trans }}</div>
-                        </a>
-                        <a href="{{ path('create_group_event_poll', {id: eventGroup.id}) }}"
-                           class="list-group-item list-group-item-action text-center">
-                            <div class="mdi mdi-poll fs-4"></div>
-                            <div>{{ 'create-poll'|trans }}</div>
-                        </a>
-                        <a href="{{ path('create_group_discussion', {id: eventGroup.id}) }}"
-                           class="list-group-item list-group-item-action text-center">
-                            <div class="mdi mdi-forum fs-4"></div>
-                            <div>{{ 'create-discustion'|trans }}</div>
-                        </a>
+                    <div class="row justify-content-between mb-3">
+                        <div class="col-6">
+                            <a href="{{ path('create_event', {step: 'details', g: eventGroup.id}) }}"
+                               class="btn w-100 btn-outline-primary">
+                                <div class="mdi mdi-plus-circle fs-4"></div>
+                                <div>{{ 'create-event'|trans }}</div>
+                            </a>
+                        </div>
+                        <div class="col-6">
+                            <a href="{{ path('create_group_discussion', {id: eventGroup.id}) }}"
+                               class="btn w-100 btn-outline-primary">
+                                <div class="mdi mdi-forum fs-4"></div>
+                                <div>{{ 'create-discustion'|trans }}</div>
+                            </a>
+                        </div>
                     </div>
                 {% endif %}
 
