@@ -16,8 +16,8 @@ use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
-#[AsLiveComponent('event_request_response_form')]
-class EventReqestResponseFormComponent extends AbstractController
+#[AsLiveComponent('EventRequestResponseFormComponent', template: 'components/event_request_response_form_component.html.twig')]
+class EventRequestResponseFormComponent extends AbstractController
 {
     use DefaultActionTrait;
 

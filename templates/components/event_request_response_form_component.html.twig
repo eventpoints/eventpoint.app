@@ -16,10 +16,18 @@
             </div>
         </div>
         <div class="d-flex justify-content-between align-items-center">
-            <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)" class="me-5">
+            <a href="#"
+               data-action="live#action:prevent"
+               data-live-action-param="submit"
+               data-live-is-attending-param="true"
+               class="me-5">
                 <div class="bi bi-check-circle fs-1 text-primary"></div>
             </a>
-            <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)">
+            <a href="#"
+               data-action="live#action:prevent"
+               data-live-action-param="submit"
+               data-live-is-attending-param="false"
+            >
                 <div class="bi bi-x-circle fs-1 text-danger"></div>
             </a>
         </div>

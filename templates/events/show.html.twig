@@ -402,7 +402,7 @@
                     {% endif %}
                     {% if app.user and event.isOrganiser(app.user) %}
                         {% for request in event.eventRequests %}
-                            {{ component('event_request_response_form', {
+                            {{ component('EventRequestResponseFormComponent', {
                                 eventRequest: request
                             }) }}
                         {% else %}
