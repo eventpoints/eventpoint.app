@@ -25,8 +25,8 @@ use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
-#[AsLiveComponent('email_autocompleter_component')]
-class EmailAutocompleterComponent extends AbstractController
+#[AsLiveComponent('InvitationEmailAutocompleteComponent', template: 'components/invitation-email-autocomplete-component.twig')]
+class InvitationEmailAutocompleteComponent extends AbstractController
 {
     use DefaultActionTrait;
 
@@ -69,7 +69,7 @@ class EmailAutocompleterComponent extends AbstractController
     }
 
     #[LiveAction]
-    public function submit(#[CurrentUser] User $currentUser): void
+    public function save(#[CurrentUser] User $currentUser): void
     {
         $email = $this->createEmail(emailAddress: $this->emailAddress);
         $this->createUserContact(email: $email, user: $currentUser);

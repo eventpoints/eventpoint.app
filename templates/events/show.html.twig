@@ -195,7 +195,7 @@
 
                 <div class="vstack d-flex justify-content-between gap-1">
                     {% for moment in event.eventMoments %}
-                        {% if moment.type.name == 'EVENT_CANCELED' %}
+                        {% if moment.type.name == 'EVENT_CANCELED' and event.eventCancellation %}
                             <div class="alert mb-1 d-flex flex-column justify-content-center border-0 text-bg-dark-grey">
                                 <div class="bi bi-exclamation-triangle-fill fs-3 text-danger text-center"></div>
                                 <div class="text-center lead fw-bold">{{ moment.type.value|trans|title }}</div>
@@ -246,7 +246,7 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">{{ 'send-invitations'|trans|capitalize }}</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                {{ component('email_autocompleter_component', {
+                {{ component('InvitationEmailAutocompleteComponent', {
                     event: event
                 }) }}
             </div>

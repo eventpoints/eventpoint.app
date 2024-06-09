@@ -2,12 +2,15 @@
     <div class="sticky-top bg-white p-2">
         <div class="d-flex flex-wrap justify-content-start align-items-center mb-3"></div>
         <div class="input-group">
-            <input id="email-input" placeholder="{{ 'email-address'|trans }}" data-model="emailAddress"
-                   class="form-control"
-                   type="text" data-action="live#action" data-action-name="debounce(100)|filter"
+            <input autocomplete="off" id="email" placeholder="{{ 'email-address'|trans }}"
+                   data-model="emailAddress"
+                   data-live-action-param="prevent|debounce(100)|filter"
+                   class="form-control mb-0"
+                   type="text" data-action="live#action:prevent"
             />
-            <a href="#" class="btn btn-success rounded-0" data-action="live#action"
-               data-action-name="prevent|submit">
+            <a href="#" class="btn btn-success rounded-0"
+               data-action="live#action:prevent"
+               data-live-action-param="prevent|save">
                 <span class="bi bi-plus-circle-fill fs-4"></span>
             </a>
         </div>
@@ -51,8 +54,11 @@
                     {% elseif contact.email.owner and event.IsOrganiser(contact.email.owner) %}
                         <div class="bi bi-person-badge-fill fs-3"></div>
                     {% else %}
-                        <a href="#" class="link-success" data-action="live#action"
-                           data-action-name="prevent|sendInvitation(contact={{ contact.id }})">
+                        <a href="#" class="link-success"
+                           data-action="live#action:prevent"
+                           data-live-action-param="sendInvitation"
+                           data-live-contact-param="{{ contact.id }}"
+                        >
                             <span class="bi bi-send-fill fs-3"></span>
                         </a>
                     {% endif %}
