@@ -121,8 +121,8 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="list-group-item">
-                            {% if not event.isPrivate %}
+                        {% if not event.isPrivate %}
+                            <div class="list-group-item">
                                 <div class="list-group list-group-flush">
                                     {% for ticket in event.ticketOptions %}
                                         <div class="list-group-item d-flex justify-content-between align-items-center">
@@ -137,8 +137,8 @@
                                         </div>
                                     {% endfor %}
                                 </div>
-                            {% endif %}
-                        </div>
+                            </div>
+                        {% endif %}
                         <div {{ stimulus_controller('read-more', {
                             moreText: 'read-more'|trans,
                             lessText: 'read-less'|trans,
