@@ -20,12 +20,18 @@
                 </div>
             </div>
         </a>
-        <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)"
+        <a href="#"
+           data-action="live#action:prevent"
+           data-live-action-param="submit"
+           data-live-is-attending-param="true"
            class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
             <div class="bi bi-check-circle fs-4 text-primary"></div>
             <div>{{ 'accept-invitation'|trans }}</div>
         </a>
-        <a href="#" data-action="live#action" data-action-name="prevent|submit(isAttending=false)"
+        <a href="#"
+           data-action="live#action:prevent"
+           data-live-action-param="submit"
+           data-live-is-attending-param="false"
            class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
             <div class="bi bi-x-circle fs-4 text-danger"></div>
             <div>{{ 'decline-invitation'|trans }}</div>

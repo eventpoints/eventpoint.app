@@ -9,17 +9,32 @@
                             <div class="h5">{{ 'venue-rating'|trans }}</div>
                             <div>{{ 'venue-rating-explainer'|trans }}</div>
                         </div>
-                        <div >
-                            <a data-action="live#action" data-action-name="prevent|setVenueRating(rating=1)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setVenueRating(rating=2)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setVenueRating(rating=3)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setVenueRating(rating=4)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setVenueRating(rating=5)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                        <div>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setVenueRating"
+                                    data-live-rating-param="1"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setVenueRating"
+                                    data-live-rating-param="2"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setVenueRating"
+                                    data-live-rating-param="3"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setVenueRating"
+                                    data-live-rating-param="4"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setVenueRating"
+                                    data-live-rating-param="5"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
                         </div>
                     </div>
                 {% elseif this.venueRating is not null and this.contentRating is null and this.hostRating is null and this.guestRating is null and this.expectationRating is null %}
@@ -29,16 +44,31 @@
                             <div>{{ 'content-rating-explainer'|trans }}</div>
                         </div>
                         <div>
-                            <a data-action="live#action" data-action-name="prevent|setContentRating(rating=1)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setContentRating(rating=2)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setContentRating(rating=3)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setContentRating(rating=4)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setContentRating(rating=5)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setContentRating"
+                                    data-live-rating-param="1"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setContentRating"
+                                    data-live-rating-param="2"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setContentRating"
+                                    data-live-rating-param="3"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setContentRating"
+                                    data-live-rating-param="4"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setContentRating"
+                                    data-live-rating-param="5"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
                         </div>
                     </div>
                 {% elseif this.venueRating is not null and this.contentRating is not null and this.hostRating is null and this.guestRating is null and this.expectationRating is null %}
@@ -48,16 +78,31 @@
                             <div>{{ 'host-rating-explainer'|trans }}</div>
                         </div>
                         <div>
-                            <a data-action="live#action" data-action-name="prevent|setHostRating(rating=1)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setHostRating(rating=2)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setHostRating(rating=3)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setHostRating(rating=4)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setHostRating(rating=5)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setHostRating"
+                                    data-live-rating-param="1"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setHostRating"
+                                    data-live-rating-param="2"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setHostRating"
+                                    data-live-rating-param="3"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setHostRating"
+                                    data-live-rating-param="4"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setHostRating"
+                                    data-live-rating-param="5"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
                         </div>
                     </div>
                 {% elseif this.venueRating is not null and this.contentRating is not null and this.hostRating is not null and this.guestRating is null and this.expectationRating is null %}
@@ -67,16 +112,31 @@
                             <div>{{ 'guest-rating-explainer'|trans }}</div>
                         </div>
                         <div>
-                            <a data-action="live#action" data-action-name="prevent|setGuestRating(rating=1)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setGuestRating(rating=2)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setGuestRating(rating=3)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setGuestRating(rating=4)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setGuestRating(rating=5)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setGuestRating"
+                                    data-live-rating-param="1"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setGuestRating"
+                                    data-live-rating-param="2"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setGuestRating"
+                                    data-live-rating-param="3"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setGuestRating"
+                                    data-live-rating-param="4"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setGuestRating"
+                                    data-live-rating-param="5"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
                         </div>
                     </div>
                 {% else %}
@@ -86,16 +146,31 @@
                             <div>{{ 'expectation-rating-explainer'|trans }}</div>
                         </div>
                         <div>
-                            <a data-action="live#action" data-action-name="prevent|setExpectationRating(rating=1)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setExpectationRating(rating=2)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setExpectationRating(rating=3)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setExpectationRating(rating=4)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
-                            <a data-action="live#action" data-action-name="prevent|setExpectationRating(rating=5)"
-                               class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setExpectationRating"
+                                    data-live-rating-param="1"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setExpectationRating"
+                                    data-live-rating-param="2"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setExpectationRating"
+                                    data-live-rating-param="3"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setExpectationRating"
+                                    data-live-rating-param="4"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
+                            <a
+                                    data-action="live#action:prevent"
+                                    data-live-action-param="setExpectationRating"
+                                    data-live-rating-param="5"
+                                    class="bi bi-star link-dark  fs-1 me-1"></a>
                         </div>
                     </div>
                 {% endif %}

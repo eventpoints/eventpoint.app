@@ -9,10 +9,17 @@
             </div>
             <hr/>
             <div>
-                <a href="#" class="btn btn-outline-danger mb-3 w-100" data-action="live#action"
-                   data-action-name="prevent|submit(isAttending=false)">{{ 'decline-invitation'|trans }}</a>
-                <a href="#" class="btn btn-outline-primary w-100" data-action="live#action"
-                   data-action-name="prevent|submit(isAttending=true)">{{ 'accept-invitation'|trans }}</a>
+                <a href="#" class="btn btn-outline-danger mb-3 w-100"
+                   data-action="live#action:prevent"
+                   data-live-action-param="submit"
+                   data-live-is-attending-param="false"
+                >{{ 'decline-invitation'|trans }}
+                </a>
+                <a href="#" class="btn btn-outline-primary w-100"
+                   data-action="live#action:prevent"
+                   data-live-action-param="submit"
+                   data-live-is-attending-param="true"
+                >{{ 'accept-invitation'|trans }}</a>
             </div>
         {% else %}
             <div class="text-center">

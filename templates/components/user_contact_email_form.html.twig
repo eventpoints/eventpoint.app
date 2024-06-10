@@ -2,7 +2,10 @@
         <div class="input-group">
             <input name="emailAddress" data-model="emailAddress" type="text" class="form-control" placeholder="E-mail address"
                    aria-label="" value="{{ emailAddress }}">
-            <button data-action="live#action" data-action-name="prevent|createUserContact"  class="btn btn-outline-secondary" type="button">
+            <button
+                    data-action="live#action:prevent"
+                    data-live-action-param="createUserContact"
+                    class="btn btn-outline-secondary" type="button">
                 <span class="bi bi-person-fill-add fs-4"></span>
             </button>
             <button class="btn btn-outline-success" type="button">
