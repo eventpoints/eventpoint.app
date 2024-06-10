@@ -122,20 +122,22 @@
                             </div>
                         </div>
                         <div class="list-group-item">
-                            <div class="list-group list-group-flush">
-                                {% for ticket in event.ticketOptions %}
-                                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>{{ ticket.title|title }}</div>
-                                        {% if ticket.currency %}
-                                            <div>{{ ticket.price|format_currency(ticket.currency) }}</div>
-                                        {% endif %}
-                                    </div>
-                                {% else %}
-                                    <div class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>{{ 'free-admission'|trans|upper }}</div>
-                                    </div>
-                                {% endfor %}
-                            </div>
+                            {% if not event.isPrivate %}
+                                <div class="list-group list-group-flush">
+                                    {% for ticket in event.ticketOptions %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>{{ ticket.title|title }}</div>
+                                            {% if ticket.currency %}
+                                                <div>{{ ticket.price|format_currency(ticket.currency) }}</div>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>{{ 'free-admission'|trans|upper }}</div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                         <div {{ stimulus_controller('read-more', {
                             moreText: 'read-more'|trans,
