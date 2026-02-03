@@ -12,11 +12,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 
 class EventParticipantCrudController extends AbstractCrudController
 {
+    #[\Override]
     public static function getEntityFqcn(): string
     {
         return EventParticipant::class;
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         return [

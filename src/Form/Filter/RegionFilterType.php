@@ -22,6 +22,7 @@ class RegionFilterType extends AbstractType
     ) {
     }
 
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->setMethod('get');
@@ -54,6 +55,7 @@ class RegionFilterType extends AbstractType
             ]);
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setRequired(['request']);

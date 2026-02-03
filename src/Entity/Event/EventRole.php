@@ -27,6 +27,7 @@ class EventRole implements Stringable, StaticEntityInterface
     #[ORM\Column(length: 255, enumType: EventOrganiserRoleEnum::class)]
     private null|EventOrganiserRoleEnum $title = null;
 
+    #[\Override]
     public function __toString(): string
     {
         return $this->title->value;

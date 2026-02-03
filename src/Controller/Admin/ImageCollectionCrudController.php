@@ -12,11 +12,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 
 class ImageCollectionCrudController extends AbstractCrudController
 {
+    #[\Override]
     public static function getEntityFqcn(): string
     {
         return ImageCollection::class;
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         return [

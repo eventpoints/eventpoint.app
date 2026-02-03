@@ -22,6 +22,7 @@ readonly class RegionalConfigurationSubscriber implements EventSubscriberInterfa
     ) {
     }
 
+    #[\Override]
     public static function getSubscribedEvents(): array
     {
         return [
@@ -31,10 +32,23 @@ readonly class RegionalConfigurationSubscriber implements EventSubscriberInterfa
 
     public function resolveRegionalConfiguration(RequestEvent $event): void
     {
+        // Only run on main request, not sub-requests
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
+        $request = $event->getRequest();
+
+        // Don't try to access session if it's not available
+        if (!$request->hasSession()) {
+            return;
+        }
+
         $user = $this->security->getUser();
 
         // 1. add browser regional data to regional configuration
-        $browserRegionalData = $this->requestStack->getSession()->get('browser_regional_data');
+        $session = $request->getSession();
+        $browserRegionalData = $session->get('browser_regional_data');
         $this->regionalConfiguration->setBrowserRegionalData($browserRegionalData);
 
         // 2. Check if user is authenticated
@@ -47,6 +61,6 @@ readonly class RegionalConfigurationSubscriber implements EventSubscriberInterfa
         }
 
         // 3. add regional configuration to session
-        $this->requestStack->getSession()->set('regional_configuration', $this->regionalConfiguration);
+        $session->set('regional_configuration', $this->regionalConfiguration);
     }
 }

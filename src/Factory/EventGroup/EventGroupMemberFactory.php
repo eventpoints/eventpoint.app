@@ -11,7 +11,7 @@ use Carbon\CarbonImmutable;
 
 class EventGroupMemberFactory
 {
-    public function create(null|User $owner = null, null|EventGroup $eventGroup = null, CarbonImmutable $approvedAt = null): EventGroupMember
+    public function create(null|User $owner = null, null|EventGroup $eventGroup = null, null|CarbonImmutable $approvedAt = null): EventGroupMember
     {
         $eventGroupMember = new EventGroupMember();
         $eventGroupMember->setOwner($owner);

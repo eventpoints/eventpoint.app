@@ -28,6 +28,7 @@ readonly class UserProvider implements UserProviderInterface
     /**
      * @throws NonUniqueResultException
      */
+    #[\Override]
     public function loadUserByIdentifier(string $identifier): UserInterface
     {
         if ($this->emailHelperService->isEmail($identifier)) {
@@ -53,11 +54,13 @@ readonly class UserProvider implements UserProviderInterface
         return $phoneNumber->getOwner();
     }
 
+    #[\Override]
     public function supportsClass(string $class): bool
     {
         return $class === User::class || is_subclass_of($class, User::class);
     }
 
+    #[\Override]
     public function refreshUser(UserInterface $user): UserInterface
     {
         if (! $user instanceof User) {

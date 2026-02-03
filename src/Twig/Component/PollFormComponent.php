@@ -22,6 +22,7 @@ class PollFormComponent extends AbstractController
     #[LiveProp(fieldName: 'formData')]
     public null|Poll $poll = null;
 
+    #[\Override]
     protected function instantiateForm(): FormInterface
     {
         return $this->createForm(

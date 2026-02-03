@@ -37,6 +37,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
     ) {
     }
 
+    #[\Override]
     public function authenticate(Request $request): Passport
     {
         $emailAddressOrPhoneNumber = preg_replace('/\s+/', '', $request->request->get('email', ''));
@@ -61,6 +62,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
         );
     }
 
+    #[\Override]
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
@@ -78,6 +80,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
         return new RedirectResponse($this->urlGenerator->generate('user_event_invitations'));
     }
 
+    #[\Override]
     protected function getLoginUrl(Request $request): string
     {
         return $this->urlGenerator->generate('app_login');

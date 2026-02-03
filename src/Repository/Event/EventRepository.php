@@ -165,7 +165,7 @@ class EventRepository extends ServiceEntityRepository
     /**
      * @return Query|array<int, Event>
      */
-    public function findByCategory(Category $category, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    public function findByCategory(Category $category, ?QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
         if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event');
@@ -187,7 +187,7 @@ class EventRepository extends ServiceEntityRepository
     /**
      * @return Query|array<int, Event>
      */
-    public function findByTitle(string $keyword, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    public function findByTitle(string $keyword, ?QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
         if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event');

@@ -138,6 +138,7 @@ class Event implements Stringable
         $this->createdAt = new CarbonImmutable();
     }
 
+    #[\Override]
     public function __toString(): string
     {
         return (string) $this->getTitle();

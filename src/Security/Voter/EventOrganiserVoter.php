@@ -13,10 +13,11 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EventOrganiserVoter extends Voter
 {
-    final public const REMOVE_EVENT_ORGANISER = 'REMOVE_EVENT_ORGANISER';
+    final public const string REMOVE_EVENT_ORGANISER = 'REMOVE_EVENT_ORGANISER';
 
-    final public const ADD_EVENT_ORGANISER = 'ADD_EVENT_ORGANISER';
+    final public const string ADD_EVENT_ORGANISER = 'ADD_EVENT_ORGANISER';
 
+    #[\Override]
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::ADD_EVENT_ORGANISER, self::REMOVE_EVENT_ORGANISER], true)
@@ -26,6 +27,7 @@ class EventOrganiserVoter extends Voter
     /**
      * @param EventOrganiser $subject
      */
+    #[\Override]
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $currentUser = $token->getUser();

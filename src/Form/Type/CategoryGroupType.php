@@ -15,6 +15,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CategoryGroupType extends AbstractType
 {
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
@@ -33,16 +34,19 @@ class CategoryGroupType extends AbstractType
         $resolver->setAllowedTypes('searchable', 'bool');
     }
 
+    #[\Override]
     public function getParent(): string
     {
         return EntityType::class;
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'category_selection_group';
     }
 
+    #[\Override]
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         if (isset($options['searchable'])) {

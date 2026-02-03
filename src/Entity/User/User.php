@@ -212,6 +212,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         $this->emails = new ArrayCollection();
     }
 
+    #[\Override]
     public function __toString(): string
     {
         return $this->getEmail()->getAddress();
@@ -232,6 +233,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
      *
      * @see UserInterface
      */
+    #[\Override]
     public function getUserIdentifier(): string
     {
         return $this->email?->getAddress() ?? $this->phoneNumber->getPhoneNumberWithCode();
@@ -240,6 +242,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     /**
      * @see UserInterface
      */
+    #[\Override]
     public function getRoles(): array
     {
         $roles = $this->roles;
@@ -263,6 +266,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     /**
      * @see PasswordAuthenticatedUserInterface
      */
+    #[\Override]
     public function getPassword(): null|string
     {
         return $this->password;
@@ -278,6 +282,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     /**
      * @see UserInterface
      */
+    #[\Override]
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
@@ -654,11 +659,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         return $this;
     }
 
+    #[\Override]
     public function getUpdatedAt(): CarbonImmutable
     {
         return $this->updatedAt;
     }
 
+    #[\Override]
     public function setUpdatedAt(CarbonImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;

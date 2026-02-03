@@ -33,6 +33,7 @@ class Category implements Stringable, StaticEntityInterface
         $this->events = new ArrayCollection();
     }
 
+    #[\Override]
     public function __toString(): string
     {
         return (string) $this->getTitle();

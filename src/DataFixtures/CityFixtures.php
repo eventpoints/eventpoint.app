@@ -21,6 +21,7 @@ class CityFixtures extends Fixture implements DependentFixtureInterface
     ) {
     }
 
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $countries = $this->countryRepository->findAll();
@@ -61,6 +62,7 @@ class CityFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
+    #[\Override]
     public function getDependencies(): array
     {
         return [

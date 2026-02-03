@@ -18,6 +18,7 @@ class CountryFixtures extends Fixture
     ) {
     }
 
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $count = $this->countryRepository->count([]);

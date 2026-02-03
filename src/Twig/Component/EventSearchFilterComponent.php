@@ -54,23 +54,29 @@ class EventSearchFilterComponent extends AbstractController
     ) {
     }
 
+    #[\Override]
     public function instantiateForm(): FormInterface
     {
         $this->eventFilterDto = new EventFilterDto();
         $browserCountryCode = $this->regionalConfiguration->getBrowserRegionalData()?->getCountryCode();
+        $countryCodeEnum = ! empty($browserCountryCode) ? CountryCodeEnum::tryFrom($browserCountryCode) : null;
 
-        if (! empty($browserCountryCode)) {
+        $country = null;
+        if ($countryCodeEnum !== null) {
             $country = $this->countryRepository->findOneBy([
-                'alpha2' => CountryCodeEnum::tryFrom($browserCountryCode)->value,
+                'alpha2' => $countryCodeEnum->value,
             ]);
-        } else {
+        }
+
+        // Fallback to Czech Republic if no valid country found
+        if ($country === null) {
             $country = $this->countryRepository->findOneBy([
-                'alpha2' => CountryCodeEnum::CzechRepublic,
+                'alpha2' => CountryCodeEnum::CzechRepublic->value,
             ]);
         }
 
         $this->eventFilterDto->setCountry($country);
-        $this->eventFilterDto->setCity($country->getCapitalCity());
+        $this->eventFilterDto->setCity($country?->getCapitalCity());
         $events = $this->eventRepository->findByFilter(eventFilterDto: $this->eventFilterDto);
         $this->jsonEvents = $this->serializer->serialize(data: $events, format: JsonEncoder::FORMAT);
         $this->events = $events;

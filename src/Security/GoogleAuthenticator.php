@@ -27,9 +27,9 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 
 class GoogleAuthenticator extends OAuth2Authenticator
 {
-    private const OAUTH_PROVIDER = 'GOOGLE_AUTH_PROVIDER';
+    private const string OAUTH_PROVIDER = 'GOOGLE_AUTH_PROVIDER';
 
-    private const ROUTE = 'connect_google_check';
+    private const string ROUTE = 'connect_google_check';
 
     public function __construct(
         private readonly ClientRegistry $clientRegistry,
@@ -43,11 +43,13 @@ class GoogleAuthenticator extends OAuth2Authenticator
     ) {
     }
 
+    #[\Override]
     public function supports(Request $request): bool
     {
         return $request->attributes->get('_route') === self::ROUTE;
     }
 
+    #[\Override]
     public function authenticate(Request $request): Passport
     {
         $client = $this->clientRegistry->getClient('google');
@@ -102,12 +104,14 @@ class GoogleAuthenticator extends OAuth2Authenticator
         );
     }
 
+    #[\Override]
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $targetUrl = $this->router->generate('user_event_invitations');
         return new RedirectResponse($targetUrl);
     }
 
+    #[\Override]
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         $loginRoute = $this->router->generate('app_login');

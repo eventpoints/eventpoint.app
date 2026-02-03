@@ -18,6 +18,7 @@ class EntitySelectionGroupType extends AbstractType
     ) {
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
@@ -29,16 +30,19 @@ class EntitySelectionGroupType extends AbstractType
         $resolver->setAllowedTypes('searchable', 'bool');
     }
 
+    #[\Override]
     public function getParent(): string
     {
         return EntityType::class;
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'entity_selection_group';
     }
 
+    #[\Override]
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         if (isset($options['searchable'])) {

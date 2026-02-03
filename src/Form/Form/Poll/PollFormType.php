@@ -13,6 +13,7 @@ use Symfony\UX\LiveComponent\Form\Type\LiveCollectionType;
 
 class PollFormType extends AbstractType
 {
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -48,6 +49,7 @@ class PollFormType extends AbstractType
         ;
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

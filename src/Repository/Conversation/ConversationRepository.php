@@ -62,7 +62,7 @@ class ConversationRepository extends ServiceEntityRepository
     /**
      * @return array<int, Conversation>|Query
      */
-    public function findByUser(User $user, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    public function findByUser(User $user, ?QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
         if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('conversation');

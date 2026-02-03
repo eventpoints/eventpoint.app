@@ -10,6 +10,7 @@ use Twig\TwigFilter;
 
 class CompactNotationFilter extends AbstractExtension
 {
+    #[\Override]
     public function getFilters(): array
     {
         return [

@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['address'], message: self::DUPLICATE_EMAIL_ADDRESS)]
 class Email implements \Stringable
 {
-    final public const DUPLICATE_EMAIL_ADDRESS = 'There is already an account with this email address';
+    final public const string DUPLICATE_EMAIL_ADDRESS = 'There is already an account with this email address';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -33,6 +33,7 @@ class Email implements \Stringable
     #[ORM\JoinColumn(nullable: true)]
     private ?User $owner = null;
 
+    #[\Override]
     public function __toString(): string
     {
         return $this->address;

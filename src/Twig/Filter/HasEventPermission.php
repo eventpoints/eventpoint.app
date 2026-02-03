@@ -14,6 +14,7 @@ use Twig\TwigFilter;
 
 class HasEventPermission extends AbstractExtension
 {
+    #[\Override]
     public function getFilters(): array
     {
         return [

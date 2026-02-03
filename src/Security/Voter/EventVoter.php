@@ -14,17 +14,18 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EventVoter extends Voter
 {
-    final public const VIEW_EVENT = 'VIEW_EVENT';
+    final public const string VIEW_EVENT = 'VIEW_EVENT';
 
-    final public const EDIT_EVENT = 'EDIT_EVENT';
+    final public const string EDIT_EVENT = 'EDIT_EVENT';
 
-    final public const CANCEL_EVENT = 'CANCEL_EVENT';
+    final public const string CANCEL_EVENT = 'CANCEL_EVENT';
 
     public function getCurrentUserEventOrganiser(Event $event, User $currentUser): null|EventOrganiser
     {
         return $event->getEventOrganisers()->findFirst(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $currentUser);
     }
 
+    #[\Override]
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::VIEW_EVENT, self::EDIT_EVENT, self::CANCEL_EVENT], true)
@@ -34,6 +35,7 @@ class EventVoter extends Voter
     /**
      * @param Event $subject
      */
+    #[\Override]
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $currentUser = $token->getUser();

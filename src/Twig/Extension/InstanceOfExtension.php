@@ -9,6 +9,7 @@ use Twig\TwigFilter;
 
 class InstanceOfExtension extends AbstractExtension
 {
+    #[\Override]
     public function getFilters(): array
     {
         return [new TwigFilter('instanceof', $this->isInstanceOf(...))];

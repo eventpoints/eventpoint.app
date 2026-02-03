@@ -27,6 +27,7 @@ class EventFilterType extends AbstractType
     ) {
     }
 
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder = new DynamicFormBuilder($builder);
@@ -59,13 +60,6 @@ class EventFilterType extends AbstractType
                     'class' => 'form-floating',
                 ],
             ])
-            ->add('country', EntityType::class, [
-                'class' => Country::class,
-                'choice_label' => 'name',
-                'row_attr' => [
-                    'class' => 'form-floating',
-                ],
-            ])
             ->addDependent('city', 'country', function (DependentField $field, Country $country) {
                 $field->add(EntityType::class, [
                     'class' => City::class,
@@ -93,6 +87,7 @@ class EventFilterType extends AbstractType
             });
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

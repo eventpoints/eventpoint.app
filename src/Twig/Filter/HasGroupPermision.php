@@ -14,6 +14,7 @@ use Twig\TwigFilter;
 
 class HasGroupPermision extends AbstractExtension
 {
+    #[\Override]
     public function getFilters(): array
     {
         return [

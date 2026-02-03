@@ -13,7 +13,8 @@ class EventNormalizer implements NormalizerInterface
      * @param array<int|string|object|array<int|string|object>> $context
      * @return array<int|string|object|array<int|string|object>>
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): array
+    #[\Override]
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         return [
             'id' => $object->getId()->toRfc4122(),
@@ -34,11 +35,13 @@ class EventNormalizer implements NormalizerInterface
     /**
      * @param array<int|string|object|array<int|string|object>> $context
      */
-    public function supportsNormalization($data, string $format = null, array $context = []): bool
+    #[\Override]
+    public function supportsNormalization($data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof Event;
     }
 
+    #[\Override]
     public function getSupportedTypes(?string $format): array
     {
         return [

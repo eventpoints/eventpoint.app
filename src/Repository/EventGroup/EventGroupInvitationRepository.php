@@ -30,7 +30,7 @@ class EventGroupInvitationRepository extends ServiceEntityRepository
     /**
      * @return Query|array<int, EventGroupInvitation>
      */
-    public function findByGroup(EventGroup $eventGroup, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    public function findByGroup(EventGroup $eventGroup, ?QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
         if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event_group_invitation');

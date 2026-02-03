@@ -11,7 +11,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFactory
 {
-    final public const PASSWORD_NOT_SET = 'PASSWORD_NOT_SET';
+    final public const string PASSWORD_NOT_SET = 'PASSWORD_NOT_SET';
 
     public function __construct(
         private readonly AvatarService $avatarService,

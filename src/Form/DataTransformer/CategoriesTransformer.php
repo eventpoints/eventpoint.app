@@ -19,6 +19,7 @@ readonly class CategoriesTransformer implements DataTransformerInterface
     /**
      * @return string[]
      */
+    #[\Override]
     public function transform($value): array
     {
         $ids = [];
@@ -33,6 +34,7 @@ readonly class CategoriesTransformer implements DataTransformerInterface
     /**
      * @throws NonUniqueResultException
      */
+    #[\Override]
     public function reverseTransform(mixed $value): mixed
     {
         $categories = [];

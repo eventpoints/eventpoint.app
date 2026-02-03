@@ -28,9 +28,9 @@ use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface
 
 class FacebookAuthenticator extends OAuth2Authenticator implements AuthenticationEntryPointInterface
 {
-    private const OAUTH_PROVIDER = 'FACEBOOK_AUTH_PROVIDER';
+    private const string OAUTH_PROVIDER = 'FACEBOOK_AUTH_PROVIDER';
 
-    private const ROUTE = 'connect_facebook_check';
+    private const string ROUTE = 'connect_facebook_check';
 
     public function __construct(
         private readonly ClientRegistry $clientRegistry,
@@ -44,11 +44,13 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
     ) {
     }
 
+    #[\Override]
     public function supports(Request $request): bool
     {
         return $request->attributes->get('_route') === self::ROUTE;
     }
 
+    #[\Override]
     public function authenticate(Request $request): Passport
     {
         $client = $this->clientRegistry->getClient('facebook');
@@ -102,12 +104,14 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
         );
     }
 
+    #[\Override]
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         $targetUrl = $this->router->generate('user_event_invitations');
         return new RedirectResponse($targetUrl);
     }
 
+    #[\Override]
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         $message = strtr($exception->getMessageKey(), $exception->getMessageData());
@@ -115,7 +119,8 @@ class FacebookAuthenticator extends OAuth2Authenticator implements Authenticatio
         return new Response($message, Response::HTTP_FORBIDDEN);
     }
 
-    public function start(Request $request, AuthenticationException $authException = null): Response
+    #[\Override]
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
         $targetUrl = $this->router->generate('connect_facebook_start');
         return new RedirectResponse(

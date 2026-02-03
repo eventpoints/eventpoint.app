@@ -12,11 +12,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class EventRoleCrudController extends AbstractCrudController
 {
+    #[\Override]
     public static function getEntityFqcn(): string
     {
         return EventRole::class;
     }
 
+    #[\Override]
     public function configureFields(string $pageName): iterable
     {
         return [

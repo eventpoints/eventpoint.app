@@ -25,7 +25,6 @@ use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\ComponentWithFormTrait;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
-
 #[AsLiveComponent('event_group_form_component')]
 class EventGroupFormComponent extends AbstractController
 {
@@ -69,6 +68,7 @@ class EventGroupFormComponent extends AbstractController
         }
     }
 
+    #[\Override]
     protected function instantiateForm(): FormInterface
     {
         $this->eventGroup = new EventGroup();

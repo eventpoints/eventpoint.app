@@ -15,6 +15,7 @@ class CategoryFixtures extends Fixture
     ) {
     }
 
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         foreach ($this->getAllCategories() as $title) {

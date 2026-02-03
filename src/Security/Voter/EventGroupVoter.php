@@ -13,27 +13,28 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EventGroupVoter extends Voter
 {
-    final public const VIEW_GROUP = 'VIEW_GROUP';
+    final public const string VIEW_GROUP = 'VIEW_GROUP';
 
-    final public const EDIT_GROUP = 'EDIT_GROUP';
+    final public const string EDIT_GROUP = 'EDIT_GROUP';
 
-    final public const CREATE_GROUP_POLL = 'CREATE_GROUP_POLL';
+    final public const string CREATE_GROUP_POLL = 'CREATE_GROUP_POLL';
 
-    final public const CREATE_GROUP_DISCUSSION = 'CREATE_GROUP_DISCUSSION';
+    final public const string CREATE_GROUP_DISCUSSION = 'CREATE_GROUP_DISCUSSION';
 
-    final public const CREATE_GROUP_EVENT = 'CREATE_GROUP_EVENT';
+    final public const string CREATE_GROUP_EVENT = 'CREATE_GROUP_EVENT';
 
-    final public const ADD_GROUP_MEMBER = 'ADD_GROUP_MEMBER';
+    final public const string ADD_GROUP_MEMBER = 'ADD_GROUP_MEMBER';
 
-    final public const REMOVE_GROUP_MEMBER = 'REMOVE_GROUP_MEMBER';
+    final public const string REMOVE_GROUP_MEMBER = 'REMOVE_GROUP_MEMBER';
 
-    final public const DELETE_GROUP = 'DELETE_GROUP';
+    final public const string DELETE_GROUP = 'DELETE_GROUP';
 
     public function getCurrentUserEventOrganiser(Event $event, User $currentUser): null|EventOrganiser
     {
         return $event->getEventOrganisers()->findFirst(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $currentUser);
     }
 
+    #[\Override]
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::VIEW_GROUP, self::EDIT_GROUP, self::CREATE_GROUP_EVENT, self::CREATE_GROUP_POLL, self::CREATE_GROUP_DISCUSSION, self::ADD_GROUP_MEMBER, self::REMOVE_GROUP_MEMBER, self::DELETE_GROUP], true)
@@ -43,6 +44,7 @@ class EventGroupVoter extends Voter
     /**
      * @param EventGroup $subject
      */
+    #[\Override]
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $currentUser = $token->getUser();

@@ -13,7 +13,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final readonly class EmailService
 {
-    private const SENDER_EMAIL_ADDRESS = 'notifications@eventpoint.app';
+    private const string SENDER_EMAIL_ADDRESS = 'notifications@eventpoint.app';
 
     public function __construct(
         private MailerInterface $mailer,

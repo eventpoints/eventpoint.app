@@ -144,7 +144,7 @@ class EventGroupRepository extends ServiceEntityRepository
     /**
      * @return Query|array<int, EventGroup>
      */
-    public function findByName(string $keyword, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    public function findByName(string $keyword, ?QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
         if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event_group');
@@ -195,7 +195,7 @@ class EventGroupRepository extends ServiceEntityRepository
     /**
      * @return Query|array<int, EventGroup>
      */
-    public function findByCategory(Category $category, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    public function findByCategory(Category $category, ?QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
         if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event_group');
@@ -217,7 +217,7 @@ class EventGroupRepository extends ServiceEntityRepository
     /**
      * @return Query|array<int, EventGroup>
      */
-    public function findByMembership(User $user, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    public function findByMembership(User $user, ?QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
         if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event_group');
@@ -241,7 +241,7 @@ class EventGroupRepository extends ServiceEntityRepository
     /**
      * @return Query|array<int, EventGroup>
      */
-    public function findByGroupsManaged(User $user, QueryBuilder $qb = null, bool $isQuery = false): Query|array
+    public function findByGroupsManaged(User $user, ?QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
         if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event_group');

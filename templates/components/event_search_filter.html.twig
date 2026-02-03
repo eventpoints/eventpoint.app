@@ -42,16 +42,11 @@
                                         }) }}
                                     {% endif %}
                             >
-                                <div class="row justify-content-between mb-3">
-                                    <div class="col-6">{{ form_row(form.country) }}</div>
-                                    <div class="col-6">
-                                        {{ form_row(form.city, {
-                                            attr: {
-                                                "data-action" : "change->map-raduis#drawCircle"
-                                            }
-                                        }) }}
-                                    </div>
-                                </div>
+                                {{ form_row(form.city, {
+                                    attr: {
+                                        "data-action" : "change->map-raduis#drawCircle"
+                                    }
+                                }) }}
 
                                 {% if eventFilterDto.city is not null %}
                                     <div class="radius-map" {{ stimulus_target('map-raduis','map') }}></div>
@@ -111,7 +106,7 @@
                         {% for event in events %}
                             <div class="col-12">
                                 {% if event.url %}
-                                   {{ include('partials/event/_external-event-card.html.twig') }}
+                                    {{ include('partials/event/_external-event-card.html.twig') }}
                                 {% else %}
                                     {{ include('partials/event/event-card.html.twig') }}
                                 {% endif %}
