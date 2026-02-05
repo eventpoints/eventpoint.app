@@ -6,12 +6,6 @@
         events: jsonEvents,
     }) }}>
 
-
-        <div class="offcanvas offcanvas-bottom vh-50" data-bs-scroll="true" tabindex="-1" id="map-offcanvas"
-             aria-labelledby="map">
-            <div class="map-big" id="map" {{ stimulus_target('dynamic-map', 'map') }}></div>
-        </div>
-
         <div class="container-fluid">
             <div class="row justify-content-center mt-3">
                 <div class="col-12 col-md-4">
@@ -32,92 +26,113 @@
                             <div class="list-group-item">
                                 {{ form_row(form.keyword) }}
                             </div>
-                            <div class="list-group-item"
-                                    {% if eventFilterDto.city is not null %}
-                                        {{ stimulus_controller('map-raduis', {
-                                            token: mapbox_token,
-                                            longitude:  eventFilterDto.city.longitude,
-                                            latitude: eventFilterDto.city.latitude,
-                                            city: eventFilterDto.city.name
-                                        }) }}
-                                    {% endif %}
-                            >
-                                {{ form_row(form.city, {
-                                    attr: {
-                                        "data-action" : "change->map-raduis#drawCircle"
-                                    }
-                                }) }}
-
-                                {% if eventFilterDto.city is not null %}
-                                    <div class="radius-map" {{ stimulus_target('map-raduis','map') }}></div>
-                                {% endif %}
-
-                                {% if form.radius is defined %}
-                                    <datalist class="mt-3" id="values">
-                                        <option value="0" label="0"></option>
-                                        <option value="25" label="25"></option>
-                                        <option value="50" label="50"></option>
-                                        <option value="75" label="75"></option>
-                                        <option value="100" label="100"></option>
-                                    </datalist>
-                                    {{ form_row(form.radius, {
+                            {% if form.city is defined %}
+                                <div class="list-group-item">
+                                    {{ form_row(form.city, {
                                         attr: {
-                                            "class" : "custom-range",
-                                            "data-map-raduis-target" : "radius",
-                                            "data-action" : "change->map-raduis#drawCircle",
-                                            "list" : "values"
+                                            "data-action" : "change->map-raduis#drawCircle"
                                         }
                                     }) }}
+                                </div>
+                                <div class="list-group-item"
+                                        {% if eventFilterDto.city is not null %}
+                                            {{ stimulus_controller('map-raduis', {
+                                                token: mapbox_token,
+                                                longitude:  eventFilterDto.city.longitude,
+                                                latitude: eventFilterDto.city.latitude,
+                                                city: eventFilterDto.city.name
+                                            }) }}
+                                        {% endif %}
+                                >
 
-                                {% endif %}
-                            </div>
+                                    {% if eventFilterDto.city is not null %}
+                                        <div class="radius-map" {{ stimulus_target('map-raduis','map') }}></div>
+                                    {% endif %}
+
+                                    {% if form.radius is defined %}
+                                        <datalist class="mt-3" id="values">
+                                            <option value="0" label="0"></option>
+                                            <option value="25" label="25"></option>
+                                            <option value="50" label="50"></option>
+                                            <option value="75" label="75"></option>
+                                            <option value="100" label="100"></option>
+                                        </datalist>
+                                        {{ form_row(form.radius, {
+                                            attr: {
+                                                "class" : "custom-range",
+                                                "data-map-raduis-target" : "radius",
+                                                "data-action" : "change->map-raduis#drawCircle",
+                                                "list" : "values"
+                                            }
+                                        }) }}
+
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                             <div class="list-group-item">{{ form_row(form.category) }}</div>
+                            <div class="list-group-item">{{ form_row(form.period) }}</div>
                         </div>
-                        {{ form_row(form.period) }}
                         {{ form_end(form) }}
                     </div>
                 </div>
-                <div class="col-12 col-md-5">
+                <div class="col-12 col-md-6" {{ stimulus_controller('view-toggle') }}>
                     <div class="row g-0">
                         <div class="col-12">
                             {{ include('partials/event/_event-filter-date-range.html.twig') }}
                         </div>
                     </div>
-
-                    <div class="row g-2 mb-3">
-
-                        {% for group in groups %}
-                            <div class="row g-1 justify-content-between">
-                                <div class="col-4">
-                                    <div class="card mb-2">
-                                        <div class="card-body text-center">
-                                            <div>
-                                                <img src="{{ group.base64Image }}"
-                                                     class="object-fit-cover rounded-circle mb-3" height="50"
-                                                     width="50"/>
+                    <div class="btn-group mb-3" role="group">
+                        <button type="button"
+                                class="btn btn-outline-primary active d-flex gap-3"
+                                {{ stimulus_target('view-toggle', 'listButton') }}
+                                {{ stimulus_action('view-toggle', 'showList', 'click') }}>
+                            {{ ux_icon('mdi:format-list-bulleted-square', {class: 'fs-5'}) }}
+                            <div>{{ 'list'|trans|capitalize }}</div>
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-primary d-flex gap-3"
+                                {{ stimulus_target('view-toggle', 'mapButton') }}
+                                {{ stimulus_action('view-toggle', 'showMap', 'click') }}>
+                            {{ ux_icon('mdi:map-search', {class: 'fs-5'}) }}
+                            <div>{{ 'map'|trans|capitalize }}</div>
+                        </button>
+                    </div>
+                    <div {{ stimulus_target('view-toggle', 'list') }}>
+                        <div class="row g-2 mb-3">
+                            {% for group in groups %}
+                                <div class="row g-1 justify-content-between">
+                                    <div class="col-4">
+                                        <div class="card mb-2">
+                                            <div class="card-body text-center">
+                                                <div>
+                                                    <img src="{{ group.base64Image }}"
+                                                         class="object-fit-cover rounded-circle mb-3" height="50"
+                                                         width="50"/>
+                                                </div>
+                                                <div class="fw-bold">{{ group.name }}</div>
                                             </div>
-                                            <div class="fw-bold">{{ group.name }}</div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endfor %}
+                            {% endfor %}
 
-                        {% for event in events %}
-                            <div class="col-12">
-                                {% if event.url %}
-                                    {{ include('partials/event/_external-event-card.html.twig') }}
-                                {% else %}
-                                    {{ include('partials/event/event-card.html.twig') }}
-                                {% endif %}
-                            </div>
-                        {% else %}
-                            <div class="text-center text-muted fw-bold mt-5">{{ 'no-events-found'|trans|upper }}</div>
-                        {% endfor %}
+                            {% for event in events %}
+                                <div class="col-12">
+                                    {% if event.url %}
+                                        {{ include('partials/event/_external-event-card.html.twig') }}
+                                    {% else %}
+                                        <twig:EventCard :event="event" :hasMap="true" :hasLink="true"/>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="text-center text-muted fw-bold mt-5">{{ 'no-events-found'|trans|upper }}</div>
+                            {% endfor %}
+                        </div>
                     </div>
-
+                    <div class="d-none" {{ stimulus_target('view-toggle', 'map') }}>
+                        <div class="map-inline" id="map" {{ stimulus_target('dynamic-map', 'map') }}></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>

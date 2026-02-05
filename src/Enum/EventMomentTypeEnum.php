@@ -12,4 +12,6 @@ enum EventMomentTypeEnum: string
     case EVENT_ORGANISER_ADDED = 'event.change.organiser.add';
     case EVENT_ORGANISER_REMOVED = 'event.change.organiser.remove';
     case EVENT_CANCELED = 'event.change.canceled';
+    case EVENT_PUBLISHED = 'event.change.published';
+    case EVENT_UNPUBLISHED = 'event.change.unpublished';
 }

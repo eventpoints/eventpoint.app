@@ -1,6 +1,5 @@
 {% extends 'base.html.twig' %}
 
-{% import "macro/event.macro.twig" as eventMacro %}
 
 {% block body %}
     <div class="container">
@@ -16,7 +15,7 @@
                 <div class="row justify-content-between">
                     {% for event in events %}
                         <div class="col-12">
-                            {{ eventMacro.card(event) }}
+                            <twig:EventCard :event="event" />
                         </div>
                     {% else %}
                         <div class="list-group-item text-center text-muted fw-bold">{{ 'no-events-found'|trans|upper }}</div>

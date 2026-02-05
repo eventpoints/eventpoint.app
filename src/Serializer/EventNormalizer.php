@@ -28,6 +28,8 @@ class EventNormalizer implements NormalizerInterface
             ],
             'properties' => [
                 'id' => $object->getId()->toRfc4122(),
+                'title' => $object->getTitle(),
+                'address' => $object->getAddress(),
             ],
         ];
     }

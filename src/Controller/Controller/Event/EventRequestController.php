@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace App\Controller\Controller\Event;
 
 use App\Entity\Event\Event;
-use App\Entity\Event\EventRequest;
+use App\Entity\Event\EventInvitation;
 use App\Entity\User\User;
 use App\Enum\FlashEnum;
-use App\Factory\Event\EventRequestFactory;
+use App\Factory\Event\EventInvitationFactory;
+use App\Repository\Event\EventInvitationRepository;
 use App\Repository\Event\EventRepository;
-use App\Repository\Event\EventRequestRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 
 class EventRequestController extends AbstractController
 {
     public function __construct(
-        private readonly EventRequestFactory $eventRequestFactory,
-        private readonly EventRequestRepository $eventRequestRepository,
+        private readonly EventInvitationFactory $eventInvitationFactory,
+        private readonly EventInvitationRepository $eventInvitationRepository,
         private readonly EventRepository $eventRepository
     ) {
     }
@@ -43,8 +43,8 @@ class EventRequestController extends AbstractController
             ]);
         }
 
-        $eventRequest = $this->eventRequestFactory->create(event: $event, owner: $currentUser);
-        $event->addEventRequest($eventRequest);
+        $eventRequest = $this->eventInvitationFactory->createRequest(owner: $currentUser, event: $event);
+        $event->addEventInvitation($eventRequest);
         $this->eventRepository->save($event, true);
         $this->addFlash(FlashEnum::MESSAGE->value, 'request-sent');
         return $this->redirectToRoute('show_event', [
@@ -53,7 +53,7 @@ class EventRequestController extends AbstractController
     }
 
     #[Route(path: '/events/rsvp/cancel/{id}', name: 'cancel_event_rsvp_request', methods: [Request::METHOD_GET])]
-    public function remove(EventRequest $eventRequest, #[CurrentUser] User $currentUser): Response
+    public function remove(EventInvitation $eventRequest, #[CurrentUser] User $currentUser): Response
     {
         $event = $eventRequest->getEvent();
         if (! $event->getIsAttending($currentUser) && ! $event->hasRequestedToAttend($currentUser)) {
@@ -63,7 +63,7 @@ class EventRequestController extends AbstractController
             ]);
         }
 
-        $this->eventRequestRepository->remove($eventRequest, true);
+        $this->eventInvitationRepository->remove($eventRequest, true);
         $this->addFlash(FlashEnum::MESSAGE->value, 'request-canceled');
         return $this->redirectToRoute('show_event', [
             'id' => $event->getId(),

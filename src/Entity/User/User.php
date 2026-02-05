@@ -10,10 +10,8 @@ use App\Entity\Conversation\ConversationParticipant;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventCancellation;
 use App\Entity\Event\EventInvitation;
-use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventOrganiserInvitation;
 use App\Entity\Event\EventParticipant;
-use App\Entity\Event\EventRequest;
 use App\Entity\Event\EventReview;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\EventGroup\EventGroupDiscussionComment;
@@ -75,9 +73,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\Column(nullable: true)]
     private null|int $age = null;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventOrganiser::class, cascade: ['persist'])]
-    private Collection $eventOrganisers;
-
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $avatar = null;
 
@@ -93,9 +88,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventParticipant::class, cascade: ['persist'])]
     private Collection $eventParticipations;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventRequest::class)]
-    private Collection $eventRequests;
-
     #[ORM\Column(length: 255)]
     private null|string $timezone = RegionalEnum::REGIONAL_TIMEZONE->value;
 
@@ -108,7 +100,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\Column(length: 3, nullable: true)]
     private ?string $country = RegionalEnum::REGIONAL_REGION->value;
 
-    #[ORM\OneToMany(mappedBy: 'target', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'targetUser', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $receivedEventInvitations;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -175,17 +167,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventReview::class)]
     private Collection $eventReviews;
 
-    #[ORM\OneToOne]
+    #[ORM\OneToOne(cascade: ['persist', 'remove'], orphanRemoval: true)]
     private ?Email $email = null;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Email::class, cascade: ['persist'])]
+    #[ORM\OneToMany(targetEntity: Email::class, mappedBy: 'owner', cascade: ['persist'])]
     private Collection $emails;
 
     public function __construct()
     {
         $this->eventParticipations = new ArrayCollection();
-        $this->eventRequests = new ArrayCollection();
-        $this->eventOrganisers = new ArrayCollection();
         $this->imageCollections = new ArrayCollection();
         $this->eventGroups = new ArrayCollection();
         $this->eventGroupMembers = new ArrayCollection();
@@ -279,10 +269,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         return $this;
     }
 
-    /**
-     * @see UserInterface
-     */
-    #[\Override]
     public function eraseCredentials(): void
     {
         // If you store any temporary, sensitive data on the user, clear it here
@@ -333,36 +319,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     public function setAge(int $age): static
     {
         $this->age = $age;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, EventOrganiser>
-     */
-    public function getEventOrganisers(): Collection
-    {
-        return $this->eventOrganisers;
-    }
-
-    public function addEventOrganiser(EventOrganiser $eventOrganiser): static
-    {
-        if (! $this->eventOrganisers->contains($eventOrganiser)) {
-            $this->eventOrganisers->add($eventOrganiser);
-            $eventOrganiser->setOwner($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEventOrganiser(EventOrganiser $eventOrganiser): static
-    {
-        if ($this->eventOrganisers->removeElement($eventOrganiser)) {
-            // set the owning side to null (unless already changed)
-            if ($eventOrganiser->getOwner() === $this) {
-                $eventOrganiser->setOwner(null);
-            }
-        }
 
         return $this;
     }
@@ -466,30 +422,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
             }
         }
 
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, EventRequest>
-     */
-    public function getEventRequests(): Collection
-    {
-        return $this->eventRequests;
-    }
-
-    public function addEventRequest(EventRequest $eventRequest): static
-    {
-        if (! $this->eventRequests->contains($eventRequest)) {
-            $this->eventRequests->add($eventRequest);
-            $eventRequest->setOwner($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEventRequest(EventRequest $eventRequest): static
-    {
-        $this->eventRequests->removeElement($eventRequest);
         return $this;
     }
 
@@ -645,6 +577,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     {
         $this->createdEmailEventInvitations->removeElement($eventInvitation);
         return $this;
+    }
+
+    public function getUnansweredEventInvitationsCount(): int
+    {
+        return $this->receivedEventInvitations->filter(
+            fn(EventInvitation $invitation) => $invitation->isInvitation() && $invitation->isPending()
+        )->count();
+    }
+
+    public function getEventRequestsCount(): int
+    {
+        return $this->createdEventInvitations->filter(
+            fn(EventInvitation $invitation) => $invitation->isRequest() && $invitation->isPending()
+        )->count();
     }
 
     public function getCreatedAt(): null|CarbonImmutable
@@ -1216,14 +1162,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     public function getFutureEvents(): ArrayCollection
     {
         $now = new CarbonImmutable();
-        $events = new ArrayCollection([...$this->eventParticipations, ...$this->eventOrganisers]);
-        return $events->filter(fn (EventOrganiser|EventParticipant $eventParticipantOrOrganiser) => $now < $eventParticipantOrOrganiser->getEvent()->getStartAt())->map(fn (EventOrganiser|EventParticipant $eventParticipantOrOrganiser) => $eventParticipantOrOrganiser->getEvent());
+        return new ArrayCollection(
+            $this->eventParticipations->filter(fn (EventParticipant $participant) => $now < $participant->getEvent()->getStartAt())
+                ->map(fn (EventParticipant $participant) => $participant->getEvent())
+                ->toArray()
+        );
     }
 
     public function getPastEvents(): ArrayCollection
     {
         $now = new CarbonImmutable();
-        $events = new ArrayCollection([...$this->eventParticipations, ...$this->eventOrganisers]);
-        return $events->filter(fn (EventOrganiser|EventParticipant $eventParticipantOrOrganiser) => $now > $eventParticipantOrOrganiser->getEvent()->getEndAt())->map(fn (EventOrganiser|EventParticipant $eventParticipantOrOrganiser) => $eventParticipantOrOrganiser->getEvent());
+        return new ArrayCollection(
+            $this->eventParticipations->filter(fn (EventParticipant $participant) => $now > $participant->getEvent()->getEndAt())
+                ->map(fn (EventParticipant $participant) => $participant->getEvent())
+                ->toArray()
+        );
     }
 }

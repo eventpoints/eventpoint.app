@@ -85,9 +85,6 @@ class EventGroupRepository extends ServiceEntityRepository
             $this->findByName(keyword: $eventFilterDto->getKeyword(), qb: $qb);
         }
 
-        $qb->andWhere(
-            $qb->expr()->eq('event_group.isPrivate', ':false')
-        )->setParameter('false', false);
 
         if ($isQuery) {
             return $qb->getQuery();
@@ -168,10 +165,6 @@ class EventGroupRepository extends ServiceEntityRepository
     public function findByGroupFilter(EventGroupFilterDto $eventFilterDto, bool $isQuery = false): Query|array
     {
         $qb = $this->createQueryBuilder('event_group');
-
-        $qb->andWhere(
-            $qb->expr()->eq('event_group.isPrivate', ':false')
-        )->setParameter('false', false);
 
         if (! empty($eventFilterDto->getKeyword())) {
             $this->findByName(keyword: $eventFilterDto->getKeyword(), qb: $qb, isQuery: true);

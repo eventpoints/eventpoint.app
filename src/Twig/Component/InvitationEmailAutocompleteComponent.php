@@ -24,11 +24,13 @@ use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
+use Symfony\UX\LiveComponent\ValidatableComponentTrait;
 
 #[AsLiveComponent('InvitationEmailAutocompleteComponent', template: 'components/invitation-email-autocomplete-component.twig')]
 class InvitationEmailAutocompleteComponent extends AbstractController
 {
     use DefaultActionTrait;
+    use ValidatableComponentTrait;
 
     #[LiveProp(writable: true)]
     #[Assert\Email]
@@ -69,10 +71,12 @@ class InvitationEmailAutocompleteComponent extends AbstractController
     }
 
     #[LiveAction]
-    public function save(#[CurrentUser] User $currentUser): void
+    public function sendToEmail(#[CurrentUser] User $currentUser): void
     {
+        $this->validate();
         $email = $this->createEmail(emailAddress: $this->emailAddress);
         $this->createUserContact(email: $email, user: $currentUser);
+        $this->eventService->process(event: $this->event, email: $email, currentUser: $currentUser, requestStack: $this->requestStack);
         $this->eventRepository->save($this->event, true);
         $this->contacts = $this->userContactRepository->findByOwnerAndQuery(user: $currentUser, emailAddress: $this->emailAddress, limit: 30);
     }

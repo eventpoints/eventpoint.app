@@ -22,32 +22,30 @@
                     <div class="list-group-item">
                         {{ 'event-organisers'|trans|title }}
                     </div>
-                    {% for organiser in event.eventOrganisers %}
+                    {% for participant in event.organisers %}
                         <div class="list-group-item list-group-item-action">
                             <div class="d-flex justify-content-between align-items-start">
                                 <div class="d-flex justify-content-start align-items-start">
                                     <div>
                                         <div class="d-flex mb-3">
-                                            <img height="50" class="me-3" src="{{ organiser.owner.avatar }}"/>
+                                            <img height="50" class="me-3" src="{{ participant.owner.avatar }}"/>
                                             <div>
-                                                <div class="fw-bold mb-1">{{ organiser.owner.fullName }}</div>
-                                                {% for role in organiser.roles %}
-                                                    <div class="badge rounded-pill text-bg-dark-grey mb-2">{{ role.title.value|trans }}</div>
-                                                {% endfor %}
+                                                <div class="fw-bold mb-1">{{ participant.owner.fullName }}</div>
+                                                <div class="badge rounded-pill text-bg-dark-grey mb-2">{{ participant.role.value|trans }}</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div>
                                     <div class="btn-group" role="group" aria-label="Basic example">
-                                        <a href="{{ path('remove_event_organiser', {event: organiser.event.id, id: organiser.id}) }}"
+                                        <a href="{{ path('remove_event_organiser', {event: participant.event.id, id: participant.id}) }}"
                                            class="link-light">
                                             <span class="bi bi-x-circle text-danger fs-3"></span>
                                         </a>
                                     </div>
                                 </div>
                             </div>
-                            <div class="text-muted text-center small"> {{ organiser.createdAt.diffForHumans }}</div>
+                            <div class="text-muted text-center small"> {{ participant.createdAt.diffForHumans }}</div>
                         </div>
                     {% endfor %}
                 </div>
@@ -68,9 +66,7 @@
                                                 <img height="50" class="me-3" src="{{ inviation.owner.avatar }}"/>
                                                 <div>
                                                     <div class="fw-bold mb-1">{{ inviation.owner.fullName }}</div>
-                                                    {% for role in inviation.roles %}
-                                                        <div class="badge rounded-pill text-bg-dark-grey mb-1">{{ role.title.value|trans }}</div>
-                                                    {% endfor %}
+                                                    <div class="badge rounded-pill text-bg-dark-grey mb-1">{{ inviation.role.value|trans }}</div>
                                                 </div>
                                             </div>
                                         </div>

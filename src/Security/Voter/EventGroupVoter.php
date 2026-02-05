@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Security\Voter;
 
-use App\Entity\Event\Event;
-use App\Entity\Event\EventOrganiser;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EventGroupVoter extends Voter
@@ -29,11 +28,6 @@ class EventGroupVoter extends Voter
 
     final public const string DELETE_GROUP = 'DELETE_GROUP';
 
-    public function getCurrentUserEventOrganiser(Event $event, User $currentUser): null|EventOrganiser
-    {
-        return $event->getEventOrganisers()->findFirst(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $currentUser);
-    }
-
     #[\Override]
     protected function supports(string $attribute, mixed $subject): bool
     {
@@ -45,7 +39,7 @@ class EventGroupVoter extends Voter
      * @param EventGroup $subject
      */
     #[\Override]
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         $currentUser = $token->getUser();
         if (! $currentUser instanceof User) {

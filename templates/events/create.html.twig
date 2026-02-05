@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row justify-content-center my-4">
+            <div class="col-12 col-md-6">
+                {{ form_start(form) }}
+                <div class="card mb-3">
+                    <div class="" {{ stimulus_controller('location', {
+                        token: mapbox_token,
+                        latitude: eventDto.latitude ?? null,
+                        longitude: eventDto.longitude ?? null
+                    }) }}>
+                        <div class="map" id="map" {{ stimulus_target('location', 'result') }} ></div>
+                        {{ form_row(form.latitude) }}
+                        {{ form_row(form.longitude) }}
+                        {{ form_row(form.address) }}
+                        <div class="card-body">
+                            <a class="btn btn-secondary" {{ stimulus_action('location', 'getCurrentLocation', 'click') }}>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <span class="me-2">{{ 'current-location'|trans }}</span>
+                                    <span {{ stimulus_target('location', 'icon') }} class="bi bi-crosshair"></span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item"> {{ form_row(form.title) }}</div>
+                        <div class="list-group-item"> {{ form_row(form.description) }}</div>
+                        <div class="list-group-item">
+                            <div class="row">
+                                <div class="col-6">
+                                    {{ form_row(form.startAt) }}
+                                </div>
+                                <div class="col-6">
+                                    {{ form_row(form.endAt) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item">{{ form_row(form.categories) }}</div>
+                        {% if form.eventGroup is defined %}
+                            <div class="list-group-item">{{ form_row(form.eventGroup) }}</div>
+                        {% endif %}
+                        <div class="list-group-item">{{ form_row(form.isPrivate) }}</div>
+                        {% if not app.user %}
+                            <div class="list-group-item">
+                                <div class="row justify-content-between">
+                                    <div class="col-12 col-md-6">{{ form_row(form.firstName) }}</div>
+                                    <div class="col-12 col-md-6">{{ form_row(form.lastName) }}</div>
+                                </div>
+                            </div>
+                            <div class="list-group-item">{{ form_row(form.email) }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-body">
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            {{ 'contiune'|trans }}
+                        </button>
+                    </div>
+
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

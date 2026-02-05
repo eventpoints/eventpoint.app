@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Controller\Controller\Event;
 
 use App\Entity\Event\Event;
-use App\Entity\Event\EventOrganiser;
+use App\Entity\Event\EventParticipant;
 use App\Repository\Event\EventRepository;
 use App\Security\Voter\EventOrganiserVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class EventOrganiserController extends AbstractController
 {
@@ -28,10 +28,11 @@ class EventOrganiserController extends AbstractController
     }
 
     #[Route(path: '/event/{event}/remove/organiser/{id}', name: 'remove_event_organiser')]
-    public function remove(Event $event, EventOrganiser $eventOrganiser): Response
+    public function remove(Event $event, EventParticipant $eventParticipant): Response
     {
-        $this->isGranted(EventOrganiserVoter::REMOVE_EVENT_ORGANISER, $eventOrganiser);
-        if ($eventOrganiser->getEvent() === $event) {
+        $this->isGranted(EventOrganiserVoter::REMOVE_EVENT_ORGANISER, $eventParticipant);
+        if ($eventParticipant->getEvent() === $event) {
+            $event->removeEventParticipant($eventParticipant);
             $this->eventRepository->save($event, true);
         }
         return $this->redirectToRoute('manage_event_organisers', [

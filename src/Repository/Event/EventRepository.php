@@ -264,16 +264,6 @@ class EventRepository extends ServiceEntityRepository
             $qb->expr()->eq('participant.owner', ':user')
         )->setParameter('user', $user);
 
-        $qb->leftJoin('event.eventOrganisers', 'organiser');
-        $qb->orWhere(
-            $qb->expr()->eq('organiser.owner', ':user')
-        )->setParameter('user', $user);
-
-        $qb->leftJoin('event.eventRequests', 'event_requests');
-        $qb->orWhere(
-            $qb->expr()->eq('event_requests.owner', ':user')
-        )->setParameter('user', $user);
-
         return $qb->getQuery()->getResult();
     }
 

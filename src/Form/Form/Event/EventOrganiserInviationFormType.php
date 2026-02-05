@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Form\Form\Event;
 
 use App\Entity\Event\EventOrganiserInvitation;
-use App\Entity\Event\EventRole;
 use App\Entity\User\User;
-use App\Form\Type\EntitySelectionGroupType;
+use App\Enum\EventParticipantRoleEnum;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -32,13 +32,10 @@ class EventOrganiserInviationFormType extends AbstractType
                 'multiple' => false,
                 'autocomplete' => true,
             ])
-            ->add('roles', EntitySelectionGroupType::class, [
-                'label' => 'roles',
-                'expanded' => true,
-                'searchable' => false,
-                'class' => EventRole::class,
-                'choice_label' => 'title.value',
-                'multiple' => true,
+            ->add('role', EnumType::class, [
+                'label' => 'role',
+                'class' => EventParticipantRoleEnum::class,
+                'choice_label' => fn (EventParticipantRoleEnum $role) => $role->value,
                 'choice_translation_domain' => true,
             ]);
     }

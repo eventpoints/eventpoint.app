@@ -31,7 +31,7 @@
                 </a>
                 <a href="{{ path('show_event', {id: event.id, _fragment: 'requests'}) }}"
                    class="btn border-0 btn-outline-secondary text-black fw-bold">
-                    <div>{{ event.eventRequests.count|compact_notation }}</div>
+                    <div>{{ event.eventInvitations.count|compact_notation }}</div>
                     <div>{{ 'requested'|trans|upper }}</div>
                 </a>
             </div>

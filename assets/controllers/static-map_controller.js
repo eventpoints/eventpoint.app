@@ -23,7 +23,6 @@ export default class extends Controller {
 
         this.addMarker();
 
-
         this.map.on('load', () => {
             this.map.flyTo({
                 center: [this.longitudeValue, this.latitudeValue],
@@ -35,8 +34,8 @@ export default class extends Controller {
     }
 
     addMarker() {
-        new mapboxgl.Marker()
-            .setLngLat([this.longitudeValue, this.latitudeValue])
-            .addTo(this.map);
+        new mapboxgl.Marker({ color: '#000000'})
+                .setLngLat([this.longitudeValue, this.latitudeValue])
+                .addTo(this.map);
     }
 }

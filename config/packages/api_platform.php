@@ -44,7 +44,5 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                 'rfc_7807_compliant_errors' => true,
             ],
         ],
-        'event_listeners_backward_compatibility_layer' => false,
-        'keep_legacy_inflector' => false,
     ]);
 };

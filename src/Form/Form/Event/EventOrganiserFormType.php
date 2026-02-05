@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Form\Form\Event;
 
-use App\Entity\Event\EventOrganiser;
-use App\Entity\Event\EventRole;
+use App\Entity\Event\EventParticipant;
 use App\Entity\User\User;
+use App\Enum\EventParticipantRoleEnum;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -26,12 +27,9 @@ class EventOrganiserFormType extends AbstractType
                 ],
                 'multiple' => false,
             ])
-            ->add('roles', EntityType::class, [
-                'row_attr' => [
-                    'class' => 'form-floating mb-3',
-                ],
-                'class' => EventRole::class,
-                'choice_label' => 'name',
+            ->add('role', EnumType::class, [
+                'class' => EventParticipantRoleEnum::class,
+                'choice_label' => fn (EventParticipantRoleEnum $role) => $role->value,
                 'translation_domain' => true,
             ]);
     }
@@ -40,7 +38,7 @@ class EventOrganiserFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => EventOrganiser::class,
+            'data_class' => EventParticipant::class,
         ]);
     }
 }

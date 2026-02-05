@@ -4,46 +4,25 @@ declare(strict_types=1);
 
 namespace App\Controller\Controller\Event;
 
-use App\Entity\Event\EventEmailInvitation;
 use App\Entity\Event\EventInvitation;
 use App\Enum\FlashEnum;
-use App\Repository\Event\EventEmailInvitationRepository;
 use App\Repository\Event\EventInvitationRepository;
 use App\Security\Voter\EventVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/event/invitations')]
 class EventInvitationController extends AbstractController
 {
     public function __construct(
-        private readonly EventEmailInvitationRepository $emailInvitationRepository,
         private readonly EventInvitationRepository $eventInvitationRepository,
         private readonly TranslatorInterface $translator,
     ) {
-    }
-
-    /**
-     * @throws TransportExceptionInterface
-     */
-    #[Route('/remove/email/{id}/{token}', name: 'remove_email_invitation', methods: [Request::METHOD_GET])]
-    public function removeEmailInvitation(EventEmailInvitation $emailInvitation, string $token): Response
-    {
-        if ($this->isCsrfTokenValid(id: 'remove-invitation', token: $token)) {
-            $event = $emailInvitation->getEvent();
-            $this->isGranted(EventVoter::EDIT_EVENT, $emailInvitation->getEvent());
-            $this->emailInvitationRepository->remove($emailInvitation, true);
-            $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changes-saved'));
-            return $this->redirectToRoute('show_event', [
-                'id' => $event->getId(),
-                '_fragment' => 'invited',
-            ]);
-        }
-        return $this->redirectToRoute('app_login');
     }
 
     /**
@@ -63,5 +42,36 @@ class EventInvitationController extends AbstractController
             ]);
         }
         return $this->redirectToRoute('app_login');
+    }
+
+    /**
+     * Remove an email invitation by token.
+     * This handles the legacy route for email invitations.
+     *
+     * @throws TransportExceptionInterface
+     */
+    #[Route('/remove/email/{id}/{token}', name: 'remove_email_invitation', methods: [Request::METHOD_GET])]
+    public function removeEmailInvitation(EventInvitation $eventInvitation, string $token): Response
+    {
+        return $this->removeInvitation($eventInvitation, $token);
+    }
+
+    /**
+     * Find invitation by verification token.
+     */
+    #[Route('/verify/{invitationToken}', name: 'verify_invitation', methods: [Request::METHOD_GET])]
+    public function verifyInvitation(string $invitationToken): Response
+    {
+        $invitation = $this->eventInvitationRepository->findByToken(Uuid::fromString($invitationToken));
+
+        if (!$invitation instanceof EventInvitation) {
+            $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('invitation-not-found'));
+            return $this->redirectToRoute('app_landing');
+        }
+
+        return $this->redirectToRoute('show_event', [
+            'id' => $invitation->getEvent()->getId(),
+            'token' => $invitationToken,
+        ]);
     }
 }

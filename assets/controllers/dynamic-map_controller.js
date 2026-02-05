@@ -25,9 +25,8 @@ export default class extends Controller {
         this.mapbox.addControl(new mapboxgl.FullscreenControl())
         this.mapbox.addControl(new mapboxgl.NavigationControl())
 
-        this.mapbox.on('render', (e) => {
-            let center = this.mapbox.getCenter()
-        })
+        this._onMapShown = () => this.mapbox.resize()
+        window.addEventListener('view-toggle:map-shown', this._onMapShown)
 
         this.mapbox.on('load', () => {
 
@@ -104,14 +103,43 @@ export default class extends Controller {
                 }
             })
 
-            this.mapbox.on('click', 'unclustered-point', (event) => {
-                let id = event.features[0].properties.id
-                let card = document.querySelector(`#asset-${id}`)
-                if (card != null) {
-                    card.classList.toggle('text-bg-primary')
+            this.mapbox.on('click', 'unclustered-point', (e) => {
+                const coordinates = e.features[0].geometry.coordinates.slice()
+                const props = e.features[0].properties
+                const title = props.title || ''
+                const address = props.address || ''
+                const id = props.id
+
+                while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360
                 }
+
+                this._setActivePoint(id)
+
+                const popup = new mapboxgl.Popup()
+                    .setLngLat(coordinates)
+                    .setHTML(`
+                        <strong>${title}</strong>
+                        <br><small>${address}</small>
+                        <br><a href="/events/${id}">View event</a>
+                    `)
+                    .addTo(this.mapbox)
+
+                popup.on('close', () => this._clearActivePoint())
+            })
+
+            this.mapbox.on('mouseenter', 'unclustered-point', () => {
+                this.mapbox.getCanvas().style.cursor = 'pointer'
+            })
+
+            this.mapbox.on('mouseleave', 'unclustered-point', () => {
+                this.mapbox.getCanvas().style.cursor = ''
             })
         })
+    }
+
+    disconnect() {
+        window.removeEventListener('view-toggle:map-shown', this._onMapShown)
     }
 
     eventsValueChanged(current, old) {
@@ -135,12 +163,9 @@ export default class extends Controller {
         let longitude = event.params.longitude
         let latitude = event.params.latitude
 
-        this.mapbox.setPaintProperty('unclustered-point', 'circle-color', [
-            'case',
-            ['==', ['get', 'id'], id],
-            '#39775A',
-            '#777777',
-        ]);
+        window.dispatchEvent(new Event('dynamic-map:switch-to-map'))
+
+        this._setActivePoint(id)
 
         this.mapbox.flyTo({
             center: [longitude, latitude],
@@ -148,6 +173,19 @@ export default class extends Controller {
             speed: 1.2,
             curve: 1.4
         });
+    }
+
+    _setActivePoint(id) {
+        this.mapbox.setPaintProperty('unclustered-point', 'circle-color', [
+            'case',
+            ['==', ['get', 'id'], id],
+            '#39775A',
+            '#777',
+        ]);
+    }
+
+    _clearActivePoint() {
+        this.mapbox.setPaintProperty('unclustered-point', 'circle-color', '#777');
     }
 
     onMouseLeave(event) {

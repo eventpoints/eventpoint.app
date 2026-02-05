@@ -39,23 +39,6 @@ class EventGroupFormType extends AbstractType
                     'class' => 'form-floating',
                 ],
             ])
-            ->add('image', FileType::class, [
-                'required' => true,
-                'mapped' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => [
-                            'image/jpeg',
-                            'image/png',
-                            'image/gif',
-                        ],
-                        'mimeTypesMessage' => $this->translator->trans('select-valid-image-format', [
-                            'formats' => implode(', ', ['JPEG', 'PNG', 'GIF']),
-                        ]),
-                    ]),
-                ],
-            ])
             ->add('language', LanguageType::class, [
                 'required' => true,
                 'row_attr' => [
@@ -63,21 +46,11 @@ class EventGroupFormType extends AbstractType
                 ],
                 'autocomplete' => true,
             ])
-            ->add('entityIdentificationNumber', TextType::class, [
-                'help' => $this->translator->trans('entity-identification-number-explainer'),
-                'row_attr' => [
-                    'class' => 'form-floating',
-                ],
-            ])
-            ->add('purpose', TextType::class, [
+            ->add('description', TextType::class, [
                 'label' => $this->translator->trans('group-purpose'),
                 'row_attr' => [
                     'class' => 'form-floating',
                 ],
-            ])
-            ->add('isPrivate', CustomCheckBoxType::class, [
-                'required' => false,
-                'label' => $this->translator->trans('is-private-group-input-label'),
             ])
             ->add('categories', EntityType::class, [
                 'class' => Category::class,
@@ -88,26 +61,8 @@ class EventGroupFormType extends AbstractType
                 'row_attr' => [
                     'class' => 'form-floating',
                 ],
-            ])
-            ->add('country', EntityType::class, [
-                'class' => Country::class,
-                'choice_label' => 'name',
-                'row_attr' => [
-                    'class' => 'form-floating',
-                ],
-            ])
-            ->addDependent('city', 'country', function (DependentField $field, null|Country $country) {
-                $field->add(EntityType::class, [
-                    'class' => City::class,
-                    'placeholder' => 'city',
-                    'disabled' => ! $country instanceof Country,
-                    'choices' => $country?->getCities(),
-                    'choice_label' => fn (City $city): string => ucfirst($city->getName()),
-                    'row_attr' => [
-                        'class' => 'form-floating',
-                    ],
-                ]);
-            });
+            ]);
+
     }
 
     #[\Override]

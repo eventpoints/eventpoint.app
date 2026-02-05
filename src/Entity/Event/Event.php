@@ -8,6 +8,10 @@ use App\Entity\EventGroup\EventGroup;
 use App\Entity\Image\Image;
 use App\Entity\Image\ImageCollection;
 use App\Entity\User\User;
+use App\Enum\EventInvitationStatusEnum;
+use App\Enum\EventInvitationTypeEnum;
+use App\Enum\EventParticipantRoleEnum;
+use App\Enum\EventStatusEnum;
 use App\Repository\Event\EventRepository;
 use Carbon\CarbonImmutable;
 use DateTimeImmutable;
@@ -45,32 +49,14 @@ class Event implements Stringable
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventInvitation::class, cascade: ['persist', 'remove'])]
     private Collection $eventInvitations;
 
-    /**
-     * @var Collection<int, EventRequest> $eventRequests
-     */
-    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventRequest::class, cascade: ['persist', 'remove'])]
-    private Collection $eventRequests;
-
-    /**
-     * @var Collection<int, EventRejection> $eventRejections
-     */
-    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventRejection::class, cascade: ['persist', 'remove'])]
-    private Collection $eventRejections;
-
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: Image::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $images;
 
-    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventOrganiser::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $eventOrganisers;
-
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: ImageCollection::class)]
     #[ORM\OrderBy([
-        'createdAt' => Criteria::DESC,
+            'createdAt' => Criteria::DESC,
     ])]
     private Collection $imageCollections;
-
-    #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventEmailInvitation::class, cascade: ['persist', 'remove'])]
-    private Collection $eventEmailInvitations;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private null|CarbonImmutable $createdAt;
@@ -86,7 +72,7 @@ class Event implements Stringable
 
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventMoment::class, cascade: ['persist'])]
     #[ORM\OrderBy([
-        'createdAt' => Order::Descending->value,
+            'createdAt' => Order::Descending->value,
     ])]
     private Collection $eventMoments;
 
@@ -96,43 +82,55 @@ class Event implements Stringable
     #[ORM\Column(nullable: true)]
     private null|string $url = null;
 
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private null|CarbonImmutable $updatedAt = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private null|string $timezone = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private null|string $venueName = null;
+
+    #[ORM\Column(nullable: true)]
+    private null|int $maxAttendees = null;
+
+    #[ORM\Column(length: 30, enumType: EventStatusEnum::class, options: ['default' => EventStatusEnum::DRAFT->value])]
+    private EventStatusEnum $status = EventStatusEnum::DRAFT;
+
     public function __construct(
-        #[ORM\Column(length: 255)]
-        private null|string $title = null,
-        #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-        private null|CarbonImmutable $startAt = null,
-        #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-        private null|CarbonImmutable $endAt = null,
-        #[ORM\Column(type: Types::TEXT, nullable: true)]
-        private null|string $description = null,
-        #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
-        private null|string $latitude = null,
-        #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
-        private null|string $longitude = null,
-        #[ORM\Column(type: Types::TEXT, nullable: true)]
-        private null|string $base64Image = null,
-        #[ORM\Column]
-        private null|bool $isPrivate = false,
-        #[ORM\Column(length: 255)]
-        private null|string $address = null,
-        #[ORM\ManyToOne(inversedBy: 'authoredEvents')]
-        #[ORM\JoinColumn(nullable: false)]
-        private ?User $owner = null,
-        #[ORM\ManyToOne(inversedBy: 'events')]
-        #[ORM\JoinColumn(nullable: true)]
-        private null|EventGroup $eventGroup = null,
-    ) {
+            #[ORM\Column(length: 255)]
+            private null|string          $title = null,
+            #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+            private null|CarbonImmutable $startAt = null,
+            #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+            private null|CarbonImmutable $endAt = null,
+            #[ORM\Column(type: Types::TEXT, nullable: true)]
+            private null|string          $description = null,
+            #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
+            private null|string          $latitude = null,
+            #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
+            private null|string          $longitude = null,
+            #[ORM\Column(type: Types::TEXT, nullable: true)]
+            private null|string          $base64Image = null,
+            #[ORM\Column]
+            private null|bool            $isPrivate = false,
+            #[ORM\Column(length: 255, nullable: true)]
+            private null|string          $address = null,
+            #[ORM\ManyToOne(inversedBy: 'authoredEvents')]
+            #[ORM\JoinColumn(nullable: false)]
+            private ?User                $owner = null,
+            #[ORM\ManyToOne(inversedBy: 'events')]
+            #[ORM\JoinColumn(nullable: true)]
+            private null|EventGroup      $eventGroup = null,
+    )
+    {
         $this->categories = new ArrayCollection();
         $this->images = new ArrayCollection();
-        $this->eventOrganisers = new ArrayCollection();
         $this->imageCollections = new ArrayCollection();
-        $this->eventEmailInvitations = new ArrayCollection();
         $this->eventOrganiserInvitations = new ArrayCollection();
         $this->eventReviews = new ArrayCollection();
         $this->eventParticipants = new ArrayCollection();
         $this->eventInvitations = new ArrayCollection();
-        $this->eventRequests = new ArrayCollection();
-        $this->eventRejections = new ArrayCollection();
         $this->eventMoments = new ArrayCollection();
         $this->ticketOptions = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
@@ -141,7 +139,7 @@ class Event implements Stringable
     #[\Override]
     public function __toString(): string
     {
-        return (string) $this->getTitle();
+        return (string)$this->getTitle();
     }
 
     public function getId(): null|Uuid
@@ -205,7 +203,7 @@ class Event implements Stringable
 
     public function addCategory(Category $category): static
     {
-        if (! $this->categories->contains($category)) {
+        if (!$this->categories->contains($category)) {
             $this->categories->add($category);
         }
 
@@ -261,7 +259,7 @@ class Event implements Stringable
 
     public function getDurationInHour(): float
     {
-        return round($this->endAt->diffInMinutes($this->endAt) / 60, 2);
+        return round($this->startAt->diffInMinutes($this->endAt) / 60, 2);
     }
 
     public function isPendingStart(): bool
@@ -293,14 +291,6 @@ class Event implements Stringable
     }
 
     /**
-     * @return Collection<int, EventRequest>
-     */
-    public function getEventRequests(): Collection
-    {
-        return $this->eventRequests;
-    }
-
-    /**
      * @return Collection<int, EventParticipant>
      */
     public function getEventParticipants(): Collection
@@ -310,7 +300,7 @@ class Event implements Stringable
 
     public function addEventParticipant(EventParticipant $user): self
     {
-        if (! $this->getEventParticipants()->contains($user)) {
+        if (!$this->getEventParticipants()->contains($user)) {
             $this->eventParticipants->add($user);
             $user->setEvent($this);
         }
@@ -326,23 +316,6 @@ class Event implements Stringable
         return $this;
     }
 
-    public function addEventRequest(EventRequest $eventRequest): self
-    {
-        if (! $this->getEventRequests()->contains($eventRequest)) {
-            $this->eventRequests->add($eventRequest);
-            $eventRequest->setEvent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEventRequest(EventRequest $eventRequest): self
-    {
-        $this->eventRequests->removeElement($eventRequest);
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, EventInvitation>
      */
@@ -351,9 +324,62 @@ class Event implements Stringable
         return $this->eventInvitations;
     }
 
+    /**
+     * Get pending invitations (type=INVITATION, status=PENDING).
+     *
+     * @return Collection<int, EventInvitation>
+     */
+    public function getPendingInvitations(): Collection
+    {
+        return $this->eventInvitations->filter(
+            fn(EventInvitation $invitation) => $invitation->isInvitation() && $invitation->isPending()
+        );
+    }
+
+    /**
+     * Get pending requests (type=REQUEST, status=PENDING).
+     *
+     * @return Collection<int, EventInvitation>
+     */
+    public function getPendingRequests(): Collection
+    {
+        return $this->eventInvitations->filter(
+            fn(EventInvitation $invitation) => $invitation->isRequest() && $invitation->isPending()
+        );
+    }
+
+    /**
+     * Get pending email invitations (invitations with targetEmail but no targetUser).
+     *
+     * @return Collection<int, EventInvitation>
+     */
+    public function getPendingEmailInvitations(): Collection
+    {
+        return $this->eventInvitations->filter(
+            fn(EventInvitation $invitation) => $invitation->isInvitation()
+                && $invitation->isPending()
+                && $invitation->getTargetEmail() !== null
+                && $invitation->getTargetUser() === null
+        );
+    }
+
+    /**
+     * Get pending user invitations (invitations with targetUser).
+     *
+     * @return Collection<int, EventInvitation>
+     */
+    public function getPendingUserInvitations(): Collection
+    {
+        return $this->eventInvitations->filter(
+            fn(EventInvitation $invitation) => $invitation->isInvitation()
+                && $invitation->isPending()
+                && $invitation->getTargetUser() !== null
+        );
+    }
+
     public function addEventInvitation(EventInvitation $eventInvite): self
     {
-        if (! $this->getEventParticipants()->exists(fn (int $key, EventParticipant $eventParticipant) => $eventParticipant->getEvent() === $eventInvite->getEvent() && $eventParticipant->getOwner() === $eventInvite->getTarget()) && ! $this->eventInvitations->exists(fn (int $key, EventInvitation $existingEventInvite) => $existingEventInvite->getEvent() === $eventInvite->getEvent() && $existingEventInvite->getTarget() === $eventInvite->getTarget())) {
+        if (!$this->eventInvitations->contains($eventInvite)) {
             $this->eventInvitations->add($eventInvite);
             $eventInvite->setEvent($this);
         }
@@ -372,33 +398,6 @@ class Event implements Stringable
     }
 
     /**
-     * @return Collection<int, EventRejection>
-     */
-    public function getEventRejections(): Collection
-    {
-        return $this->eventRejections;
-    }
-
-    public function addEventRejection(EventRejection $eventRejection): self
-    {
-        if (! $this->getEventRejections()->contains($eventRejection)) {
-            $this->eventRejections->add($eventRejection);
-            $eventRejection->setEvent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEventRejection(EventRejection $eventRejection): self
-    {
-        if ($this->getEventRejections()->removeElement($eventRejection) && $eventRejection->getEvent() === $this) {
-            $eventRejection->setEvent(null);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Image>
      */
     public function getImages(): Collection
@@ -408,7 +407,7 @@ class Event implements Stringable
 
     public function addImage(Image $image): static
     {
-        if (! $this->images->contains($image)) {
+        if (!$this->images->contains($image)) {
             $this->images->add($image);
         }
 
@@ -424,36 +423,6 @@ class Event implements Stringable
     public function isAfterStart(): bool
     {
         return CarbonImmutable::now()->isAfter($this->getStartAt());
-    }
-
-    /**
-     * @return Collection<int, EventOrganiser>
-     */
-    public function getEventOrganisers(): Collection
-    {
-        return $this->eventOrganisers;
-    }
-
-    public function addEventOrganiser(EventOrganiser $eventOrganiser): static
-    {
-        if (! $this->getEventOrganisers()->contains($eventOrganiser)) {
-            $this->eventOrganisers->add($eventOrganiser);
-            $eventOrganiser->setEvent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEventOrganiser(EventOrganiser $eventOrganiser): static
-    {
-        if ($this->getEventOrganisers()->removeElement($eventOrganiser)) {
-            // set the owning side to null (unless already changed)
-            if ($eventOrganiser->getEvent() === $this) {
-                $eventOrganiser->setEvent(null);
-            }
-        }
-
-        return $this;
     }
 
     public function isIsPrivate(): null|bool
@@ -478,7 +447,7 @@ class Event implements Stringable
 
     public function addImageCollection(ImageCollection $imageCollection): static
     {
-        if (! $this->getImageCollections()->contains($imageCollection)) {
+        if (!$this->getImageCollections()->contains($imageCollection)) {
             $this->imageCollections->add($imageCollection);
             $imageCollection->setEvent($this);
         }
@@ -518,36 +487,6 @@ class Event implements Stringable
         $this->longitude = $longitude;
     }
 
-    /**
-     * @return Collection<int, EventEmailInvitation>
-     */
-    public function getEventEmailInvitations(): Collection
-    {
-        return $this->eventEmailInvitations;
-    }
-
-    public function addEmailInvitation(EventEmailInvitation $emailInvitation): static
-    {
-        if (! $this->getEventEmailInvitations()->contains($emailInvitation)) {
-            $this->eventEmailInvitations->add($emailInvitation);
-            $emailInvitation->setEvent($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEmailInvitation(EventEmailInvitation $emailInvitation): static
-    {
-        if ($this->getEventEmailInvitations()->removeElement($emailInvitation)) {
-            // set the owning side to null (unless already changed)
-            if ($emailInvitation->getEvent() === $this) {
-                $emailInvitation->setEvent(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getEventGroup(): null|EventGroup
     {
         return $this->eventGroup;
@@ -567,7 +506,12 @@ class Event implements Stringable
 
     public function getUnansweredInvitation(User $user): null|EventInvitation
     {
-        return $this->getEventInvitations()->findFirst(fn (int $key, EventInvitation $eventInvitation) => $eventInvitation->getTarget() === $user);
+        return $this->eventInvitations->findFirst(
+            fn(int $key, EventInvitation $eventInvitation) =>
+                $eventInvitation->isInvitation()
+                && $eventInvitation->isPending()
+                && $eventInvitation->getTargetUser() === $user
+        );
     }
 
     public function getAddress(): null|string
@@ -638,7 +582,7 @@ class Event implements Stringable
 
     public function addEventOrganiserInvitation(EventOrganiserInvitation $eventOrganiserInvitation): static
     {
-        if (! $this->eventOrganiserInvitations->contains($eventOrganiserInvitation)) {
+        if (!$this->eventOrganiserInvitations->contains($eventOrganiserInvitation)) {
             $this->eventOrganiserInvitations->add($eventOrganiserInvitation);
             $eventOrganiserInvitation->setEvent($this);
         }
@@ -660,52 +604,85 @@ class Event implements Stringable
 
     public function hasRequestedToAttend(User $user): bool
     {
-        return $this->getEventRequests()->exists(fn (int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
+        return $this->eventInvitations->exists(
+            fn(int $key, EventInvitation $invitation) =>
+                $invitation->isRequest()
+                && $invitation->isPending()
+                && $invitation->getOwner() === $user
+        );
     }
 
     public function hasBeenInvited(User $user): bool
     {
-        return $this->getEventInvitations()->exists(fn (int $key, EventInvitation $eventInvitation) => $eventInvitation->getTarget() === $user);
+        return $this->eventInvitations->exists(
+            fn(int $key, EventInvitation $invitation) =>
+                $invitation->isInvitation()
+                && $invitation->isPending()
+                && $invitation->getTargetUser() === $user
+        );
     }
 
     public function hasEmailBeenInvited(string $emailAddress): bool
     {
-        return $this->getEventEmailInvitations()->exists(fn (int $key, EventEmailInvitation $eventEmailInvitation) => $eventEmailInvitation->getEmail()->getAddress() === $emailAddress);
+        return $this->eventInvitations->exists(
+            fn(int $key, EventInvitation $invitation) =>
+                $invitation->isInvitation()
+                && $invitation->isPending()
+                && $invitation->getTargetEmail()?->getAddress() === $emailAddress
+        );
     }
 
-    public function getRequestToAttend(User $user): null|EventRequest
+    public function getRequestToAttend(User $user): null|EventInvitation
     {
-        return $this->getEventRequests()->findFirst(fn (int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
+        return $this->eventInvitations->findFirst(
+            fn(int $key, EventInvitation $invitation) =>
+                $invitation->isRequest()
+                && $invitation->isPending()
+                && $invitation->getOwner() === $user
+        );
     }
 
-    public function attendRequest(User $user): null|EventRequest
+    public function attendRequest(User $user): null|EventInvitation
     {
-        return $this->getEventRequests()->findFirst(fn (int $key, EventRequest $eventRequest) => $eventRequest->getOwner() === $user);
+        return $this->getRequestToAttend($user);
     }
 
     public function getIsAttending(User $user): bool
     {
-        return $this->getEventParticipants()->exists(fn (int $key, EventParticipant $eventParticipant) => $eventParticipant->getOwner() === $user);
+        return $this->getEventParticipants()->exists(fn(int $key, EventParticipant $eventParticipant) => $eventParticipant->getOwner() === $user);
     }
 
     public function hasRated(User $user): bool
     {
-        return $this->getEventReviews()->exists(fn (int $key, EventReview $eventReview) => $eventReview->getOwner() === $user);
+        return $this->getEventReviews()->exists(fn(int $key, EventReview $eventReview) => $eventReview->getOwner() === $user);
     }
 
     public function getIsOrganiser(User $user): bool
     {
-        return $this->getEventOrganisers()->exists(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $user);
+        return $this->getEventParticipants()->exists(fn(int $key, EventParticipant $participant) => $participant->getOwner() === $user && $participant->getRole() === EventParticipantRoleEnum::ROLE_ORGANISER);
+    }
+
+    /**
+     * @return Collection<int, EventParticipant>
+     */
+    public function getOrganisers(): Collection
+    {
+        return $this->eventParticipants->filter(fn(EventParticipant $participant) => in_array($participant->getRole(), [
+            EventParticipantRoleEnum::ROLE_ORGANISER,
+            EventParticipantRoleEnum::ROLE_MODERATOR,
+            EventParticipantRoleEnum::ROLE_PROMOTER,
+            EventParticipantRoleEnum::ROLE_SPONSOR,
+        ], true));
     }
 
     public function isAlreadyInvitedOrganiser(User $user): bool
     {
-        return $this->eventOrganiserInvitations->exists(fn (int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getOwner() instanceof User && $eventOrganiserInvitation->getOwner() === $user);
+        return $this->eventOrganiserInvitations->exists(fn(int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getOwner() instanceof User && $eventOrganiserInvitation->getOwner() === $user);
     }
 
     public function isEmailAlreadyInvitedOrganiser(string $emailAddress): bool
     {
-        return $this->eventOrganiserInvitations->exists(fn (int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getOwner()->getEmail()->getAddress() === $emailAddress);
+        return $this->eventOrganiserInvitations->exists(fn(int $key, EventOrganiserInvitation $eventOrganiserInvitation) => $eventOrganiserInvitation->getOwner()->getEmail()->getAddress() === $emailAddress);
     }
 
     /**
@@ -718,7 +695,7 @@ class Event implements Stringable
 
     public function addEventReview(EventReview $eventReview): static
     {
-        if (! $this->eventReviews->contains($eventReview)) {
+        if (!$this->eventReviews->contains($eventReview)) {
             $this->eventReviews->add($eventReview);
             $eventReview->setEvent($this);
         }
@@ -748,7 +725,7 @@ class Event implements Stringable
 
     public function addEventMoment(EventMoment $eventChangeLog): static
     {
-        if (! $this->eventMoments->contains($eventChangeLog)) {
+        if (!$this->eventMoments->contains($eventChangeLog)) {
             $this->eventMoments->add($eventChangeLog);
             $eventChangeLog->setEvent($this);
         }
@@ -778,7 +755,7 @@ class Event implements Stringable
 
     public function addTicketOption(EventTicketOption $ticketOption): static
     {
-        if (! $this->ticketOptions->contains($ticketOption)) {
+        if (!$this->ticketOptions->contains($ticketOption)) {
             $this->ticketOptions->add($ticketOption);
             $ticketOption->setEvent($this);
         }
@@ -800,12 +777,30 @@ class Event implements Stringable
 
     public function getAllInvitationsCount(): int
     {
-        return $this->getEventEmailInvitations()->count() + $this->getEventInvitations()->count();
+        return $this->getPendingInvitations()->count();
+    }
+
+    public function getPendingInvitationUsersCount(): int
+    {
+        return $this->eventInvitations->filter(
+            fn(EventInvitation $invitation) => $invitation->isInvitation()
+                && $invitation->isPending()
+                && $invitation->getTargetUser() !== null
+        )->count();
+    }
+
+    public function getPendingRequestUsersCount(): int
+    {
+        return $this->eventInvitations->filter(
+            fn(EventInvitation $invitation) => $invitation->isRequest()
+                && $invitation->isPending()
+                && $invitation->getOwner() !== null
+        )->count();
     }
 
     public function getAllParticipantsCount(): int
     {
-        return $this->getEventOrganisers()->count() + $this->getEventParticipants()->count();
+        return $this->getEventParticipants()->count();
     }
 
     public function getUrl(): ?string
@@ -816,5 +811,104 @@ class Event implements Stringable
     public function setUrl(?string $url): void
     {
         $this->url = $url;
+    }
+
+    public function getUpdatedAt(): ?CarbonImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?CarbonImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getTimezone(): ?string
+    {
+        return $this->timezone;
+    }
+
+    public function setTimezone(?string $timezone): static
+    {
+        $this->timezone = $timezone;
+
+        return $this;
+    }
+
+    public function getVenueName(): ?string
+    {
+        return $this->venueName;
+    }
+
+    public function setVenueName(?string $venueName): static
+    {
+        $this->venueName = $venueName;
+
+        return $this;
+    }
+
+    public function getMaxAttendees(): ?int
+    {
+        return $this->maxAttendees;
+    }
+
+    public function setMaxAttendees(?int $maxAttendees): static
+    {
+        $this->maxAttendees = $maxAttendees;
+
+        return $this;
+    }
+
+    public function getStatus(): EventStatusEnum
+    {
+        return $this->status;
+    }
+
+    public function setStatus(EventStatusEnum $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function isDraft(): bool
+    {
+        return $this->status === EventStatusEnum::DRAFT;
+    }
+
+    public function isAwaitingReview(): bool
+    {
+        return $this->status === EventStatusEnum::AWAITING_REVIEW;
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->status === EventStatusEnum::PUBLISHED;
+    }
+
+    public function isAcceptingAdmissions(): bool
+    {
+        return $this->status === EventStatusEnum::ACCEPTING_ADMISSIONS;
+    }
+
+    public function isAdmissionsClosed(): bool
+    {
+        return $this->status === EventStatusEnum::ADMISSIONS_CLOSED;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === EventStatusEnum::CANCELLED;
+    }
+
+    public function isFull(): bool
+    {
+        if ($this->maxAttendees === null) {
+            return false;
+        }
+
+        return $this->getAllParticipantsCount() >= $this->maxAttendees;
     }
 }

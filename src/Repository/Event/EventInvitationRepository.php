@@ -6,13 +6,17 @@ namespace App\Repository\Event;
 
 use App\Entity\Event\Event;
 use App\Entity\Event\EventInvitation;
+use App\Entity\User\Email;
 use App\Entity\User\User;
+use App\Enum\EventInvitationStatusEnum;
+use App\Enum\EventInvitationTypeEnum;
 use Carbon\CarbonImmutable;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<EventInvitation>
@@ -77,8 +81,16 @@ class EventInvitationRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('event_invitation');
 
-        $qb->andWhere($qb->expr() ->eq('event_invitation.target', ':target_user'))
+        $qb->andWhere($qb->expr() ->eq('event_invitation.targetUser', ':target_user'))
             ->setParameter('target_user', $user->getId(), 'uuid');
+
+        // Only get pending invitations
+        $qb->andWhere($qb->expr()->eq('event_invitation.status', ':status'))
+            ->setParameter('status', EventInvitationStatusEnum::PENDING->value);
+
+        // Only get invitations (not requests)
+        $qb->andWhere($qb->expr()->eq('event_invitation.type', ':type'))
+            ->setParameter('type', EventInvitationTypeEnum::INVITATION->value);
 
         $now = CarbonImmutable::now();
         $qb->leftJoin('event_invitation.event', 'event');
@@ -93,5 +105,94 @@ class EventInvitationRepository extends ServiceEntityRepository
 
         return $qb->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Find pending invitations or requests by event and type.
+     *
+     * @return array<int, EventInvitation>|Query
+     */
+    public function findPendingByEvent(Event $event, EventInvitationTypeEnum $type, bool $isQuery = false): array|Query
+    {
+        $qb = $this->createQueryBuilder('event_invitation');
+
+        $qb->andWhere($qb->expr()->eq('event_invitation.event', ':event'))
+            ->setParameter('event', $event->getId(), 'uuid');
+
+        $qb->andWhere($qb->expr()->eq('event_invitation.type', ':type'))
+            ->setParameter('type', $type->value);
+
+        $qb->andWhere($qb->expr()->eq('event_invitation.status', ':status'))
+            ->setParameter('status', EventInvitationStatusEnum::PENDING->value);
+
+        $qb->orderBy('event_invitation.createdAt', Criteria::DESC);
+
+        if ($isQuery) {
+            return $qb->getQuery();
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Find pending invitations by target email address.
+     *
+     * @return array<int, EventInvitation>|Query
+     */
+    public function findByTargetEmail(Email $email, bool $isQuery = false): array|Query
+    {
+        $qb = $this->createQueryBuilder('event_invitation');
+
+        $qb->leftJoin('event_invitation.targetEmail', 'target_email');
+        $qb->andWhere(
+            $qb->expr()->eq('target_email.address', ':emailAddress')
+        )->setParameter('emailAddress', $email->getAddress());
+
+        $qb->andWhere($qb->expr()->eq('event_invitation.status', ':status'))
+            ->setParameter('status', EventInvitationStatusEnum::PENDING->value);
+
+        $qb->andWhere($qb->expr()->eq('event_invitation.type', ':type'))
+            ->setParameter('type', EventInvitationTypeEnum::INVITATION->value);
+
+        if ($isQuery) {
+            return $qb->getQuery();
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Find invitation by token.
+     */
+    public function findByToken(Uuid $token): ?EventInvitation
+    {
+        return $this->findOneBy(['token' => $token]);
+    }
+
+    /**
+     * Find pending requests by user (owner).
+     *
+     * @return array<int, EventInvitation>|Query
+     */
+    public function findPendingRequestsByOwner(User $user, bool $isQuery = false): array|Query
+    {
+        $qb = $this->createQueryBuilder('event_invitation');
+
+        $qb->andWhere($qb->expr()->eq('event_invitation.owner', ':owner'))
+            ->setParameter('owner', $user->getId(), 'uuid');
+
+        $qb->andWhere($qb->expr()->eq('event_invitation.type', ':type'))
+            ->setParameter('type', EventInvitationTypeEnum::REQUEST->value);
+
+        $qb->andWhere($qb->expr()->eq('event_invitation.status', ':status'))
+            ->setParameter('status', EventInvitationStatusEnum::PENDING->value);
+
+        $qb->orderBy('event_invitation.createdAt', Criteria::DESC);
+
+        if ($isQuery) {
+            return $qb->getQuery();
+        }
+
+        return $qb->getQuery()->getResult();
     }
 }

@@ -6,40 +6,50 @@ namespace App\Event\Subscriber;
 
 use App\Entity\User\User;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Routing\RouterInterface;
 
-class EmptyUserPassowrdSubscriber implements EventSubscriberInterface
+#[AsEventListener(event: KernelEvents::REQUEST, method: 'redirectToPasswordForm', priority: 0)]
+final class EmptyUserPassowrdSubscriber
 {
     public function __construct(
-        private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly Security $security
-    ) {
-    }
-
-    #[\Override]
-    public static function getSubscribedEvents(): array
+            private readonly Security        $security,
+            private readonly RouterInterface $router,
+    )
     {
-        return [
-            RequestEvent::class => 'redirectToPasswordForm',
-        ];
     }
 
     public function redirectToPasswordForm(RequestEvent $event): void
     {
-        /** @var User $user */
-        $user = $this->security->getUser();
-        if ($user instanceof UserInterface && $event->isMainRequest()) {
-            $request = $event->getRequest();
-            $route = $request->attributes->get('_route');
-
-            if ($user->getPassword() === null && $route !== 'reset_user_password') {
-                $url = $this->urlGenerator->generate('reset_user_password');
-                $event->setResponse(new RedirectResponse($url));
-            }
+        if (!$event->isMainRequest()) {
+            return;
         }
+
+        $user = $this->security->getUser();
+        if (!$user instanceof User) {
+            // not logged in (or not your User class)
+            return;
+        }
+
+
+        $request = $event->getRequest();
+        $route = (string)$request->attributes->get('_route', '');
+
+        // Avoid loops / allow access to the reset form itself
+        if ($route === 'reset_user_password') {
+            return;
+        }
+
+        $password = $user->getPassword();
+        if ($password !== null && $password !== '') {
+            return;
+        }
+
+        $event->setResponse(
+                new RedirectResponse($this->router->generate('reset_user_password'))
+        );
     }
 }

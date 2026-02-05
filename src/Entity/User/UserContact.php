@@ -26,6 +26,10 @@ class UserContact
     #[Groups(['user_contact'])]
     private null|Email $email = null;
 
+    #[ORM\ManyToOne(cascade: ['persist'])]
+    #[Groups(['user_contact'])]
+    private null|PhoneNumber $phoneNumber = null;
+
     #[ORM\ManyToOne(inversedBy: 'contacts')]
     #[ORM\JoinColumn(nullable: false)]
     #[Groups(['user_contact'])]
@@ -77,6 +81,18 @@ class UserContact
     public function setCreatedAt(null|CarbonImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getPhoneNumber(): null|PhoneNumber
+    {
+        return $this->phoneNumber;
+    }
+
+    public function setPhoneNumber(null|PhoneNumber $phoneNumber): static
+    {
+        $this->phoneNumber = $phoneNumber;
 
         return $this;
     }

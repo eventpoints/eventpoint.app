@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace App\Service\EventService;
 
 use App\Entity\Event\Event;
-use App\Entity\Event\EventEmailInvitation;
-use App\Entity\Event\EventRequest;
+use App\Entity\Event\EventInvitation;
 use App\Entity\User\Email;
 use App\Entity\User\User;
 use App\Enum\FlashEnum;
-use App\Factory\Event\EventEmailInvitationFactory;
 use App\Factory\Event\EventInvitationFactory;
-use App\Factory\Event\EventRequestFactory;
-use App\Repository\Event\EventEmailInvitationRepository;
+use App\Repository\Event\EventInvitationRepository;
 use App\Repository\Event\EventParticipantRepository;
-use App\Repository\Event\EventRequestRepository;
 use App\Repository\User\UserRepository;
 use App\Service\EmailService\EmailService;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -29,14 +25,11 @@ final readonly class EventService
 {
     public function __construct(
         private EventInvitationFactory $eventInvitationFactory,
-        private EventEmailInvitationFactory $eventEmailInvitationFactory,
         private UserRepository $userRepository,
         private EmailService $emailService,
         private UrlGeneratorInterface $urlGenerator,
-        private EventRequestFactory $eventRequestFactory,
-        private EventRequestRepository $eventRequestRepository,
+        private EventInvitationRepository $eventInvitationRepository,
         private EventParticipantRepository $eventParticipantRepository,
-        private EventEmailInvitationRepository $eventEmailInvitationRepository,
         private TranslatorInterface $translator,
     ) {
     }
@@ -71,7 +64,7 @@ final readonly class EventService
     public function sendInvitation(User $user, Event $event, User $currentUser, FlashBagInterface $flashBag): void
     {
         if ($this->canUserBeInvited(event: $event, user: $user, flashBag: $flashBag)) {
-            $invitation = $this->eventInvitationFactory->create(owner: $currentUser, target: $user, event: $event);
+            $invitation = $this->eventInvitationFactory->createUserInvitation(owner: $currentUser, target: $user, event: $event);
             $this->emailService->sendInviteToUserWithAccount(
                 email: $user->getEmail(),
                 context: [
@@ -90,8 +83,8 @@ final readonly class EventService
     public function sendEmailInvitationToUserWithoutAccount(Email $email, Event $event, User $currentUser, FlashBagInterface $flashBag): void
     {
         if ($this->canEmailBeInvited(event: $event, email: $email, flashBag: $flashBag)) {
-            $emailInvitation = $this->eventEmailInvitationFactory->create(email: $email, owner: $currentUser);
-            $event->addEmailInvitation($emailInvitation);
+            $emailInvitation = $this->eventInvitationFactory->createEmailInvitation(owner: $currentUser, email: $email, event: $event);
+            $event->addEventInvitation($emailInvitation);
             $link = $this->urlGenerator->generate(name: 'show_event', parameters: [
                 'id' => $event->getId(),
                 'token' => $emailInvitation->getToken(),
@@ -116,7 +109,7 @@ final readonly class EventService
 
         if ($event->hasRequestedToAttend($user)) {
             $request = $event->getRequestToAttend($user);
-            $this->convertRequestToParticipation(eventRequest: $request);
+            $this->acceptInvitation($request);
             $flashBag->add(FlashEnum::MESSAGE->value, $this->translator->trans('user-request-accepted'));
             return false;
         }
@@ -125,12 +118,7 @@ final readonly class EventService
 
     public function canEmailBeInvited(Event $event, Email $email, FlashBagInterface $flashBag): bool
     {
-        $invitation = $this->eventEmailInvitationRepository->findOneBy([
-            'email' => $email,
-            'event' => $event,
-        ]);
-
-        if ($invitation instanceof EventEmailInvitation) {
+        if ($event->hasEmailBeenInvited($email->getAddress())) {
             $flashBag->add(FlashEnum::MESSAGE->value, $this->translator->trans('email-already-invited'));
             return false;
         }
@@ -138,10 +126,23 @@ final readonly class EventService
         return true;
     }
 
-    public function convertRequestToParticipation(EventRequest $eventRequest): void
+    public function acceptInvitation(EventInvitation $invitation): void
     {
-        $participant = $this->eventRequestFactory->toEventParticipant(eventRequest: $eventRequest);
-        $this->eventParticipantRepository->save($participant, true);
-        $this->eventRequestRepository->remove($eventRequest, true);
+        $this->eventInvitationFactory->accept($invitation);
+        $this->eventInvitationRepository->save($invitation, true);
+    }
+
+    public function declineInvitation(EventInvitation $invitation): void
+    {
+        $this->eventInvitationFactory->decline($invitation);
+        $this->eventInvitationRepository->save($invitation, true);
+    }
+
+    /**
+     * @deprecated Use acceptInvitation() instead
+     */
+    public function convertRequestToParticipation(EventInvitation $eventRequest): void
+    {
+        $this->acceptInvitation($eventRequest);
     }
 }

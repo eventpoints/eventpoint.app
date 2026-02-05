@@ -5,25 +5,9 @@
         <div class="card-header fs-5 fw-bold">{{ 'create-event-group'|trans|capitalize }}</div>
         <div class="list-group list-group-flush">
             <div class="list-group-item">{{ form_row(form.name) }}</div>
-            <div class="list-group-item">{{ form_row(form.purpose) }}</div>
-            <div class="list-group-item">{{ form_row(form.image) }}</div>
+            <div class="list-group-item">{{ form_row(form.description) }}</div>
             <div class="list-group-item">{{ form_row(form.language) }}</div>
             <div class="list-group-item">{{ form_row(form.categories) }}</div>
-            <div class="list-group-item">
-                <div class="row justify-content-between">
-                    <div class="col-6">
-                        {{ form_row(form.country) }}
-                    </div>
-                    <div class="col-6">
-                        {% if form.city is defined %}
-                            {{ form_row(form.city) }}
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="list-group-item">{{ form_row(form.entityIdentificationNumber) }}</div>
-            <div class="list-group-item">{{ form_row(form.isPrivate) }}</div>
-            <div class="list-group-item text-muted text-center">{{ 'event-group-creation-disclaimer'|trans }}</div>
         </div>
         <div class="card-footer text-end">
             <button type="submit" class="btn btn-primary">{{ 'create'|trans }}</button>

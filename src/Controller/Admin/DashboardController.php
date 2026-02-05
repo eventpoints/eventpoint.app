@@ -6,11 +6,8 @@ namespace App\Controller\Admin;
 
 use App\Entity\Event\Category;
 use App\Entity\Event\Event;
-use App\Entity\Event\EventEmailInvitation;
 use App\Entity\Event\EventInvitation;
-use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventParticipant;
-use App\Entity\Event\EventRole;
 use App\Entity\EventGroup\EventGroupMember;
 use App\Entity\EventGroup\EventGroupRole;
 use App\Entity\Image\ImageCollection;
@@ -19,7 +16,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class DashboardController extends AbstractDashboardController
 {
@@ -60,10 +57,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Category', 'fas fa-list', Category::class);
         yield MenuItem::linkToCrud('Events', 'fas fa-list', Event::class);
         yield MenuItem::linkToCrud('Event Participants', 'fas fa-list', EventParticipant::class);
-        yield MenuItem::linkToCrud('Event Organisers', 'fas fa-list', EventOrganiser::class);
-        yield MenuItem::linkToCrud('Event Roles', 'fas fa-list', EventRole::class);
         yield MenuItem::linkToCrud('Event Invites', 'fas fa-list', EventInvitation::class);
-        yield MenuItem::linkToCrud('Event Email Invites', 'fas fa-list', EventEmailInvitation::class);
         yield MenuItem::linkToCrud('Image Collections', 'fas fa-list', ImageCollection::class);
         yield MenuItem::linkToCrud('Group Members', 'fas fa-list', EventGroupMember::class);
         yield MenuItem::linkToCrud('Group Roles', 'fas fa-list', EventGroupRole::class);

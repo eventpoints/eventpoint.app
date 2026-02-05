@@ -14,7 +14,7 @@ use App\Security\Voter\EventVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EventOrganiserInvitationController extends AbstractController
@@ -34,10 +34,8 @@ class EventOrganiserInvitationController extends AbstractController
         $eventOrganiserInvitationForm->handleRequest($request);
         if ($eventOrganiserInvitationForm->isSubmitted() && $eventOrganiserInvitationForm->isValid()) {
             $owner = $eventOrganiserInvitationForm->get('owner')->getData();
-            $roles = $eventOrganiserInvitationForm->get('roles')->getData();
-            foreach ($roles as $role) {
-                $eventOrganiserInvitation->addRole($role);
-            }
+            $role = $eventOrganiserInvitationForm->get('role')->getData();
+            $eventOrganiserInvitation->setRole($role);
 
             if ($event->isAlreadyInvitedOrganiser($owner)) {
                 $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('user-already-invited'));

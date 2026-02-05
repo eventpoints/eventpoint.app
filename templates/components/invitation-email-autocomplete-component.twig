@@ -1,19 +1,23 @@
 <div class="modal-body p-0" {{ attributes }} >
     <div class="sticky-top bg-white p-2">
-        <div class="d-flex flex-wrap justify-content-start align-items-center mb-3"></div>
         <div class="input-group">
             <input autocomplete="off" id="email" placeholder="{{ 'email-address'|trans }}"
                    data-model="emailAddress"
                    data-live-action-param="prevent|debounce(100)|filter"
-                   class="form-control mb-0"
-                   type="text" data-action="live#action:prevent"
+                   class="form-control mb-0 {{ this.getError('emailAddress') ? 'is-invalid' }}"
+                   type="email" data-action="live#action:prevent"
             />
-            <a href="#" class="btn btn-success rounded-0"
+            {% set validEmail = emailAddress is not null and emailAddress matches '/^.+@.+\\..+$/' %}
+            <button type="button" class="btn btn-primary rounded-0"
                data-action="live#action:prevent"
-               data-live-action-param="prevent|save">
-                <span class="bi bi-plus-circle-fill fs-4"></span>
-            </a>
+               data-live-action-param="prevent|sendToEmail"
+               {{ not validEmail ? 'disabled' }}>
+                {{ 'send-invitation'|trans }}
+            </button>
         </div>
+        {% if this.getError('emailAddress') %}
+            <div class="text-danger small mt-1">{{ this.getError('emailAddress').message }}</div>
+        {% endif %}
     </div>
     <div class="list-group list-group-flush">
         {% for contact in this.contacts %}

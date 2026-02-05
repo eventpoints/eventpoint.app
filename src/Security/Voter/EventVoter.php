@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Security\Voter;
 
 use App\Entity\Event\Event;
-use App\Entity\Event\EventOrganiser;
-use App\Entity\Event\EventRole;
+use App\Entity\Event\EventParticipant;
 use App\Entity\User\User;
-use App\Enum\EventOrganiserRoleEnum;
+use App\Enum\EventParticipantRoleEnum;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EventVoter extends Voter
@@ -20,9 +20,9 @@ class EventVoter extends Voter
 
     final public const string CANCEL_EVENT = 'CANCEL_EVENT';
 
-    public function getCurrentUserEventOrganiser(Event $event, User $currentUser): null|EventOrganiser
+    public function getCurrentUserParticipant(Event $event, User $currentUser): null|EventParticipant
     {
-        return $event->getEventOrganisers()->findFirst(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $currentUser);
+        return $event->getEventParticipants()->findFirst(fn (int $key, EventParticipant $participant) => $participant->getOwner() === $currentUser);
     }
 
     #[\Override]
@@ -36,7 +36,7 @@ class EventVoter extends Voter
      * @param Event $subject
      */
     #[\Override]
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         $currentUser = $token->getUser();
         if (! $currentUser instanceof User) {
@@ -57,18 +57,12 @@ class EventVoter extends Voter
             return true;
         }
 
-        $currentUserEventOrgniser = $this->getCurrentUserEventOrganiser($event, $currentUser);
-        if (! $currentUserEventOrgniser instanceof EventOrganiser) {
+        $participant = $this->getCurrentUserParticipant($event, $currentUser);
+        if (! $participant instanceof EventParticipant) {
             return false;
         }
 
-        $isPermited = $currentUserEventOrgniser->getRoles()->exists(fn (int $key, EventRole $eventRole) => $eventRole->getTitle() === EventOrganiserRoleEnum::ROLE_EVENT_ADMIN);
-
-        if (! $isPermited) {
-            return false;
-        }
-
-        return true;
+        return $participant->getRole() === EventParticipantRoleEnum::ROLE_ORGANISER;
     }
 
     private function canCancelEvent(Event $event, User $currentUser): bool
@@ -77,27 +71,18 @@ class EventVoter extends Voter
             return true;
         }
 
-        $currentUserEventOrgniser = $this->getCurrentUserEventOrganiser($event, $currentUser);
-        if (! $currentUserEventOrgniser instanceof EventOrganiser) {
+        $participant = $this->getCurrentUserParticipant($event, $currentUser);
+        if (! $participant instanceof EventParticipant) {
             return false;
         }
 
-        $isPermited = $currentUserEventOrgniser->getRoles()->exists(fn (int $key, EventRole $eventRole) => $eventRole->getTitle() === EventOrganiserRoleEnum::ROLE_EVENT_ADMIN);
-
-        if (! $isPermited) {
-            return false;
-        }
-
-        return true;
+        return $participant->getRole() === EventParticipantRoleEnum::ROLE_ORGANISER;
     }
 
     private function canViewEvent(Event $event, User $currentUser): bool
     {
-        $currentUserEventOrganiser = $this->getCurrentUserEventOrganiser($event, $currentUser);
-        if (! $currentUserEventOrganiser instanceof EventOrganiser) {
-            return false;
-        }
+        $participant = $this->getCurrentUserParticipant($event, $currentUser);
 
-        return true;
+        return $participant instanceof EventParticipant;
     }
 }

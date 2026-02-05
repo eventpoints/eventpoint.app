@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Security\Voter;
 
-use App\Entity\Event\EventOrganiser;
-use App\Entity\Event\EventRole;
+use App\Entity\Event\EventParticipant;
 use App\Entity\User\User;
-use App\Enum\EventOrganiserRoleEnum;
+use App\Enum\EventParticipantRoleEnum;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EventOrganiserVoter extends Voter
@@ -21,14 +21,14 @@ class EventOrganiserVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::ADD_EVENT_ORGANISER, self::REMOVE_EVENT_ORGANISER], true)
-            && $subject instanceof EventOrganiser;
+            && $subject instanceof EventParticipant;
     }
 
     /**
-     * @param EventOrganiser $subject
+     * @param EventParticipant $subject
      */
     #[\Override]
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         $currentUser = $token->getUser();
         if (! $currentUser instanceof User) {
@@ -42,50 +42,46 @@ class EventOrganiserVoter extends Voter
         };
     }
 
-    private function canAddEventOrganiser(EventOrganiser $eventOrganiser, User $currentUser): bool
+    private function canAddEventOrganiser(EventParticipant $participant, User $currentUser): bool
     {
-        $event = $eventOrganiser->getEvent();
-        $currentUserEventOrganiser = $event->getEventOrganisers()->findFirst(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $currentUser);
-        if (! $currentUserEventOrganiser instanceof EventOrganiser) {
+        $event = $participant->getEvent();
+        $currentUserParticipant = $event->getEventParticipants()->findFirst(fn (int $key, EventParticipant $p) => $p->getOwner() === $currentUser);
+        if (! $currentUserParticipant instanceof EventParticipant) {
             return false;
         }
 
-        $isAdmin = $currentUserEventOrganiser->getRoles()->exists(fn (int $key, EventRole $eventRole) => $eventRole->getTitle() === EventOrganiserRoleEnum::ROLE_EVENT_ADMIN);
-
-        if (! $isAdmin) {
+        if ($currentUserParticipant->getRole() !== EventParticipantRoleEnum::ROLE_ORGANISER) {
             return false;
         }
 
-        if ($eventOrganiser->getOwner() === $event->getOwner()) {
+        if ($participant->getOwner() === $event->getOwner()) {
             return false;
         }
 
-        if ($event->getEventOrganisers()->count() <= 1) {
+        if ($event->getOrganisers()->count() <= 1) {
             return false;
         }
 
         return true;
     }
 
-    private function canRemoveEventOrganiser(EventOrganiser $eventOrganiser, User $currentUser): bool
+    private function canRemoveEventOrganiser(EventParticipant $participant, User $currentUser): bool
     {
-        $event = $eventOrganiser->getEvent();
-        $currentUserEventOrganiser = $event->getEventOrganisers()->findFirst(fn (int $key, EventOrganiser $eventOrganiser) => $eventOrganiser->getOwner() === $currentUser);
-        if (! $currentUserEventOrganiser instanceof EventOrganiser) {
+        $event = $participant->getEvent();
+        $currentUserParticipant = $event->getEventParticipants()->findFirst(fn (int $key, EventParticipant $p) => $p->getOwner() === $currentUser);
+        if (! $currentUserParticipant instanceof EventParticipant) {
             return false;
         }
 
-        $isAdmin = $currentUserEventOrganiser->getRoles()->exists(fn (int $key, EventRole $eventRole) => $eventRole->getTitle() === EventOrganiserRoleEnum::ROLE_EVENT_ADMIN);
-
-        if ($eventOrganiser->getOwner() === $event->getOwner()) {
+        if ($participant->getOwner() === $event->getOwner()) {
             return false;
         }
 
-        if (! $isAdmin) {
+        if ($currentUserParticipant->getRole() !== EventParticipantRoleEnum::ROLE_ORGANISER) {
             return false;
         }
 
-        if ($event->getEventOrganisers()->count() <= 1) {
+        if ($event->getOrganisers()->count() <= 1) {
             return false;
         }
 

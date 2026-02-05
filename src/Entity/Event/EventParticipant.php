@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Entity\Event;
 
 use App\Entity\User\User;
+use App\Enum\EventParticipantRoleEnum;
 use App\Repository\Event\EventParticipantRepository;
 use Carbon\CarbonImmutable;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -23,24 +22,20 @@ class EventParticipant
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\ManyToOne(targetEntity: User::class, cascade: ['persist'], inversedBy: 'acceptedEvents')]
+    #[ORM\ManyToOne(targetEntity: User::class, cascade: ['persist'], inversedBy: 'eventParticipations')]
     private User $owner;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $createdAt;
 
-    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'eventUsers')]
+    #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'eventParticipants')]
     private Event $event;
 
-    #[ORM\JoinTable(name: 'event_participant_roles')]
-    #[ORM\JoinColumn(name: 'event_participant_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'event_role_id', referencedColumnName: 'id')]
-    #[ORM\ManyToMany(targetEntity: EventRole::class)]
-    private Collection $roles;
+    #[ORM\Column(length: 255, enumType: EventParticipantRoleEnum::class, options: ['default' => EventParticipantRoleEnum::ROLE_PARTICIPANT->value])]
+    private EventParticipantRoleEnum $role = EventParticipantRoleEnum::ROLE_PARTICIPANT;
 
     public function __construct()
     {
-        $this->roles = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
     }
 
@@ -78,26 +73,20 @@ class EventParticipant
         return $this;
     }
 
-    /**
-     * @return Collection<int, EventRole>
-     */
-    public function getRoles(): Collection
+    public function getRole(): EventParticipantRoleEnum
     {
-        return $this->roles;
+        return $this->role;
     }
 
-    public function addRole(EventRole $role): static
+    public function setRole(EventParticipantRoleEnum $role): self
     {
-        if (! $this->roles->contains($role)) {
-            $this->roles->add($role);
-        }
+        $this->role = $role;
 
         return $this;
     }
 
-    public function removeRole(EventRole $role): static
+    public function isOrganiser(): bool
     {
-        $this->roles->removeElement($role);
-        return $this;
+        return $this->role === EventParticipantRoleEnum::ROLE_ORGANISER;
     }
 }

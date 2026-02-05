@@ -78,17 +78,17 @@
                         <div>{{ 'edit-event'|trans }}</div>
                         <div class="bi bi-pencil-fill fs-4"></div>
                     </a>
-                    <a class="{{ app.request.get('_route') == 'manage_event_organisers' ? 'active' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                    <a class="{{ app.request.attributes.get('_route') == 'manage_event_organisers' ? 'active' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                        href="{{ path('event_tickets', {id: event.id}) }}">
                         <div>{{ 'manage-ticketing'|trans }}</div>
                         <div class="bi bi-ticket-fill fs-4"></div>
                     </a>
-                    <a class="{{ app.request.get('_route') == 'manage_event_organisers' ? 'active' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                    <a class="{{ app.request.attributes.get('_route') == 'manage_event_organisers' ? 'active' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                        href="{{ path('manage_event_organisers', {id: event.id}) }}">
                         <div>{{ 'manage-event-orgnisers'|trans }}</div>
                         <div class="bi bi-people-fill fs-4"></div>
                     </a>
-                    <a class="{{ app.request.get('_route') == 'cancel_event' ? 'active' }} list-group-item text-danger list-group-item-action d-flex justify-content-between align-items-center"
+                    <a class="{{ app.request.attributes.get('_route') == 'cancel_event' ? 'active' }} list-group-item text-danger list-group-item-action d-flex justify-content-between align-items-center"
                        href="{{ path('cancel_event', {id: event.id}) }}">
                         <div>{{ 'cancel-event'|trans }}</div>
                         <div class="bi bi-exclamation-triangle-fill fs-4"></div>

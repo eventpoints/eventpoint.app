@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Entity\Event;
 
 use App\Entity\User\User;
+use App\Enum\EventParticipantRoleEnum;
 use App\Repository\Event\EventOrganiserInvitationRepository;
 use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -35,20 +34,13 @@ class EventOrganiserInvitation
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private null|DateTimeImmutable $createdAt = null;
 
-    /**
-     * @var Collection<int, EventRole>
-     */
-    #[ORM\JoinTable(name: 'event_organiser_invitation_roles')]
-    #[ORM\JoinColumn(name: 'event_organiser_invitation_id', referencedColumnName: 'id')]
-    #[ORM\InverseJoinColumn(name: 'event_role_id', referencedColumnName: 'id')]
-    #[ORM\ManyToMany(targetEntity: EventRole::class)]
-    private Collection $roles;
+    #[ORM\Column(length: 255, enumType: EventParticipantRoleEnum::class, options: ['default' => EventParticipantRoleEnum::ROLE_ORGANISER->value])]
+    private EventParticipantRoleEnum $role = EventParticipantRoleEnum::ROLE_ORGANISER;
 
     public function __construct()
     {
         $this->createdAt = new DateTimeImmutable();
         $this->token = Uuid::v4();
-        $this->roles = new ArrayCollection();
     }
 
     public function getId(): null|Uuid
@@ -104,26 +96,15 @@ class EventOrganiserInvitation
         return $this;
     }
 
-    /**
-     * @return Collection<int, EventRole>
-     */
-    public function getRoles(): Collection
+    public function getRole(): EventParticipantRoleEnum
     {
-        return $this->roles;
+        return $this->role;
     }
 
-    public function addRole(EventRole $role): static
+    public function setRole(EventParticipantRoleEnum $role): static
     {
-        if (! $this->roles->contains($role)) {
-            $this->roles->add($role);
-        }
+        $this->role = $role;
 
-        return $this;
-    }
-
-    public function removeRole(EventRole $role): static
-    {
-        $this->roles->removeElement($role);
         return $this;
     }
 }

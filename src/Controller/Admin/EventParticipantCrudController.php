@@ -7,6 +7,7 @@ namespace App\Controller\Admin;
 use App\Entity\Event\EventParticipant;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 
@@ -24,6 +25,7 @@ class EventParticipantCrudController extends AbstractCrudController
         return [
             IdField::new('id'),
             AssociationField::new('owner'),
+            ChoiceField::new('role'),
             DateField::new('createdAt'),
         ];
     }

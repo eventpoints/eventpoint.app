@@ -4,14 +4,10 @@ declare(strict_types=1);
 
 namespace App\Factory\Event;
 
-use App\DataTransferObject\Event\EventDetailsFormDto;
-use App\DataTransferObject\Event\EventLocationFormDto;
+use App\DataTransferObject\Event\EventDto;
 use App\Entity\Event\Event;
 use App\Entity\Event\EventInvitation;
-use App\Entity\Event\EventOrganiser;
 use App\Entity\Event\EventParticipant;
-use App\Entity\Event\EventRejection;
-use App\Entity\Event\EventRequest;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
 use App\Repository\Event\CategoryRepository;
@@ -53,17 +49,6 @@ final readonly class EventFactory
     }
 
     /**
-     * @param array<int,EventOrganiser> $eventCrewMembers
-     */
-    public function addEventOrganisers(array $eventCrewMembers, Event $event): void
-    {
-        foreach ($eventCrewMembers as $eventCrewMember) {
-            $eventCrewMember->setEvent($event);
-            $event->addEventOrganiser($eventCrewMember);
-        }
-    }
-
-    /**
      * @param array<int,EventParticipant> $eventParticipants
      */
     public function addEventParticipants(array $eventParticipants, Event $event): void
@@ -85,48 +70,22 @@ final readonly class EventFactory
         }
     }
 
-    /**
-     * @param array<int,EventRequest> $eventRequests
-     */
-    public function addEventRequests(array $eventRequests, Event $event): void
-    {
-        foreach ($eventRequests as $eventRequest) {
-            $eventRequest->setEvent($event);
-            $event->addEventRequest($eventRequest);
-        }
-    }
-
-    /**
-     * @param array<int,EventRejection> $eventRejections
-     */
-    public function addEventRejections(array $eventRejections, Event $event): void
-    {
-        foreach ($eventRejections as $eventRejection) {
-            $eventRejection->setEvent($event);
-            $event->addEventRejection($eventRejection);
-        }
-    }
-
     public function createFromDTOs(
-        User $owner,
-        EventDetailsFormDto $eventFormDetailsDto,
-        EventLocationFormDto $eventFormLocationDto,
+        EventDto $eventDto,
     ): Event {
         $event = new Event(
-            title: $eventFormDetailsDto->getTitle(),
-            startAt: CarbonImmutable::create($eventFormDetailsDto->getStartAt()),
-            endAt: CarbonImmutable::create($eventFormDetailsDto->getEndAt()),
-            description: $eventFormDetailsDto->getDescription(),
-            latitude: $eventFormLocationDto->getLatitude(),
-            longitude: $eventFormLocationDto->getLongitude(),
-            base64Image: $eventFormDetailsDto->getBase64image(),
-            isPrivate: $eventFormDetailsDto->isPrivate(),
-            address: $eventFormLocationDto->getAddress(),
-            owner: $owner,
-            eventGroup: $eventFormDetailsDto->getEventGroup(),
+            title: $eventDto->getTitle(),
+            startAt: CarbonImmutable::create($eventDto->getStartAt()),
+            endAt: CarbonImmutable::create($eventDto->getEndAt()),
+            description: $eventDto->getDescription(),
+            latitude: $eventDto->getLatitude(),
+            longitude: $eventDto->getLongitude(),
+            isPrivate: $eventDto->isPrivate(),
+            address: $eventDto->getAddress(),
+            eventGroup: $eventDto->getEventGroup(),
         );
 
-        foreach ($eventFormDetailsDto->getCategories() as $id) {
+        foreach ($eventDto->getCategories() as $id) {
             $category = $this->categoryRepository->find($id);
             $event->addCategory($category);
         }
