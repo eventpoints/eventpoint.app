@@ -1,29 +1,29 @@
-<div class="d-flex justify-content-between fs-4">
-    <div class="text-danger text-center">
+<div class="flex justify-between text-xl">
+    <div class="text-center text-red-600">
         {% if eventFilterDto.period.value == 'recently' %}
-            <div class="fw-bold">{{ 'recently'|trans|upper }}</div>
+            <div class="font-bold">{{ 'recently'|trans|upper }}</div>
         {% elseif eventFilterDto.period.value == 'in-progress' %}
-            <div class="fw-bold">{{ 'in-progress'|trans|upper }}</div>
+            <div class="font-bold">{{ 'in-progress'|trans|upper }}</div>
         {% elseif eventFilterDto.period.value == 'today' %}
-            <div class="fw-bold">{{ 'today'|trans|upper }}</div>
+            <div class="font-bold">{{ 'today'|trans|upper }}</div>
         {% elseif eventFilterDto.period.value == 'tomorrow' %}
-            <div class="fw-bold">{{ 'tomorrow'|trans|upper }}</div>
+            <div class="font-bold">{{ 'tomorrow'|trans|upper }}</div>
         {% elseif eventFilterDto.period.value == 'this-weekend' %}
-            <div class="fw-bold">{{ 'this-weekend'|trans|upper }}</div>
+            <div class="font-bold">{{ 'this-weekend'|trans|upper }}</div>
         {% elseif eventFilterDto.period.value == 'this-week' %}
-            <div class="fw-bold">{{ 'this-week'|trans|upper }}</div>
+            <div class="font-bold">{{ 'this-week'|trans|upper }}</div>
         {% elseif eventFilterDto.period.value == 'next-week' %}
-            <div class="fw-bold">{{ 'next-week'|trans|upper }}</div>
+            <div class="font-bold">{{ 'next-week'|trans|upper }}</div>
         {% elseif eventFilterDto.period.value == 'next-month' %}
-            <div class="fw-bold">{{ 'next-month'|trans|upper }}</div>
+            <div class="font-bold">{{ 'next-month'|trans|upper }}</div>
         {% else %}
         {% endif %}
     </div>
     <div class="text-end">
-        <div class="d-flex justify-content-between">
+        <div class="flex justify-between">
             <div>
                 {% if eventFilterDto.period.value == 'recently' %}
-                    <div class="fw-bold">
+                    <div class="font-bold">
                         {{ app_time.now.subWeek.startOfWeek.dayName|timezone_name(regional.timezone) }}
                         {{ app_time.now.subWeek.startOfWeek.day|timezone_name(regional.timezone) }}
                         -
@@ -33,8 +33,8 @@
                         {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
                     </div>
                 {% elseif eventFilterDto.period.value == 'in-progress' %}
-                    <div class="fw-bold">
-                        <div class="fw-bold">
+                    <div class="font-bold">
+                        <div class="font-bold">
                             {{ app_time.now.dayName|timezone_name(regional.timezone) }}
                             {{ app_time.now.day|timezone_name(regional.timezone) }}
                             {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
@@ -42,8 +42,8 @@
                         </div>
                     </div>
                 {% elseif eventFilterDto.period.value == 'today' %}
-                    <div class="fw-bold">
-                        <div class="fw-bold">
+                    <div class="font-bold">
+                        <div class="font-bold">
                             {{ app_time.now.dayName|timezone_name(regional.timezone) }}
                             {{ app_time.now.day|timezone_name(regional.timezone) }}
                             {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
@@ -51,14 +51,14 @@
                         </div>
                     </div>
                 {% elseif eventFilterDto.period.value == 'tomorrow' %}
-                    <div class="fw-bold">
+                    <div class="font-bold">
                         {{ app_time.now.addDay.dayName|timezone_name(regional.timezone) }}
                         {{ app_time.now.addDay.day|timezone_name(regional.timezone) }}
                         {{ app_time.now.subWeek.monthName|timezone_name(regional.timezone) }}
                         {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
                     </div>
                 {% elseif eventFilterDto.period.value == 'this-weekend' %}
-                    <div class="fw-bold">
+                    <div class="font-bold">
                         {{ app_time.now.next('SATURDAY').dayName|timezone_name(regional.timezone) }}
                         {{ app_time.now.next('SATURDAY').day|timezone_name(regional.timezone) }}
                         -
@@ -68,7 +68,7 @@
                         {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
                     </div>
                 {% elseif eventFilterDto.period.value == 'this-week' %}
-                    <div class="fw-bold">
+                    <div class="font-bold">
                         {{ app_time.now.previous('MONDAY').dayName|timezone_name(regional.timezone) }}
                         {{ app_time.now.previous('MONDAY').day|timezone_name(regional.timezone) }}
                         -
@@ -78,7 +78,7 @@
                         {{ app_time.now.subWeek.year|timezone_name(regional.timezone) }}
                     </div>
                 {% elseif eventFilterDto.period.value == 'next-week' %}
-                    <div class="fw-bold">
+                    <div class="font-bold">
                         {{ app_time.now.addWeek.startOfWeek.dayName|timezone_name(regional.timezone) }}
                         {{ app_time.now.addWeek.startOfWeek.day|timezone_name(regional.timezone) }}
                         -
@@ -93,6 +93,4 @@
         </div>
     </div>
 </div>
-<hr/>
-
-
+<hr class="my-4 border-gray-200"/>

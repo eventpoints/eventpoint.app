@@ -11,12 +11,11 @@ export default class extends Controller {
         this.itemTargets.map((item, index) => {
             let content = item.getAttribute('data-searchable-content');
             if (content.toLowerCase().includes(this.inputTarget.value.toLowerCase())) {
-                this.itemTargets[index].classList.remove('visually-hidden')
+                this.itemTargets[index].classList.remove('hidden')
             } else {
-                this.itemTargets[index].classList.add('visually-hidden')
+                this.itemTargets[index].classList.add('hidden')
             }
         })
     }
 
 }
-

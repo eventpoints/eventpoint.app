@@ -1,0 +1,50 @@
+<div {{ stimulus_controller('event-category-select') }}>
+    <div class="flex flex-wrap gap-2 mb-3">
+        {% for category in this.selectedCategories %}
+            <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
+                {{ category.title }}
+                <button
+                    type="button"
+                    {{ stimulus_action('live', 'removeCategory', 'click', {
+                        id: category.id,
+                        vue: false
+                    }) }}
+                    class="hover:text-blue-900"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </span>
+        {% endfor %}
+    </div>
+
+    <div class="relative">
+        <input
+            type="text"
+            {{ stimulus_model('live', 'search') }}
+            {{ stimulus_action('live', 'search', 'input') }}
+            placeholder="Search categories..."
+            class="w-full rounded-lg border border-gray-200 py-2.5 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+
+        {% if this.searchResults|length > 0 %}
+            <ul class="absolute z-50 w-full mt-1 rounded-lg border border-gray-100 bg-white shadow-lg py-1">
+                {% for category in this.searchResults %}
+                    <li>
+                        <button
+                            type="button"
+                            {{ stimulus_action('live', 'addCategory', 'click', {
+                                id: category.id,
+                                vue: false
+                            }) }}
+                            class="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-gray-50"
+                        >
+                            {{ category.title }}
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>

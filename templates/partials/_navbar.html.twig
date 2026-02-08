@@ -1,34 +1,40 @@
 {% import "macro/component.macro.twig" as component %}
 
-<nav class="navbar navbar-expand text-bg-primary navbar-dark" data-bs-theme="light">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="{{ path('events') }}">
-            <img class="me-3" src="{{ asset('images/logo-90-white-01.png') }}" height="50">
-            <div class="fw-bold d-none d-lg-block">Event Point</div>
+<nav class="border-b border-gray-100 bg-white/95 backdrop-blur-sm">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <a class="flex items-center gap-3 no-underline" href="{{ path('events') }}">
+            <img class="h-10" src="{{ asset('images/logo.png') }}" alt="Event Point">
+            <span class="hidden text-lg font-semibold tracking-tight text-gray-900 lg:block">Event Point</span>
         </a>
-        <ul class="navbar-nav justify-content-start align-items-center gap-3">
-            <li class="nav-item">
-                <a class="btn btn-outline-light p-1 px-2 rounded-2" href="{{ path('create_event') }}">
-                    {{ 'add-event'|trans }}
+        <ul class="flex list-none items-center gap-4">
+            <li>
+                <a class="inline-flex items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white no-underline transition-all hover:bg-gray-800 hover:shadow-md" href="{{ path('create_event') }}">
+                    <span class="hidden sm:inline">{{ 'add-event'|trans }}</span>
+                    <span class="sm:hidden">
+                        {{ ux_icon('mdi:plus', {class: 'text-xl'}) }}
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900" href="{{ path('events') }}">
+                    {{ ux_icon('mdi:compass-outline', {class: 'text-3xl'}) }}
                 </a>
             </li>
             {% if app.user %}
-                <li class="nav-item">
-                    <a class="nav-link px-2" href="{{ path('user_event_invitations') }}">
-                        {{ ux_icon('mdi:account-circle-outline', {class: 'fs-3'}) }}
+                <li>
+                    <a class="inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900" href="{{ path('user_event_invitations') }}">
+                        {{ ux_icon('mdi:account-circle-outline', {class: 'text-3xl'}) }}
                     </a>
                 </li>
             {% endif %}
-            <li class="nav-item">
-                <a class="nav-link px-2" href="#" aria-current="page" data-bs-toggle="modal"
-                   data-bs-target="#regional_settings">
-                    {{ ux_icon('mdi:web', {class: 'fs-3'}) }}
+            <li>
+                <a class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900" data-modal-target="regional_settings" data-modal-toggle="regional_settings">
+                    {{ ux_icon('mdi:web', {class: 'text-3xl'}) }}
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link px-2" href="#" data-bs-toggle="offcanvas" data-bs-target="#menu"
-                   aria-controls="menu">
-                    {{ ux_icon('mdi:menu', {class: 'fs-3'}) }}
+            <li>
+                <a class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900" data-drawer-target="menu" data-drawer-show="menu" data-drawer-placement="right">
+                    {{ ux_icon('mdi:menu', {class: 'text-3xl'}) }}
                 </a>
             </li>
         </ul>
@@ -36,64 +42,104 @@
 </nav>
 
 
-<div class="offcanvas offcanvas-end" data-bs-backdrop="menu" tabindex="-1" id="menu" aria-labelledby="menu">
-    {% if app.user %}
-        <div class="d-flex justify-content-between align-items-center p-2">
-            <a class="link-dark text-decoration-none d-flex justify-content-start align-items-center"
-               href="{{ path('user_future_events') }}">
-                <div class="me-3">
-                    <img src="{{ app.user.avatar }}" height="50" class="border "/>
-                </div>
-                <div>
-                    <div class="fw-bold lh-1"> {{ app.user.fullName }}</div>
-                    <div> {{ app.user.email.address }}</div>
-                </div>
-            </a>
-            <a class="me-2"
-               data-bs-dismiss="offcanvas"
-               aria-label="Close">
-                <span class="bi bi-x-lg fs-4"></span>
-            </a>
+{# Drawer menu #}
+<div id="menu" class="fixed right-0 top-0 z-40 h-screen w-80 translate-x-full overflow-y-auto border-l border-gray-100 bg-white shadow-2xl transition-transform" tabindex="-1" aria-labelledby="menu">
+    <div class="flex h-full flex-col">
+        <div class="flex items-center justify-between border-b border-gray-100 p-5">
+            <span class="text-sm font-medium uppercase tracking-wider text-gray-400">Menu</span>
+            <button type="button" data-drawer-hide="menu" aria-label="Close" class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600">
+                <span class="bi bi-x-lg"></span>
+            </button>
         </div>
-    {% endif %}
-    <div class="list-group list-group-flush">
         {% if app.user %}
-            <a href="{{ path('events') }}"
-               class="list-group-item list-group-item-action">{{ 'all-events'|trans }}</a>
-            <a href="{{ path('event_groups') }}"
-               class="list-group-item list-group-item-action">{{ 'all-groups'|trans }}</a>
-            <a href="{{ path('user_future_events') }}"
-               class="list-group-item list-group-item-action">{{ 'dashboard'|trans }}</a>
-            <a href="{{ path('create_event', {step: 'details'}) }}"
-               class="list-group-item list-group-item-action">{{ 'create-event'|trans }}</a>
-            <a href="{{ path('create_event_group') }}"
-               class="list-group-item list-group-item-action">{{ 'create-group'|trans }}</a>
-            <a href="{{ path('user_account') }}"
-               class="list-group-item list-group-item-action">{{ 'account'|trans }}</a>
-            <a href="{{ path('app_logout') }}"
-               class="list-group-item list-group-item-action text-danger">{{ 'logout'|trans }}</a>
-        {% else %}
-            <a href="{{ path('app_register') }}"
-               class="list-group-item list-group-item-action">{{ 'register'|trans }}</a>
-            <a href="{{ path('app_login') }}" class="list-group-item list-group-item-action">{{ 'login'|trans }}</a>
+            <a class="flex items-center gap-4 border-b border-gray-100 p-5 no-underline transition-colors hover:bg-gray-50"
+               href="{{ path('user_future_events') }}">
+                <img src="{{ app.user.avatar }}" class="h-12 w-12 rounded-full object-cover ring-2 ring-gray-100" alt="">
+                <div class="min-w-0 flex-1">
+                    <div class="truncate font-medium text-gray-900">{{ app.user.fullName }}</div>
+                    <div class="truncate text-sm text-gray-500">{{ app.user.email.address }}</div>
+                </div>
+            </a>
+        {% endif %}
+        <nav class="flex-1 py-2">
+            {% if app.user %}
+                <a href="{{ path('events') }}"
+                   class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
+                    {{ ux_icon('mdi:calendar-search', {class: 'text-lg text-gray-400'}) }}
+                    <span>{{ 'all-events'|trans }}</span>
+                </a>
+                <a href="{{ path('event_groups') }}"
+                   class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
+                    {{ ux_icon('mdi:account-group-outline', {class: 'text-lg text-gray-400'}) }}
+                    <span>{{ 'all-groups'|trans }}</span>
+                </a>
+                <a href="{{ path('user_future_events') }}"
+                   class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
+                    {{ ux_icon('mdi:view-dashboard-outline', {class: 'text-lg text-gray-400'}) }}
+                    <span>{{ 'dashboard'|trans }}</span>
+                </a>
+                <div class="my-2 border-t border-gray-100"></div>
+                <a href="{{ path('create_event', {step: 'details'}) }}"
+                   class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
+                    {{ ux_icon('mdi:calendar-plus', {class: 'text-lg text-gray-400'}) }}
+                    <span>{{ 'create-event'|trans }}</span>
+                </a>
+                <a href="{{ path('create_event_group') }}"
+                   class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
+                    {{ ux_icon('mdi:account-multiple-plus-outline', {class: 'text-lg text-gray-400'}) }}
+                    <span>{{ 'create-group'|trans }}</span>
+                </a>
+                <div class="my-2 border-t border-gray-100"></div>
+                <a href="{{ path('user_account') }}"
+                   class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
+                    {{ ux_icon('mdi:cog-outline', {class: 'text-lg text-gray-400'}) }}
+                    <span>{{ 'account'|trans }}</span>
+                </a>
+            {% else %}
+                <a href="{{ path('app_register') }}"
+                   class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
+                    {{ ux_icon('mdi:account-plus-outline', {class: 'text-lg text-gray-400'}) }}
+                    <span>{{ 'register'|trans }}</span>
+                </a>
+                <a href="{{ path('app_login') }}"
+                   class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
+                    {{ ux_icon('mdi:login', {class: 'text-lg text-gray-400'}) }}
+                    <span>{{ 'login'|trans }}</span>
+                </a>
+            {% endif %}
+        </nav>
+        {% if app.user %}
+            <div class="border-t border-gray-100 p-5">
+                <a href="{{ path('app_logout') }}"
+                   class="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 py-2.5 text-sm font-medium text-gray-600 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
+                    {{ ux_icon('mdi:logout', {class: 'text-base'}) }}
+                    <span>{{ 'logout'|trans }}</span>
+                </a>
+            </div>
         {% endif %}
     </div>
 </div>
 
 
-<div class="modal fade" id="regional_settings" data-bs-keyboard="false" tabindex="-1"
-     aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">{{ 'regional-settings'|trans }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+{# Regional settings modal #}
+<div id="regional_settings" tabindex="-1" aria-hidden="true"
+     class="fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0">
+    <div class="relative max-h-full w-full max-w-md">
+        <div class="relative overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-100">
+            <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+                <h5 class="text-base font-semibold text-gray-900">{{ 'regional-settings'|trans }}</h5>
+                <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600" data-modal-hide="regional_settings">
+                    <svg class="h-4 w-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close</span>
+                </button>
             </div>
             <turbo-frame id="regional_settings" src="{{ path('_app_regional_settings') }}"
                          target="_top" loading="lazy">
-                <div class="d-flex min-vh-50 justify-content-center align-items-center">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                <div class="flex min-h-[40vh] items-center justify-center">
+                    <div class="h-8 w-8 animate-spin rounded-full border-2 border-gray-200 border-t-gray-600" role="status">
+                        <span class="sr-only">Loading...</span>
                     </div>
                 </div>
             </turbo-frame>

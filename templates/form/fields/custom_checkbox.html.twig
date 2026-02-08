@@ -1,9 +1,9 @@
 {% block custom_checkbox_widget %}
-    <div class="form-check w-100 form-switch d-flex justify-content-around align-items-center">
+    <div class="flex w-full items-center justify-around">
         <input name="{{ form.vars.full_name }}" value="{{ form.vars.value }}" id="{{ form.vars.id }}"
-               {% if form.vars.checked %}checked{% endif %} class="form-check-input fs-3" type="checkbox"
+               {% if form.vars.checked %}checked{% endif %} class="h-6 w-6 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500" type="checkbox"
                role="switch">
-        <label class="form-check-label w-75 text-end" for="{{ form.vars.id }}">
+        <label class="w-3/4 text-end" for="{{ form.vars.id }}">
             {{ form.vars.label|default(null)|trans({}, translation_domain) }}
         </label>
     </div>

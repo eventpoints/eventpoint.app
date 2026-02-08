@@ -1,19 +1,19 @@
-<div class="card mb-2">
+<div class="mb-2 rounded-lg border border-gray-200 bg-white shadow-sm">
     {% if event.base64Image %}
         <img src="{{ event.base64Image }}"
-             class="card-img-top"
+             class="rounded-t-lg w-full"
              alt="{{ event.title }}">
     {% endif %}
 
-    <div class="card-body">
-        <div class="d-flex justify-content-between">
+    <div class="p-4">
+        <div class="flex justify-between">
             <div>
-                <div class="fw-bold">{{ event.title }}</div>
+                <div class="font-bold">{{ event.title }}</div>
                 {{ include('partials/event/_duration.html.twig') }}
-                <div class="text-muted">{{ event.address }}</div>
+                <div class="text-gray-500">{{ event.address }}</div>
             </div>
             <div>
-                <span class="badge rounded-pill text-bg-warning">{{ 'external-event'|trans }}</span>
+                <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">{{ 'external-event'|trans }}</span>
             </div>
         </div>
         <a class="stretched-link"

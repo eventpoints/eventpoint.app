@@ -1,18 +1,21 @@
-<div class="container-fluid">
-    <footer class="py-5 mt-5">
-        <div class="nav justify-content-center pb-3 mb-3">
-            <a href="{{ path('events') }}"
-               class="link-dark px-2">{{ 'events'|trans|capitalize }}</a>
-            <a href="{{ path('create_feedback') }}"
-               class="link-dark px-2">{{ 'feedback'|trans|capitalize }}</a>
-            <a href="#" class="link-dark px-2">{{ 'faqs'|trans|capitalize }}</a>
-            <a href="{{ path('app_terms') }}"
-               class="link-dark px-2">{{ 'terms'|trans|capitalize }}</a>
-            <a href="#"
-               class="link-dark px-2">{{ 'privicy'|trans|capitalize }}</a>
-            <a href="{{ path('app_about') }}"
-               class="link-dark px-2">{{ 'about'|trans|capitalize }}</a>
+<footer class="border-t border-gray-100 bg-white">
+    <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div class="flex flex-col items-center">
+            <nav class="mb-8 flex flex-wrap justify-center gap-x-8 gap-y-2">
+                <a href="{{ path('events') }}"
+                   class="text-sm text-gray-500 no-underline transition-colors hover:text-gray-900">{{ 'events'|trans|capitalize }}</a>
+                <a href="{{ path('create_feedback') }}"
+                   class="text-sm text-gray-500 no-underline transition-colors hover:text-gray-900">{{ 'feedback'|trans|capitalize }}</a>
+                <a href="#"
+                   class="text-sm text-gray-500 no-underline transition-colors hover:text-gray-900">{{ 'faqs'|trans|capitalize }}</a>
+                <a href="{{ path('app_terms') }}"
+                   class="text-sm text-gray-500 no-underline transition-colors hover:text-gray-900">{{ 'terms'|trans|capitalize }}</a>
+                <a href="#"
+                   class="text-sm text-gray-500 no-underline transition-colors hover:text-gray-900">{{ 'privicy'|trans|capitalize }}</a>
+                <a href="{{ path('app_about') }}"
+                   class="text-sm text-gray-500 no-underline transition-colors hover:text-gray-900">{{ 'about'|trans|capitalize }}</a>
+            </nav>
+            <p class="text-sm text-gray-400">&copy; {{ 'now'|date('Y') }} Event Point. All rights reserved.</p>
         </div>
-        <p class="text-center text-body-secondary">© {{ 'now'|date('Y') }} eventpoint.app</p>
-    </footer>
-</div>
+    </div>
+</footer>

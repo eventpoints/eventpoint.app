@@ -1,17 +1,15 @@
 {% block category_selection_group_widget %}
-    <div class="list-group m-0 list-group-flush" {{ stimulus_controller('list-group-search') }}>
+    <div class="m-0 divide-y divide-gray-200" {{ stimulus_controller('list-group-search') }}>
         {% if searchable %}
-            <div class="list-group-item bg-white justify-content-between align-items-center sticky-top">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="{{ 'search'|trans }}"
-                           aria-label="{{ 'search'|trans }}"
-                           aria-describedby="basic-addon1" {{ stimulus_target('list-group-search', 'input') }} {{ stimulus_action('list-group-search', 'type', 'keyup') }}>
-                </div>
+            <div class="sticky top-0 flex items-center justify-between bg-white px-4 py-3">
+                <input type="text" class="form-control" placeholder="{{ 'search'|trans }}"
+                       aria-label="{{ 'search'|trans }}"
+                       {{ stimulus_target('list-group-search', 'input') }} {{ stimulus_action('list-group-search', 'type', 'keyup') }}>
             </div>
         {% endif %}
         {% for choice in choices %}
             {% if choice.data.categories.count > 0 %}
-                <div class="list-group-item list-group-item-action {{ choice.data.categories.count == 0 ? 'bg-light' }} d-flex justify-content-between align-items-center"
+                <div class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 {{ choice.data.categories.count == 0 ? 'bg-gray-50' }}"
                         {{ stimulus_target('list-group-search', 'item') }} >
                     <input style="-ms-transform: scale(2)!important;-webkit-transform: scale(2)!important;transform: scale(2)!important;"
                            type="{{ form.vars.multiple ? 'checkbox' : 'radio' }}" id="{{ id ~ '_' ~ choice.value }}"
@@ -19,12 +17,12 @@
                            value="{{ choice.value }}" {% if choice.value in value %}checked{% endif %}
                             {{ stimulus_target('list-group-search', 'checkbox') }}
                     >
-                    <label for="{{ id ~ '_' ~ choice.value }}" class="fw-bold w-75 text-end">
+                    <label for="{{ id ~ '_' ~ choice.value }}" class="w-3/4 text-end font-bold">
                         {{ choice.label|default(null)|trans({}, translation_domain) }}
                     </label>
                 </div>
             {% else %}
-                <div class="list-group-item bg-light fw-bold">
+                <div class="bg-gray-50 px-4 py-3 font-bold">
                     {{ choice.label|trans|capitalize }}
                 </div>
             {% endif %}

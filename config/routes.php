@@ -5,6 +5,9 @@ declare(strict_types=1);
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 return static function (RoutingConfigurator $routingConfigurator): void {
+
+    $routingConfigurator->import('@AutocompleteBundle/config/routes.php');
+
     $routingConfigurator->import(
         resource: '../src/Controller/Controller/',
         type: 'attribute'

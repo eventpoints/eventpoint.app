@@ -1,5 +1,5 @@
-<div aria-live="polite" aria-atomic="true" class="position-absolute z-index-9000 top-0 d-flex px-2 justify-content-start align-items-start w-100">
-    <div id="toast-container" class="toast-container">
+<div aria-live="polite" aria-atomic="true" class="fixed top-0 z-[9000] flex w-full justify-start px-2">
+    <div id="toast-container" class="flex flex-col gap-2">
         {% for message in app.session.flashbag.get('message') %}
             {{ include('partials/_toast.html.twig', {
                 message: message,

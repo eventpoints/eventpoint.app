@@ -42,27 +42,18 @@ class EventFilterType extends AbstractType
                         'attr' => [
                         ],
                         'required' => false,
-                        'row_attr' => [
-                                'class' => 'form-floating',
-                        ],
                 ])
                 ->add('period', EnumType::class, [
                         'label' => false,
                         'class' => EventFilterDateRangeEnum::class,
-                        'row_attr' => [
-                                'class' => 'form-floating',
-                        ],
-                        'autocomplete' => true,
+                        'placeholder' => 'period'
                 ])
                 ->add('category', EntityType::class, [
                         'required' => false,
                         'class' => Category::class,
                         'choice_label' => 'title',
                         'choice_translation_domain' => true,
-                        'autocomplete' => true,
-                        'row_attr' => [
-                                'class' => 'form-floating',
-                        ],
+
                 ])
                 ->add('city', EntityType::class, [
                         'class' => City::class,
@@ -70,23 +61,7 @@ class EventFilterType extends AbstractType
                         'data' => $country->getCapitalCity(),
                         'choices' => $country->getCities(),
                         'choice_label' => fn(City $city): string => ucfirst($city->getName()),
-                        'row_attr' => [
-                                'class' => 'form-floating',
-                        ],
-                ])
-                ->addDependent('radius', 'city', function (DependentField $field, null|City $city) {
-                    if ($city instanceof City) {
-                        $field->add(RangeType::class, [
-                                'label' => false,
-                                'required' => false,
-                                'data' => 50,
-                                'attr' => [
-                                        'min' => 5,
-                                        'max' => 100,
-                                ],
-                        ]);
-                    }
-                });
+                ]);
     }
 
     #[\Override]

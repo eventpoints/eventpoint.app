@@ -38,4 +38,17 @@ class CategoryRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getOneOrNullResult();
     }
+
+    /**
+     * @return Category[]
+     */
+    public function findByTitleSearch(string $search): array
+    {
+        return $this->createQueryBuilder('category')
+            ->andWhere('category.title LIKE :search')
+            ->setParameter('search', '%' . $search . '%')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
 }

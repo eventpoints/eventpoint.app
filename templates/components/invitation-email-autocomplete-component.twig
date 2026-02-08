@@ -1,75 +1,74 @@
-<div class="modal-body p-0" {{ attributes }} >
-    <div class="sticky-top bg-white p-2">
-        <div class="input-group">
+<div class="flex min-h-0 flex-col" {{ attributes }}>
+    <div class="flex-shrink-0 border-b border-gray-100 bg-white p-4">
+        <div class="flex">
             <input autocomplete="off" id="email" placeholder="{{ 'email-address'|trans }}"
                    data-model="emailAddress"
                    data-live-action-param="prevent|debounce(100)|filter"
-                   class="form-control mb-0 {{ this.getError('emailAddress') ? 'is-invalid' }}"
+                   class="block w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition-colors focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-0 {{ this.getError('emailAddress') ? 'border-red-300 bg-red-50' }}"
+                   style="border-radius: 0.5rem 0 0 0.5rem;"
                    type="email" data-action="live#action:prevent"
             />
             {% set validEmail = emailAddress is not null and emailAddress matches '/^.+@.+\\..+$/' %}
-            <button type="button" class="btn btn-primary rounded-0"
-               data-action="live#action:prevent"
-               data-live-action-param="prevent|sendToEmail"
-               {{ not validEmail ? 'disabled' }}>
+            <button type="button"
+                    class="whitespace-nowrap border border-l-0 border-gray-200 bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+                    style="border-radius: 0 0.5rem 0.5rem 0;"
+                    data-action="live#action:prevent"
+                    data-live-action-param="prevent|sendToEmail"
+                    {{ not validEmail ? 'disabled' }}>
                 {{ 'send-invitation'|trans }}
             </button>
         </div>
         {% if this.getError('emailAddress') %}
-            <div class="text-danger small mt-1">{{ this.getError('emailAddress').message }}</div>
+            <p class="mt-1.5 text-sm text-red-600">{{ this.getError('emailAddress').message }}</p>
         {% endif %}
     </div>
-    <div class="list-group list-group-flush">
+
+    <div class="min-h-0 flex-1 divide-y divide-gray-100 overflow-y-auto">
         {% for contact in this.contacts %}
-            <div class="d-flex justify-content-between align-items-center list-group-item list-group-item-action">
-                <div>
+            <div class="flex items-center justify-between px-4 py-3 transition-colors hover:bg-gray-50">
+                <div class="min-w-0 flex-1">
                     {% if contact.email.owner %}
-                        <div class="d-flex justify-content-start align-items-center">
-                            <div>
-                                <img class="object-fit-cover me-2" src="{{ contact.email.owner.avatar }}"
-                                     height="50"
-                                     width="50"/>
-                            </div>
-                            <div>
-                                <div>{{ contact.email.owner.fullName }}</div>
-                                <div>{{ contact.email.address }}</div>
+                        <div class="flex items-center gap-3">
+                            <img class="h-10 w-10 rounded-full object-cover" src="{{ contact.email.owner.avatar }}" alt="">
+                            <div class="min-w-0">
+                                <div class="truncate text-sm font-medium text-gray-900">{{ contact.email.owner.fullName }}</div>
+                                <div class="truncate text-xs text-gray-500">{{ contact.email.address }}</div>
                             </div>
                         </div>
                     {% else %}
-                        <div class="d-flex justify-content-start align-items-center">
-                            <div>
-                                <div class="mdi mdi-at fs-1 me-3"></div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                                {{ ux_icon('mdi:at', {class: 'h-5 w-5 text-gray-400'}) }}
                             </div>
-                            <div>
-                                <div>{{ contact.email.address }}</div>
+                            <div class="min-w-0">
+                                <div class="truncate text-sm text-gray-900">{{ contact.email.address }}</div>
                             </div>
                         </div>
                     {% endif %}
                 </div>
-                <div>
+                <div class="ml-3 flex-shrink-0">
                     {% if contact.email.owner and event.hasBeenInvited(contact.email.owner) %}
-                        <a class="text-dark-grey">
-                            <span class="bi bi-send-check-fill fs-3"></span>
-                        </a>
+                        <span class="text-gray-400">
+                            {{ ux_icon('mdi:send-check', {class: 'h-5 w-5'}) }}
+                        </span>
                     {% elseif event.hasEmailBeenInvited(contact.email.address) %}
-                        <a class="text-dark-grey">
-                            <span class="bi bi-send-check-fill fs-3"></span>
-                        </a>
+                        <span class="text-gray-400">
+                            {{ ux_icon('mdi:send-check', {class: 'h-5 w-5'}) }}
+                        </span>
                     {% elseif contact.email.owner and event.IsOrganiser(contact.email.owner) %}
-                        <div class="bi bi-person-badge-fill fs-3"></div>
+                        <span class="text-gray-400">
+                            {{ ux_icon('mdi:shield-account', {class: 'h-5 w-5'}) }}
+                        </span>
                     {% else %}
-                        <a href="#" class="link-success"
+                        <a href="#" class="inline-flex h-8 w-8 items-center justify-center rounded-full text-green-600 transition-colors hover:bg-green-50"
                            data-action="live#action:prevent"
                            data-live-action-param="sendInvitation"
-                           data-live-contact-param="{{ contact.id }}"
-                        >
-                            <span class="bi bi-send-fill fs-3"></span>
+                           data-live-contact-param="{{ contact.id }}">
+                            {{ ux_icon('mdi:send', {class: 'h-5 w-5'}) }}
                         </a>
                     {% endif %}
                 </div>
             </div>
         {% endfor %}
     </div>
-
 </div>
-

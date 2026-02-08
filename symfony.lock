@@ -70,6 +70,9 @@
             "ref": "b131e6cbfe1b898a508987851963fff485986285"
         }
     },
+    "kerrialnewham/autocomplete": {
+        "version": "dev-main"
+    },
     "knplabs/knp-paginator-bundle": {
         "version": "v6.2.0"
     },
@@ -361,18 +364,6 @@
         },
         "files": [
             "config/packages/uid.yaml"
-        ]
-    },
-    "symfony/ux-autocomplete": {
-        "version": "2.12",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "2.6",
-            "ref": "07d9602b7231ba355f484305d6cea58310c01741"
-        },
-        "files": [
-            "config/routes/ux_autocomplete.yaml"
         ]
     },
     "symfony/ux-chartjs": {

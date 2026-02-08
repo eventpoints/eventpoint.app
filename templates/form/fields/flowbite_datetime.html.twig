@@ -1,0 +1,63 @@
+{% block flowbite_datetime_row %}
+    {% set show_floating_lb =
+        show_floating_label is defined
+        ? show_floating_label
+        : (form.vars.show_floating_label ?? true)
+    %}
+
+    {% set hasErrors = not form.vars.valid %}
+    {% set describedby_id = id ~ '_help ' ~ id ~ '_errors' %}
+
+    <div class="w-full space-y-2"
+         role="group"
+         aria-labelledby="{{ id }}_label"
+         aria-describedby="{{ describedby_id|trim }}"
+         aria-invalid="{{ hasErrors ? 'true' : 'false' }}">
+
+        {% if show_floating_lb %}
+            <label id="{{ id }}_label" class="block text-sm font-medium text-gray-700">
+                {{ label|default(name|humanize)|trans }}
+            </label>
+        {% endif %}
+
+        {{ block('flowbite_datetime_widget') }}
+
+        {% if help is defined and help %}
+            <p class="text-sm text-gray-500" id="{{ id }}_help">{{ help }}</p>
+        {% endif %}
+
+        <div id="{{ id }}_errors">
+            {{ form_errors(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block flowbite_datetime_widget %}
+    <div class="flex">
+        {# DATE - left side of input group #}
+        <div class="relative flex-1">
+            {% set _date_attr = form.date.vars.attr|merge({
+                'data-controller': 'fb-datepicker',
+                'data-fb-datepicker-format-value': form.date.vars.attr['datepicker-format']|default('yyyy-mm-dd'),
+                'data-fb-datepicker-autohide-value': 'true',
+                'data-fb-datepicker-open-on-focus-value': 'true',
+                'datepicker-autoselect-today': 'true',
+                class: 'block w-full h-12 border border-gray-200 bg-gray-50 px-4 text-sm text-gray-900 transition-colors focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-0 focus:z-10',
+                style: 'border-radius: 0.5rem 0 0 0.5rem;'
+            }) %}
+
+            {{ form_widget(form.date, { attr: _date_attr }) }}
+        </div>
+
+        {# TIME - right side of input group #}
+        <div class="relative w-28">
+            {% set _time_attr = form.time.vars.attr|merge({
+                class: 'block w-full h-12 border-gray-200 bg-gray-50 px-3 text-sm text-gray-900 transition-colors focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-0 focus:z-10 cursor-pointer',
+                style: 'border-radius: 0 0.5rem 0.5rem 0; border-style: solid; border-width: 1px 1px 1px 0;',
+                onclick: 'this.showPicker()'
+            }) %}
+
+            {{ form_widget(form.time, { attr: _time_attr }) }}
+        </div>
+    </div>
+{% endblock %}

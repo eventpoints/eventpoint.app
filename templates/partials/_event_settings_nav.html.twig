@@ -1,17 +1,17 @@
-<div class="list-group">
-    <a class="{{ app.request.attributes.get('_route') == 'manage_event_ticketing' ? 'active' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+<div class="divide-y divide-gray-200 rounded-lg border border-gray-200">
+    <a class="{{ app.request.attributes.get('_route') == 'manage_event_ticketing' ? 'bg-blue-50 text-blue-700 font-semibold' : '' }} flex items-center justify-between px-4 py-3 text-gray-900 no-underline hover:bg-gray-50"
        href="#">
         <div>{{ 'manage-ticketing'|trans }}</div>
-        <div class="bi bi-ticket-fill fs-4"></div>
+        <div class="bi bi-ticket-fill text-xl"></div>
     </a>
-    <a class="{{ app.request.attributes.get('_route') == 'manage_event_organisers' ? 'active' }} list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+    <a class="{{ app.request.attributes.get('_route') == 'manage_event_organisers' ? 'bg-blue-50 text-blue-700 font-semibold' : '' }} flex items-center justify-between px-4 py-3 text-gray-900 no-underline hover:bg-gray-50"
        href="{{ path('manage_event_organisers', {id: event.id}) }}">
         <div>{{ 'manage-event-orgnisers'|trans }}</div>
-        <div class="bi bi-people fs-4"></div>
+        <div class="bi bi-people text-xl"></div>
     </a>
-    <a class="{{ app.request.attributes.get('_route') == 'cancel_event' ? 'active' }} list-group-item text-danger list-group-item-action d-flex justify-content-between align-items-center"
+    <a class="{{ app.request.attributes.get('_route') == 'cancel_event' ? 'bg-blue-50 text-blue-700 font-semibold' : '' }} flex items-center justify-between px-4 py-3 text-red-600 no-underline hover:bg-gray-50"
        href="{{ path('cancel_event', {id: event.id}) }}">
         <div>{{ 'cancel-event'|trans }}</div>
-        <div class="bi bi-x-octagon-fill fs-4"></div>
+        <div class="bi bi-x-octagon-fill text-xl"></div>
     </a>
 </div>

@@ -2,72 +2,101 @@
 
 {% block title %}Register{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-
-    <style>
-        body {
-            min-height: 90vh;
-            background: url("{{ asset('images/register-bg-3-01.png') }}");
-            background-attachment: inherit;
-            background-repeat: no-repeat;
-            background-size: cover;
-        }
-    </style>
-
-{% endblock %}
-
 {% block body %}
-    <div class="register-bg">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="mt-5 mb-3">
-                        <div class="display-3 fw-bold mb-4">{{ app_name|title }}</div>
-                        <div class="fs-4 text-muted">{{ 'app-explainer'|trans }}</div>
+    <div class="min-h-[calc(100vh-200px)] px-4 py-12">
+        <div class="mx-auto max-w-5xl">
+            <div class="flex flex-col items-center gap-12 lg:flex-row lg:items-start lg:gap-16">
+                {# Left side - branding #}
+                <div class="w-full max-w-md text-center lg:w-1/2 lg:text-left">
+                    <div class="lg:sticky lg:top-24">
+                        <h1 class="text-4xl font-semibold tracking-tight text-gray-900 lg:text-5xl">{{ app_name|title }}</h1>
+                        <p class="mt-4 text-lg text-gray-500">{{ 'app-explainer'|trans }}</p>
+                        <div class="mt-8 hidden lg:block">
+                            <div class="flex items-center gap-4 rounded-xl bg-gray-50 p-4">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-900 text-white">
+                                    {{ ux_icon('mdi:calendar-check', {class: 'h-5 w-5'}) }}
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <span class="font-medium text-gray-900">Discover events</span> in your area and connect with your community
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-5">
-                    <div class="card my-3">
-                        <div class="card-header bg-white">
-                            <div class="card- bg-white">{{ include('security/_social-auth.html.twig') }}</div>
+
+                {# Right side - form #}
+                <div class="w-full max-w-md lg:w-1/2">
+                    <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+                        <div class="border-b border-gray-100 p-6">
+                            {{ include('security/_social-auth.html.twig') }}
                         </div>
-                        <div class="card-body">
+
+                        <div class="p-6">
+                            <div class="relative mb-6">
+                                <div class="absolute inset-0 flex items-center">
+                                    <div class="w-full border-t border-gray-200"></div>
+                                </div>
+                                <div class="relative flex justify-center text-sm">
+                                    <span class="bg-white px-4 text-gray-500">{{ 'or-continue-with-email'|trans|default('or register with email') }}</span>
+                                </div>
+                            </div>
+
                             {{ form_errors(registrationForm.email) }}
 
                             {{ form_start(registrationForm) }}
-                            {{ form_row(registrationForm.firstName) }}
-                            {{ form_row(registrationForm.lastName) }}
-                            {{ form_row(registrationForm.email) }}
-                            <div class="input-group mb-3" {{ stimulus_controller('password-visibility') }}>
-                                {{ form_widget(registrationForm.plainPassword) }}
-                                <button data-action="password-visibility#toggle" class="btn btn-outline-secondary"
-                                        type="button" id="button-addon2">
-                                    <span data-password-visibility-target="icon" class="bi bi-eye-fill fs-4"></span>
-                                    <span data-password-visibility-target="icon"
-                                          class="hidden bi bi-eye-slash-fill fs-4"></span>
-                                </button>
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'first-name'|trans|default('First name') }}</label>
+                                        {{ form_widget(registrationForm.firstName, {attr: {class: 'block w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition-colors focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-0'}}) }}
+                                    </div>
+                                    <div>
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'last-name'|trans|default('Last name') }}</label>
+                                        {{ form_widget(registrationForm.lastName, {attr: {class: 'block w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition-colors focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-0'}}) }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'email'|trans }}</label>
+                                    {{ form_widget(registrationForm.email, {attr: {class: 'block w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition-colors focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-0'}}) }}
+                                </div>
+                                <div>
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'password'|trans }}</label>
+                                    <div class="flex" {{ stimulus_controller('password-visibility') }}>
+                                        {{ form_widget(registrationForm.plainPassword, {attr: {class: 'block w-full rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition-colors focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-0'}}) }}
+                                        <button data-action="password-visibility#toggle"
+                                                class="inline-flex items-center rounded-r-lg border border-gray-200 bg-gray-50 px-4 text-gray-500 transition-colors hover:bg-gray-100"
+                                                type="button">
+                                            <span data-password-visibility-target="icon" class="bi bi-eye-fill"></span>
+                                            <span data-password-visibility-target="icon" class="bi bi-eye-slash-fill hidden"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="text-center">
+
+                            <div class="mt-6 flex justify-center">
                                 <div class="cf-turnstile" data-sitekey="{{ turnstile_public_key }}"></div>
                             </div>
+
                             <button type="submit"
-                                    class="btn btn-lg mt-5 btn-primary w-100">{{ 'register'|trans }}</button>
+                                    class="mt-6 w-full rounded-lg bg-gray-900 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-gray-800">
+                                {{ 'create-account'|trans|default('Create account') }}
+                            </button>
 
                             {{ form_end(registrationForm) }}
-
                         </div>
                     </div>
+
+                    <p class="mt-6 text-center text-sm text-gray-500">
+                        {{ 'already-have-account'|trans|default('Already have an account?') }}
+                        <a href="{{ path('app_login') }}" class="font-medium text-gray-900 no-underline hover:underline">{{ 'sign-in'|trans }}</a>
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 {% endblock %}
 
-
 {% block javascripts %}
-
     {{ parent() }}
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-
 {% endblock %}

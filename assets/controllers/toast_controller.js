@@ -1,5 +1,4 @@
 import { Controller } from '@hotwired/stimulus';
-import {Toast} from "bootstrap";
 
 export default class extends Controller {
     connect() {
@@ -9,8 +8,19 @@ export default class extends Controller {
             return;
         }
 
-       const toast = new Toast(this.element);
-       toast.show();
+        this.element.classList.remove('hidden');
+        this.element.classList.add('flex');
 
+        setTimeout(() => {
+            this.element.classList.add('hidden');
+            this.element.classList.remove('flex');
+        }, 5000);
+    }
+
+    show(event) {
+        if (event.detail && event.detail.message) {
+            this.element.querySelector('span:last-child').textContent = event.detail.message;
+        }
+        this.connect();
     }
 }

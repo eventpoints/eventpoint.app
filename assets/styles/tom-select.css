@@ -1,0 +1,60 @@
+.ts-wrapper {
+    @apply w-full;
+}
+
+.ts-control {
+    @apply w-full rounded-lg border border-gray-200 bg-white py-2.5 px-3 text-sm text-gray-900;
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    min-height: 44px;
+}
+
+.ts-control input {
+    @apply outline-none bg-transparent text-sm text-gray-900;
+}
+
+.ts-dropdown {
+    @apply absolute z-50 w-full mt-1 rounded-lg border border-gray-100 bg-white shadow-lg py-1;
+}
+
+.ts-dropdown .option {
+    @apply px-3 py-2 text-sm text-gray-700 cursor-pointer;
+}
+
+.ts-dropdown .option:hover {
+    @apply bg-gray-50;
+}
+
+.ts-dropdown .option.selected {
+    @apply bg-blue-50 text-blue-700;
+}
+
+.ts-dropdown .option.active {
+    @apply bg-blue-100 text-blue-700;
+}
+
+.ts-control .item {
+    @apply inline-flex items-center bg-gray-100 text-gray-700 rounded px-2 py-1 mr-1;
+}
+
+.ts-control .remove-button {
+    @apply ml-1 text-gray-400 hover:text-gray-600 cursor-pointer;
+}
+
+.ts-control:not(.disabled)::after {
+    @apply absolute right-3 top-1/2 -translate-y-1/2 border-gray-400;
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid;
+    border-bottom: 1.5px solid;
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.ts-wrapper.open .ts-control::after {
+    @apply rotate(-45deg);
+    transform: translateY(-75%) rotate(45deg);
+}
+
+.ts-wrapper.focus .ts-control {
+    @apply ring-2 ring-blue-500 border-transparent;
+}

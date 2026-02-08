@@ -1,44 +1,42 @@
 {% if event.isAfterStart %}
-    <div class="card mb-3">
-        <div class="card-body">
+    <div class="mb-3 rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div class="p-4">
             {{ form_start(imageForm) }}
-            <div class="input-group">
+            <div class="flex">
                 {{ form_widget(imageForm.images) }}
-                <button type="submit" class="btn btn-primary">{{ 'upload'|trans }}</button>
+                <button type="submit" class="rounded-e-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800">{{ 'upload'|trans }}</button>
             </div>
             {{ form_end(imageForm) }}
         </div>
     </div>
     <div>
-        <div class="position-relative">
+        <div class="relative">
             {% for imageCollection in event.imageCollections %}
-                <div class="card border-0 text-bg-dark-grey">
-                    <div class="card-body">
-                        <div class='position-relative' {{ stimulus_controller('lightbox image-grid') }}
-                             data-lightbox-options-value='{"thumbnails": true}'
-                        >
-                            {% for image in imageCollection.images %}
-                                <img class="object-fit-cover rounded" src="{{ image.dataUrl }}"
-                                     alt="event image"/>
-                            {% endfor %}
-                        </div>
-                        <div class="text-center mt-3">
-                            <img class="rounded-circle"
-                                 src="{{ imageCollection.owner.avatar }}"
-                                 width="30"
-                                 height="30 mb-2"/>
-                            <div>
-                                <div class="">{{ imageCollection.owner.fullName|title }}</div>
-                            </div>
+                <div class="rounded-lg border-0 bg-gray-100 p-4 text-gray-800">
+                    <div class='relative' {{ stimulus_controller('lightbox image-grid') }}
+                         data-lightbox-options-value='{"thumbnails": true}'
+                    >
+                        {% for image in imageCollection.images %}
+                            <img class="rounded object-cover" src="{{ image.dataUrl }}"
+                                 alt="event image"/>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-3 text-center">
+                        <img class="rounded-full"
+                             src="{{ imageCollection.owner.avatar }}"
+                             width="30"
+                             height="30 mb-2"/>
+                        <div>
+                            <div>{{ imageCollection.owner.fullName|title }}</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="text-center text-muted small mb-3">{{ imageCollection.createdAt|time_ago }}</div>
+                <div class="mb-3 text-center text-sm text-gray-500">{{ imageCollection.createdAt|time_ago }}</div>
 
                 {% if not loop.last %}
                     <div class="text-center">
-                        <div class="vr vh-5"></div>
+                        <div class="vh-5 mx-auto border-l border-gray-300"></div>
                     </div>
                 {% endif %}
 

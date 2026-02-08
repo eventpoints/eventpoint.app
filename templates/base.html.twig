@@ -13,12 +13,11 @@
     <meta name="revisit-after" content="1 days">
 
     {% block stylesheets %}
-        {{ encore_entry_link_tags('app') }}
+        <link rel="stylesheet" href="{{ asset('bundles/autocomplete/autocomplete.css') }}">
         {{ encore_entry_link_tags('app') }}
     {% endblock %}
 
     {% block javascripts %}
-        {{ encore_entry_script_tags('app') }}
         {{ encore_entry_script_tags('app') }}
 
         <!-- Google tag (gtag.js) -->
@@ -32,7 +31,7 @@
         </script>
     {% endblock %}
 </head>
-<body>
+<body class="bg-gray-50 font-sans text-gray-900 antialiased">
 {{ include('partials/_flash.message.html.twig') }}
 {% block navbar %}
     {{ include('partials/_navbar.html.twig') }}

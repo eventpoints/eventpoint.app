@@ -1,3 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --flowbite-primary: #660033;
+        --flowbite-primary-light: #7d003d;
+        --flowbite-primary-dark: #4d0026;
+        --flowbite-primary-hover: #52002a;
+    }
+}
+
 body {
     background-color: lightgray;
 }

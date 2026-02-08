@@ -19,58 +19,61 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class UserAccountFormType extends AbstractType
 {
     public function __construct(
-        private readonly TranslatorInterface $translator,
-    ) {
+            private readonly TranslatorInterface $translator,
+    )
+    {
     }
 
     #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('firstName', TextType::class, [
-                'row_attr' => [
-                ],
-            ])
-            ->add('lastName', TextType::class, [
-                'row_attr' => [
-                ],
-            ])
-            ->add('locale', LanguageType::class, [
-                'label' => $this->translator->trans('language'),
-                'choice_loader' => null,
-                'choices' => [
-                    'English' => 'en',
-                    'Čeština' => 'cz',
-                    'Русский' => 'ru',
-                ],
-            ])
-            ->add('country', CountryType::class, [
-                'label' => $this->translator->trans('region-country', [
-                    'required' => false,
-                ]),
-            ])
-            ->add('currency', CurrencyType::class, [
-                'label' => $this->translator->trans('currency', [
-                    'required' => false,
-                ]),
-            ])
-            ->add('timezone', TimezoneType::class, [
-                'required' => false,
-            ])
-            ->add('avatar', FileType::class, [
-                'row_attr' => [
-                    'class' => 'w-75',
-                ],
-                'mapped' => false,
-                'required' => false,
-            ]);
+                ->add('firstName', TextType::class, [
+                        'row_attr' => [
+                        ],
+                ])
+                ->add('lastName', TextType::class, [
+                        'row_attr' => [
+                        ],
+                ])
+                ->add('locale', LanguageType::class, [
+                        'label' => $this->translator->trans('language'),
+                        'choice_loader' => null,
+                        'placeholder' => $this->translator->trans('language'),
+                        'choices' => [
+                                'English' => 'en',
+                                'Čeština' => 'cz',
+                                'Русский' => 'ru',
+                        ],
+                ])
+                ->add('country', CountryType::class, [
+                        'label' => $this->translator->trans('region-country'),
+                        'placeholder' => $this->translator->trans('region-country'),
+                        'required' => false,
+                ])
+                ->add('currency', CurrencyType::class, [
+                        'label' => $this->translator->trans('currency'),
+                        'required' => false,
+                        'placeholder' => $this->translator->trans('currency'),
+
+                ])
+                ->add('timezone', TimezoneType::class, [
+                        'required' => false,
+                ])
+                ->add('avatar', FileType::class, [
+                        'row_attr' => [
+                                'class' => 'w-75',
+                        ],
+                        'mapped' => false,
+                        'required' => false,
+                ]);
     }
 
     #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
+                'data_class' => User::class,
         ]);
     }
 }

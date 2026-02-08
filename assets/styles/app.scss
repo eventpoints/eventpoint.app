@@ -1,12 +1,16 @@
 @import '~lightgallery/scss/lightgallery';
-@import 'https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,700;1,300&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap';
 @import 'mapbox-gl/src/css/mapbox-gl.css';
 @import "tailwindcss";
-@import "flowbite/src/themes/default";
+@import "flowbite/src/themes/minimal.css";
 @plugin "flowbite/plugin";
 @source "../../node_modules/flowbite";
+@source "../node_modules/flowbite-datepicker";
+@plugin "flowbite-typography";
 
-input[type=text] {
+
+input[type=text],
+input[type=time] {
   height: 50px;
 }
 
@@ -21,28 +25,9 @@ input[type=range]:focus {
   outline: none;
 }
 
-input[type=range]::-webkit-slider-runnable-track {
-  background: #6c757d;
-  border-color: #6c757d;
-  border-radius: 0;
-  width: 100%;
-  height: 3px;
-  cursor: pointer;
-  border-width: 3px;
-  color: transparent;
-  display: flex;
-  align-items: center;
-}
 
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 20px;
-  width: 20px;
-  border-radius: 50%;
-  background: #0d6efd;
-  cursor: pointer;
-  margin-top: -8px; /* Adjust this value to center the thumb */
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
 }
 
 input[type="range"]::-ms-thumb {
@@ -50,27 +35,21 @@ input[type="range"]::-ms-thumb {
 }
 
 input[type=range]::-moz-range-track {
-  background: #6c757d;
-  border-color: #6c757d;
-  border-radius: 0;
+  background: var(--color-pastel-300);
+  border-radius: 99px;
   width: 100%;
-  height: 3px;
+  height: 4px;
   cursor: pointer;
-  border-width: 3px;
-  color: transparent;
-  display: flex;
-  align-items: center;
 }
 
 input[type=range]::-moz-range-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
   border-radius: 50%;
-  background: #0d6efd;
+  background: var(--color-brand);
   cursor: pointer;
-  margin-top: -8px; /* Adjust this value to center the thumb */
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -79,8 +58,8 @@ datalist {
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
-  color: #6c757d;
-  font-size: 12px;
+  color: var(--color-text-tertiary);
+  font-size: 0.75rem;
 }
 
 .radius-map {
@@ -89,7 +68,7 @@ datalist {
 }
 
 .timeline {
-  border-left: 1px solid hsl(0, 0%, 90%);
+  border-left: 1px solid var(--color-border);
   position: relative;
   list-style: none;
 }
@@ -105,12 +84,13 @@ datalist {
 }
 
 .timeline .timeline-item:after {
-  background-color: hsl(0, 0%, 90%);
+  background-color: var(--color-brand);
   left: -38px;
   border-radius: 50%;
   height: 11px;
   width: 11px;
   content: "";
+  border: 2px solid var(--color-bg-primary);
 }
 
 
@@ -123,24 +103,17 @@ datalist {
   height: 10vh !important;
 }
 
-.w-10 {
+.w-10vh {
   width: 10vh !important;
-}
-
-.text-bg-dark-grey {
-  color: #333 !important;
-  background-color: rgba(0, 0, 0, 0.07) !important;
-}
-
-.text-dark-grey {
-  color: rgba(73, 80, 87, 0.75) !important;
 }
 
 
 body {
   padding: 0;
   margin: 0;
-  background-color: #FAFAFA!important;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
 }
 
 .z-90001 {
@@ -183,8 +156,49 @@ body {
   min-height: 90vh;
 }
 
-* {
-  font-family: 'Ubuntu', sans-serif;
+/* Form styling - elegant theme */
+.form-control {
+  @apply block w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition-colors focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-0;
+}
+.form-control-lg {
+  @apply px-4 py-3.5 text-base;
+}
+.form-select {
+  @apply block w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition-colors focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-0;
+}
+.form-check {
+  @apply flex items-center;
+}
+.form-check-input {
+  @apply h-4 w-4 rounded border-gray-300 bg-white text-gray-900 focus:ring-2 focus:ring-gray-300;
+}
+.form-check-label {
+  @apply ms-2 text-sm font-medium text-gray-700;
+}
+.form-label {
+  @apply mb-1.5 block text-sm font-medium text-gray-700;
+}
+.form-floating {
+  @apply relative;
+}
+.form-floating > .form-control {
+  @apply placeholder-transparent;
+  height: 3.5rem;
+  padding-top: 1.625rem;
+  padding-bottom: 0.625rem;
+}
+.form-floating > label {
+  @apply pointer-events-none absolute start-0 top-0 origin-[0_0] border border-transparent px-4 py-3 text-sm text-gray-500 transition-all duration-100;
+}
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+  @apply -translate-y-2 scale-75 text-gray-600;
+}
+.invalid-feedback {
+  @apply mt-1.5 text-sm text-red-600;
+}
+.is-invalid {
+  @apply border-red-300 bg-red-50 focus:border-red-400;
 }
 
 .dark_theme body {
@@ -203,9 +217,6 @@ body {
   height: 100%;
 }
 
-.hidden {
-  display: none;
-}
 
 .read-more-content {
   overflow: hidden;
@@ -249,8 +260,6 @@ body {
 
 .map-inline {
   width: 100%;
-  height: 70vh;
-  border-radius: 0.375rem;
+  height: 100%;
+  border-radius: var(--radius-lg);
 }
-
-

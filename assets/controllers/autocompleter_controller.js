@@ -1,5 +1,4 @@
 import {Controller} from '@hotwired/stimulus';
-import {Toast} from "bootstrap";
 
 export default class extends Controller {
 
@@ -49,7 +48,7 @@ export default class extends Controller {
     }
 
     disableItem(item) {
-        item.classList.add('disabled')
+        item.classList.add('opacity-50', 'pointer-events-none')
     }
 
     enableItem(emailAddress) {
@@ -57,7 +56,7 @@ export default class extends Controller {
             return item.getAttribute('data-email-value').toLowerCase() === emailAddress
         })[0]
         if (item) {
-            item.classList.remove('disabled')
+            item.classList.remove('opacity-50', 'pointer-events-none')
         }
     }
 
@@ -79,7 +78,7 @@ export default class extends Controller {
     createEmailBadge(emailAddress) {
         let badge = document.createElement('div')
         badge.setAttribute('data-email-value', emailAddress)
-        badge.innerHTML = `<div class="d-flex justify-content-between align-items-center badge rounded-pill text-bg-dark-grey m-1"><div class="lead me-3">${emailAddress}</div><div class="bi bi-x-circle fs-5 link-danger" data-action="click->autocompleter#remove"></div></div>`
+        badge.innerHTML = `<div class="flex items-center justify-between rounded-full bg-gray-100 text-gray-800 px-3 py-1 m-1"><span class="text-base me-3">${emailAddress}</span><span class="bi bi-x-circle text-lg text-red-600 cursor-pointer" data-action="click->autocompleter#remove"></span></div>`
         return badge
     }
 }

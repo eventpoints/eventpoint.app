@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Form\Form\Event;
 
 use App\DataTransferObject\Event\EventDto;
+use App\Entity\Animal;
 use App\Entity\Event\Category;
 use App\Entity\Event\Event;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
 use App\Form\Type\CustomCheckBoxType;
 use App\Form\Type\EntitySelectionGroupType;
+use App\Form\Type\FlowbiteDateTimeType;
 use App\Repository\Event\EventGroupRepository;
 use DateTimeZone;
 use Doctrine\ORM\QueryBuilder;
+use Kerrialnewham\Autocomplete\Form\Type\AutocompleteType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
@@ -58,43 +61,22 @@ class EventFormType extends AbstractType
                 ])
                 ->add('title', TextType::class)
                 ->add('description', TextareaType::class)
-                ->add('startAt', DateTimeType::class, [
-                        'view_timezone' => 'Europe/Prague',
-                        'html5' => false,
-                        'format' => 'yyyy-MM-dd HH:mm',
-                        'widget' => 'single_text',
-                        'input' => 'datetime_immutable',
-                        'row_attr' => [
-                                'data-controller' => 'calendar',
-                                'data-calendar-theme-value' => '',
-                        ],
-                        'attr' => [
-                                'autocomplete' => 'off',
-                                'data-calendar-target' => 'dateInput',
-                        ],
+                ->add('startAt', FlowbiteDateTimeType::class, [
+                        'label' => $this->translator->trans('startAt')
                 ])
-                ->add('endAt', DateTimeType::class, [
-                        'view_timezone' => 'Europe/Prague',
-                        'format' => 'yyyy-MM-dd HH:mm',
-                        'html5' => false,
-                        'widget' => 'single_text',
-                        'input' => 'datetime_immutable',
-                        'row_attr' => [
-                                'data-controller' => 'calendar',
-                                'data-calendar-theme-value' => '',
-                        ],
-                        'attr' => [
-                                'autocomplete' => 'off',
-                                'data-calendar-target' => 'dateInput',
-                        ],
+                ->add('endAt', FlowbiteDateTimeType::class, [
+                        'label' => $this->translator->trans('endAt')
                 ])
                 ->add('categories', EntityType::class, [
                         'label' => false,
                         'multiple' => true,
                         'class' => Category::class,
                         'choice_label' => 'title',
-                        'choice_translation_domain' => true,
                         'autocomplete' => true,
+                        'placeholder' => 'categories',
+                        'limit' => 10,
+                        'required' => false,
+                        'theme' => 'default',
                 ])
                 ->add('isPrivate', CustomCheckBoxType::class, [
                         'label' => $this->translator->trans('is-event-private'),
