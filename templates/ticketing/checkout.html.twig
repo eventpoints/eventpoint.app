@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'ticketing.checkout.page_title'|trans }} - {{ event.title }} - Event Point{% endblock %}
+
+{% block body %}
+<div class="mx-auto max-w-2xl px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">{{ 'ticketing.checkout.page_title'|trans }}</h1>
+        <p class="mt-1 text-gray-600">{{ event.title }}</p>
+    </div>
+
+    {{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
+
+    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-4 text-lg font-semibold text-gray-800">{{ 'ticketing.checkout.select_tickets'|trans }}</h2>
+
+        {% for ticketOption in ticketOptions %}
+            {% set fieldName = 'ticket_' ~ ticketOption.id %}
+            <div class="flex items-center justify-between border-b border-gray-100 py-4 last:border-0">
+                <div class="flex-1">
+                    <p class="font-medium text-gray-900">{{ ticketOption.title }}</p>
+                    {% if ticketOption.description %}
+                        <p class="mt-0.5 text-sm text-gray-500">{{ ticketOption.description }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-sm font-semibold text-blue-600">
+                        {{ ticketOption.price.baseUnit|format_currency(ticketOption.price.currency) }}
+                    </p>
+                </div>
+                <div class="ml-4 w-24">
+                    {{ form_widget(form[fieldName], {'attr': {'class': 'block w-full rounded-md border-gray-300 text-center shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm'}}) }}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="flex justify-end">
+        <button type="submit"
+                class="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            {{ 'ticketing.checkout.proceed_to_payment'|trans }}
+        </button>
+    </div>
+
+    {{ form_end(form) }}
+</div>
+{% endblock %}

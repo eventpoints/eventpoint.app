@@ -4,9 +4,19 @@
     <div class="container">
         <div class="row justify-content-center mt-3">
             <div class="col-12 col-md-6">
-                {{ component('event_group_form_component', {
-                    eventGroup: null
-                }) }}
+                {{ form_start(eventGroupForm) }}
+                <div class="card mb-5">
+                    <div class="card-header fs-5 fw-bold">{{ 'create-event-group'|trans|capitalize }}</div>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">{{ form_row(eventGroupForm.name) }}</div>
+                        <div class="list-group-item">{{ form_row(eventGroupForm.language) }}</div>
+                        <div class="list-group-item">{{ form_row(eventGroupForm.categories) }}</div>
+                    </div>
+                    <div class="card-footer text-end">
+                        <button type="submit" class="btn btn-primary">{{ 'create'|trans }}</button>
+                    </div>
+                </div>
+                {{ form_end(eventGroupForm) }}
             </div>
         </div>
     </div>

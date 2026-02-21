@@ -59,13 +59,7 @@
                             </div>
                         </div>
 
-                        <div {{ stimulus_controller('read-more', {
-                            moreText: 'read-more'|trans,
-                            lessText: 'read-less'|trans,
-                        }) }} class="px-4 py-3">
-                            <div class="read-more-content" {{ stimulus_target('read-more', 'content') }}>{{ event.description|nl2br }}</div>
-                            <a class="mt-2 block text-center text-gray-900" {{ stimulus_action('read-more', 'toggle', 'click') }} >{{ 'read-more'|trans }}</a>
-                        </div>
+                        <twig:ReadMore :content="event.description" wrapperClass="px-4 py-3" />
                     </div>
                 </div>
 

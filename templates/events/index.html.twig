@@ -1,5 +1,81 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    {{ component('event_search_filter') }}
+    <div data-controller="event-map"
+         data-event-map-boundary-url-value="{{ boundaryUrl }}">
+
+            <div class="flex flex-col xl:flex-row">
+                <div class="w-full xl:w-72 flex-shrink-0 border-r border-gray-100 order-1 xl:order-1">
+                    <div class="flex flex-col h-full">
+                        <div class="p-5 pb-3">
+                            <h2 class="text-sm font-medium uppercase tracking-wider text-gray-400">{{ 'filters'|trans }}</h2>
+                        </div>
+                        <div class="flex-1 px-4 pb-4">
+                            {{ form_start(form, {
+                                attr: {
+                                    'novalidate': true,
+                                    'method': 'GET',
+                                }
+                            }) }}
+                            <div class="space-y-4">
+                                <div>
+                                    {{ form_row(form.keyword) }}
+                                </div>
+                                {% if form.city is defined %}
+                                    <div>
+                                        {{ form_row(form.city) }}
+                                    </div>
+                                {% endif %}
+                                <div>{{ form_row(form.categories) }}</div>
+                                <div>{{ form_row(form.period) }}</div>
+                                <div>
+                                    <button type="submit" class="w-full rounded-full bg-primary-600 px-4 py-2 text-sm font-medium text-white no-underline transition-all hover:bg-primary-700 hover:shadow-md">
+                                        {{ 'search'|trans }}
+                                    </button>
+                                </div>
+                            </div>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 min-w-0 order-2 xl:order-2 min-h-screen p-5">
+                    <div class="sticky top-0 z-10 mb-3 overflow-hidden rounded-lg">
+                        {{ ux_map(map, { style: 'height: 224px; width: 100%;' }) }}
+                    </div>
+                    <div class="space-y-4">
+                        {% for group in groups %}
+                            <div class="rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
+                                <div class="p-4 text-center">
+                                    <div>
+                                        <img src="{{ group.base64Image }}"
+                                             class="mx-auto mb-3 rounded-full object-cover"
+                                             height="50"
+                                             width="50"/>
+                                    </div>
+                                    <div class="font-medium text-gray-900">{{ group.name }}</div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        {% for event in events %}
+                            <div>
+                                {% if event.url %}
+                                    {{ include('partials/event/_external-event-card.html.twig') }}
+                                {% else %}
+                                    <twig:EventCard :event="event" :hasMap="true" :hasLink="true"/>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="py-12 text-center">
+                                <p class="text-sm font-medium uppercase tracking-wider text-gray-400">{{ 'no-events-found'|trans }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="w-full xl:w-64 flex-shrink-0 border-l border-gray-100 order-3 xl:order-3 hidden xl:block">
+                    <div class="p-5">
+                    </div>
+                </div>
+            </div>
+    </div>
 {% endblock %}

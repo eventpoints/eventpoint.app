@@ -1,0 +1,40 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Form\Form;
+
+use App\DataTransferObject\PasswordResetDto;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+final class PasswordResetFormType extends AbstractType
+{
+    public function __construct(
+        private readonly TranslatorInterface $translator
+    ) {
+    }
+
+    #[\Override]
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        $builder->add('email', EmailType::class, [
+            'label' => $this->translator->trans('email-address'),
+            'attr' => [
+                'autocomplete' => 'email',
+                'placeholder' => $this->translator->trans('email-placeholder'),
+            ],
+        ]);
+    }
+
+    #[\Override]
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => PasswordResetDto::class,
+        ]);
+    }
+}

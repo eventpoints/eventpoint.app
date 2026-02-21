@@ -107,6 +107,20 @@ final readonly class EmailService
 
     /**
      * @param array<string|int|object> $context
+     * @throws TransportExceptionInterface
+     */
+    public function sendPasswordResetEmail(Email $email, array $context = []): void
+    {
+        $this->send(
+            subject: $this->translator->trans('email.password-reset.subject'),
+            template: '/email/password-reset-email.html.twig',
+            email: $email,
+            context: $context
+        );
+    }
+
+    /**
+     * @param array<string|int|object> $context
      */
     private function compose(
         string $subject,

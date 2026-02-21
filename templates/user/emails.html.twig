@@ -1,41 +1,62 @@
+{# templates/account/email_addresses.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container">
-        <div class="row justify-content-center mt-3">
-            <div class="col-12 col-md-4">
-                <div class="card">
+    <div class="mx-auto w-full max-w-6xl px-4 py-6">
+        <div class="flex flex-col gap-6 md:flex-row md:items-start">
+            {# Left: account nav (same row on md+) #}
+            <aside class="w-full md:w-4/12">
+                <div class="rounded-lg border border-gray-200 bg-white">
                     {{ include('partials/_account-navbar.html.twig') }}
                 </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="fs-3 fw-bold text-end">{{ 'email-addresses'|trans|upper }}</div>
-                <hr class="mt-0"/>
+            </aside>
 
+            {# Right: content #}
+            <section class="w-full md:w-8/12">
+                <div class="text-right text-2xl font-bold tracking-wide text-gray-900">
+                    {{ 'email-addresses'|trans|upper }}
+                </div>
+                <hr class="mt-2 border-gray-200"/>
 
                 {{ form_start(defaultEmailForm) }}
-                <div class="card">
-                    <div class="card-header fw-bold">{{ 'email-addresses'|trans|capitalize }}</div>
 
-                    <div class="list-group list-group-flush">
+                <div class="mt-4 rounded-lg border border-gray-200 bg-white">
+                    <div class="border-b border-gray-200 px-4 py-3 font-semibold text-gray-900">
+                        {{ 'email-addresses'|trans|capitalize }}
+                    </div>
+
+                    <div class="divide-y divide-gray-200">
                         <a href="{{ path('create_user_email') }}"
-                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                            <div>{{ 'add-email-address'|trans }}</div>
-                            <div class="bi bi-plus-circle fs-4"></div>
+                           class="flex items-center justify-between px-4 py-3 text-gray-900 hover:bg-gray-50">
+                            <span class="text-sm font-medium">{{ 'add-email-address'|trans }}</span>
+
+                            <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 5v14m7-7H5"/>
+                            </svg>
                         </a>
-                        <div class="list-group-item">
+
+                        <div class="px-4 py-3 text-sm text-gray-600">
                             {{ 'set-default-email-address'|trans }}
                         </div>
                     </div>
-                    {{ form_row(defaultEmailForm.email) }}
-                    <div class="card-footer d-flex justify-content-center">
-                        <button type="submit" class="btn btn-primary w-100">{{ 'save'|trans }}</button>
+
+                    <div class="px-4 py-4">
+                        {{ form_row(defaultEmailForm.email) }}
+                    </div>
+
+                    <div class="border-t border-gray-200 px-4 py-4">
+                        <button
+                                type="submit"
+                                class="w-full rounded-lg bg-[#660033] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#520026] focus:outline-none focus:ring-4 focus:ring-[#660033]/30"
+                        >
+                            {{ 'save'|trans }}
+                        </button>
                     </div>
                 </div>
-                {{ form_end(defaultEmailForm) }}
 
-            </div>
+                {{ form_end(defaultEmailForm) }}
+            </section>
         </div>
-    </div>
     </div>
 {% endblock %}

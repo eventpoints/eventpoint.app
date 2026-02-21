@@ -1,70 +1,53 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="mx-auto max-w-7xl px-4">
-        <div class="my-4 flex justify-center">
-            <div class="w-full" style="width: 100%; max-width: 600px;">
-                    <img  src="{{ asset('images/illustrations/test-three.png') }}" alt="Create Event" class="w-full">
+    <div class="relative mx-auto w-full px-4 py-8 md:w-1/2">
 
-                    {{ form_start(form) }}
-                    <div class="mb-3 rounded-lg border border-gray-200 bg-white shadow-sm">
-                        <div class="" {{ stimulus_controller('location', {
-                            token: mapbox_token,
-                            latitude: eventDto.latitude ?? null,
-                            longitude: eventDto.longitude ?? null
-                        }) }}>
-                            <div class="map  rounded-lg" id="map" {{ stimulus_target('location', 'result') }} ></div>
-                            {{ form_row(form.latitude) }}
-                            {{ form_row(form.longitude) }}
-                            {{ form_row(form.address) }}
-                            <div class="p-4">
-                                <a class="inline-flex items-center rounded-lg bg-gray-500 px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-600" {{ stimulus_action('location', 'getCurrentLocation', 'click') }}>
-                                    <span class="me-2">{{ 'current-location'|trans }}</span>
-                                    <span {{ stimulus_target('location', 'icon') }} class="bi bi-crosshair"></span>
-                                </a>
-                            </div>
-                        </div>
+        <img src="{{ asset('images/illustrations/banner-two.png') }}"
+             alt=""
+             class="shadow-lg pointer-events-none relative left-1/2 -mb-50 w-[140%] max-w-none -translate-x-[54%] object-contain z-0"/>
 
-                        <div class="divide-y divide-gray-200">
-                            <div class="px-4 py-3"> {{ form_row(form.title) }}</div>
-                            <div class="px-4 py-3"> {{ form_row(form.description) }}</div>
-                            <div class="px-4 py-3">
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        {{ form_row(form.startAt) }}
-                                    </div>
-                                    <div>
-                                        {{ form_row(form.endAt) }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="px-4 py-3">{{ form_row(form.categories) }}</div>
-                            {% if form.eventGroup is defined %}
-                                <div class="px-4 py-3">{{ form_row(form.eventGroup) }}</div>
-                            {% endif %}
-                            <div class="px-4 py-3">{{ form_row(form.isPrivate) }}</div>
-                            {% if not app.user %}
-                                <div class="px-4 py-3">
-                                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                        <div>{{ form_row(form.firstName) }}</div>
-                                        <div>{{ form_row(form.lastName) }}</div>
-                                    </div>
-                                </div>
-                                <div class="px-4 py-3">{{ form_row(form.email) }}</div>
-                            {% endif %}
-                        </div>
-
-                        <div class="p-4">
-                            <button type="submit"
-                                    class="w-full rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800">
-                                {{ 'contiune'|trans }}
-                            </button>
-                        </div>
-
-                    </div>
-                    {{ form_end(form) }}
-                </div>
-            </div>
+        <div class="relative px-4 pt-2 pb-4 z-20 bg-white rounded-t-lg shadow-lg">
+            <h1 class="text-3xl font-bold text-black pt-2">{{ 'create-event'|trans|capitalize }}</h1>
+            <p class="mt-1 text-sm text-gray-500">{{ 'create-event-subtitle'|trans({}, 'messages') }}</p>
         </div>
+
+        <div class="relative rounded-b-lg border border-t-0 border-gray-200 bg-white z-20">
+            {{ form_start(form) }}
+            {{ form_row(form.location) }}
+            <div class="divide-y divide-gray-100">
+                <div class="px-4 py-3">{{ form_row(form.title) }}</div>
+                <div class="px-4 py-3">{{ form_row(form.description) }}</div>
+                <div class="px-4 py-3">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>{{ form_row(form.startAt) }}</div>
+                        <div>{{ form_row(form.endAt) }}</div>
+                    </div>
+                </div>
+                <div class="px-4 py-3">{{ form_row(form.categories) }}</div>
+                {% if form.eventGroup is defined %}
+                    <div class="px-4 py-3">{{ form_row(form.eventGroup) }}</div>
+                {% endif %}
+                <div class="px-4 py-3">{{ form_row(form.isPrivate) }}</div>
+                {% if not app.user %}
+                    <div class="px-4 py-3">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div>{{ form_row(form.firstName) }}</div>
+                            <div>{{ form_row(form.lastName) }}</div>
+                        </div>
+                    </div>
+                    <div class="px-4 py-3">{{ form_row(form.email) }}</div>
+                {% endif %}
+            </div>
+
+            <div class="p-4">
+                <button type="submit"
+                        class="w-full rounded-lg bg-primary-600 px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+                    {{ 'contiune'|trans }}
+                </button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
     </div>
 {% endblock %}

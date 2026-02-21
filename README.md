@@ -11,3 +11,8 @@ in order to access the inbuilt table GUI, we are using [Adminer](https://www.adm
 
 1. open `http://localhost:8000/` and login (system: PostgreSQL server: database username: root,
    password; eventpoint, database: eventpoint)
+
+
+bounding box pre-filter (kept for index performance), a Euclidean distance approximation is calculated:      
+
+`(Δlat × 111)² + (Δlng × 111 × cos(lat))² ≤ radius²`

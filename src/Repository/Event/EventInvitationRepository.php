@@ -162,11 +162,17 @@ class EventInvitationRepository extends ServiceEntityRepository
     }
 
     /**
-     * Find invitation by token.
+     * Find a pending invitation by token. Returns null if the token has already been used.
      */
     public function findByToken(Uuid $token): ?EventInvitation
     {
-        return $this->findOneBy(['token' => $token]);
+        return $this->createQueryBuilder('event_invitation')
+            ->andWhere('event_invitation.token = :token')
+            ->setParameter('token', $token, 'uuid')
+            ->andWhere('event_invitation.status = :status')
+            ->setParameter('status', EventInvitationStatusEnum::PENDING->value)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**

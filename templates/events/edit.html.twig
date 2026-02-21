@@ -64,13 +64,7 @@
                             </div>
                         </div>
 
-                        <div {{ stimulus_controller('read-more', {
-                            moreText: 'read-more'|trans,
-                            lessText: 'read-less'|trans,
-                        }) }} class="list-group-item">
-                            <div class="read-more-content" {{ stimulus_target('read-more', 'content') }}>{{ event.description|nl2br }}</div>
-                            <a class="link-dark mt-2 text-center d-block" {{ stimulus_action('read-more', 'toggle', 'click') }} >{{ 'read-more'|trans }}</a>
-                        </div>
+                        <twig:ReadMore :content="event.description" wrapperClass="list-group-item" />
                     </div>
                 </div>
             </div>

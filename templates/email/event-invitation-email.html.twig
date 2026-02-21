@@ -1,64 +1,22 @@
 {% extends 'email/base-email.html.twig' %}
 
 {% block content %}
-    <center data-parsed="">
-        {{ include('email/partial/_header.html.twig') }}
-        <table align="center" class="container body-drip float-center">
-            <tbody>
-            <tr>
-                <td>
-                    {{ include('email/partial/_spacer.html.twig') }}
-                    <table class="row">
-                        <tbody>
-                        <tr>
-                            <th class="small-12 large-12 columns first last">
-                                <table>
-                                    <tr>
-                                        <th>
-                                            <h4 class="text-center">{{ 'email-intro'|trans({name: target.fullName }) }},</h4>
-                                        </th>
-                                        <th class="expander"></th>
-                                    </tr>
-                                </table>
-                            </th>
-                        </tr>
-                        </tbody>
-                    </table>
-                    <table class="row">
-                        <tbody>
-                        <tr>
-                            <th class="small-12 large-12 columns first last">
-                                <table>
-                                    <tr>
-                                        <th>
-                                            <p class="text-center">{{ 'invitation-no-account-text'|trans({title: event.title, name: owner.fullName}) }}</p>
-                                            <center data-parsed="">
-                                                <table class="button success float-center">
-                                                    <tr>
-                                                        <td>
-                                                            <table>
-                                                                <tr>
-                                                                    <td>
-                                                                        <a href="{{ url('show_event', {id: event.id, token: token}) }}">{{ 'show-event'|trans }}</a>
-                                                                    </td>
-                                                                </tr>
-                                                            </table>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </center>
-                                        </th>
-                                        <th class="expander"></th>
-                                    </tr>
-                                </table>
-                            </th>
-                        </tr>
-                        </tbody>
-                    </table>
-                    {{ include('email/partial/_signiture.html.twig') }}
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </center>
+    <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#111827;">{{ 'email-intro'|trans({name: target.fullName}) }},</h1>
+    <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#4b5563;">
+        {{ 'invitation-no-account-text'|trans({title: event.title, name: owner.fullName}) }}
+    </p>
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;">
+        <tr>
+            <td align="center">
+                <a href="{{ url('show_event', {id: event.id, token: token}) }}"
+                   style="display:inline-block;background-color:#660033;color:#ffffff;font-size:15px;font-weight:600;text-decoration:none;padding:12px 28px;border-radius:8px;">
+                    {{ 'show-event'|trans }}
+                </a>
+            </td>
+        </tr>
+    </table>
+
+    <hr style="border:0;border-top:1px solid #f3f4f6;margin:0 0 24px;"/>
+    <p style="margin:0;font-size:14px;color:#6b7280;">{{ 'email-sign-off'|trans }}</p>
 {% endblock %}

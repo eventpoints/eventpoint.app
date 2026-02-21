@@ -280,7 +280,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         }>,
  *     },
  *     asset_mapper?: bool|array{ // Asset Mapper configuration
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *         paths?: array<string, scalar|Param|null>,
  *         excluded_patterns?: list<scalar|Param|null>,
  *         exclude_dotfiles?: bool|Param, // If true, any files starting with "." will be excluded from the asset mapper. // Default: true
@@ -1844,6 +1844,21 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     },
  *     ignore_not_found?: bool|Param, // Ignore error when an icon is not found. Set to 'true' to fail silently. // Default: false
  * }
+ * @psalm-type SymfonycastsTailwindConfig = array{
+ *     input_css?: list<scalar|Param|null>,
+ *     config_file?: scalar|Param|null, // Path to the tailwind.config.js file // Default: "%kernel.project_dir%/tailwind.config.js"
+ *     binary?: scalar|Param|null, // The tailwind binary to use instead of downloading a new one // Default: null
+ *     binary_version?: scalar|Param|null, // Tailwind CLI version to download - null means the latest version // Default: null
+ *     binary_platform?: "auto"|"linux-arm64"|"linux-arm64-musl"|"linux-x64"|"linux-x64-musl"|"macos-arm64"|"macos-x64"|"windows-x64"|Param, // Tailwind CLI platform to download - "auto" will try to detect the platform automatically // Default: "auto"
+ *     postcss_config_file?: scalar|Param|null, // Path to PostCSS config file which is passed to the Tailwind CLI // Default: null
+ *     strict_mode?: bool|Param|null, // When enabled, an exception will be thrown if there are no built assets (default: false in `test` env, true otherwise) // Default: null
+ * }
+ * @psalm-type UxMapConfig = array{
+ *     renderer?: scalar|Param|null, // Default: null
+ *     google_maps?: array{
+ *         default_map_id?: scalar|Param|null, // Default: null
+ *     },
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1852,6 +1867,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     doctrine?: DoctrineConfig,
  *     doctrine_migrations?: DoctrineMigrationsConfig,
  *     twig?: TwigConfig,
+ *     web_profiler?: WebProfilerConfig,
  *     twig_extra?: TwigExtraConfig,
  *     security?: SecurityConfig,
  *     monolog?: MonologConfig,
@@ -1867,6 +1883,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     nelmio_cors?: NelmioCorsConfig,
  *     api_platform?: ApiPlatformConfig,
  *     ux_icons?: UxIconsConfig,
+ *     symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *     ux_map?: UxMapConfig,
  *     "when@dev"?: array{
  *         imports?: ImportsConfig,
  *         parameters?: ParametersConfig,
@@ -1893,30 +1911,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nelmio_cors?: NelmioCorsConfig,
  *         api_platform?: ApiPlatformConfig,
  *         ux_icons?: UxIconsConfig,
- *     },
- *     "when@prod"?: array{
- *         imports?: ImportsConfig,
- *         parameters?: ParametersConfig,
- *         services?: ServicesConfig,
- *         framework?: FrameworkConfig,
- *         doctrine?: DoctrineConfig,
- *         doctrine_migrations?: DoctrineMigrationsConfig,
- *         twig?: TwigConfig,
- *         twig_extra?: TwigExtraConfig,
- *         security?: SecurityConfig,
- *         monolog?: MonologConfig,
- *         symfonycasts_verify_email?: SymfonycastsVerifyEmailConfig,
- *         bazinga_geocoder?: BazingaGeocoderConfig,
- *         stimulus?: StimulusConfig,
- *         knp_paginator?: KnpPaginatorConfig,
- *         turbo?: TurboConfig,
- *         twig_component?: TwigComponentConfig,
- *         webpack_encore?: WebpackEncoreConfig,
- *         live_component?: LiveComponentConfig,
- *         knpu_oauth2_client?: KnpuOauth2ClientConfig,
- *         nelmio_cors?: NelmioCorsConfig,
- *         api_platform?: ApiPlatformConfig,
- *         ux_icons?: UxIconsConfig,
+ *         symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *         ux_map?: UxMapConfig,
  *     },
  *     "when@test"?: array{
  *         imports?: ImportsConfig,
@@ -1942,6 +1938,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         nelmio_cors?: NelmioCorsConfig,
  *         api_platform?: ApiPlatformConfig,
  *         ux_icons?: UxIconsConfig,
+ *         symfonycasts_tailwind?: SymfonycastsTailwindConfig,
+ *         ux_map?: UxMapConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
@@ -2023,7 +2021,6 @@ namespace Symfony\Component\Routing\Loader\Configurator;
  * }
  * @psalm-type RoutesConfig = array{
  *     "when@dev"?: array<string, RouteConfig|ImportConfig|AliasConfig>,
- *     "when@prod"?: array<string, RouteConfig|ImportConfig|AliasConfig>,
  *     "when@test"?: array<string, RouteConfig|ImportConfig|AliasConfig>,
  *     ...<string, RouteConfig|ImportConfig|AliasConfig>
  * }

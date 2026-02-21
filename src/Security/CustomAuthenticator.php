@@ -65,7 +65,8 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
     #[\Override]
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
+        $targetPath = $this->getTargetPath($request->getSession(), $firewallName)
+            ?? $request->query->get('_target_path');
 
         $user = $token->getUser();
         if ($user instanceof User) {

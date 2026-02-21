@@ -74,4 +74,11 @@ Encore
 //.autoProvidejQuery()
 ;
 
-module.exports = Encore.getWebpackConfig();
+const config = Encore.getWebpackConfig();
+
+config.resolve.alias = {
+    ...config.resolve.alias,
+    'leaflet/dist/leaflet.min.css': require.resolve('leaflet/dist/leaflet.css'),
+};
+
+module.exports = config;

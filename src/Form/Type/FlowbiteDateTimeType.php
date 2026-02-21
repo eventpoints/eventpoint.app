@@ -19,65 +19,64 @@ final class FlowbiteDateTimeType extends AbstractType
     {
         // Date part (Flowbite)
         $builder->add('date', TextType::class, [
-            'required' => $options['required'],
-            'attr' => array_replace([
-                'placeholder' => $options['placeholder'] ?: 'Select date',
-                'datepicker' => 'true',
-                'datepicker-format' => $options['flowbite_format'],
-            ], $options['date_attr']),
+                'required' => $options['required'],
+                'attr' => array_replace([
+                        'autocomplete' => 'off',
+                        'placeholder' => $options['placeholder'] ?: 'Select date',
+                ], $options['date_attr']),
         ]);
 
         // Time part
         $builder->add('time', TimeType::class, [
-            'required' => $options['required'],
-            'input' => 'string',
-            'widget' => 'single_text',
-            'with_seconds' => $options['with_seconds'],
-            'attr' => array_replace([
-                'min' => $options['time_min'] ?: null,
-                'max' => $options['time_max'] ?: null,
-                'step' => $options['time_step'] ?: null,
-            ], $options['time_attr']),
+                'required' => $options['required'],
+                'input' => 'string',
+                'widget' => 'single_text',
+                'with_seconds' => $options['with_seconds'],
+                'attr' => array_replace([
+                        'min' => $options['time_min'] ?: null,
+                        'max' => $options['time_max'] ?: null,
+                        'step' => $options['time_step'] ?: null,
+                ], $options['time_attr']),
         ]);
 
         $builder->addModelTransformer(new FlowbiteDateTimeTransformer(
-            $options['php_date_format'],
-            $options['php_time_format'],
-            $options['model_timezone']
+                $options['php_date_format'],
+                $options['php_time_format'],
+                $options['model_timezone']
         ));
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => null,
-            'required' => false,
+                'data_class' => null,
+                'required' => false,
 
             // PHP formats for the model/transformer
-            'php_date_format' => 'Y-m-d',
-            'php_time_format' => 'H:i',
-            'with_seconds' => false,
+                'php_date_format' => 'Y-m-d',
+                'php_time_format' => 'H:i',
+                'with_seconds' => false,
 
             // Flowbite datepicker format (NOT PHP format)
-            'flowbite_format' => 'yyyy-mm-dd',
+                'flowbite_format' => 'yyyy-mm-dd',
 
             // Optional timezone normalization (e.g., 'Europe/Prague'); null = unchanged
-            'model_timezone' => null,
+                'model_timezone' => null,
 
             // Extra attributes
-            'date_attr' => [],
-            'time_attr' => [],
-            'time_min' => null,  // like "09:00"
-            'time_max' => null,  // like "18:00"
-            'time_step' => null,  // seconds (e.g., 60)
+                'date_attr' => [],
+                'time_attr' => [],
+                'time_min' => null,  // like "09:00"
+                'time_max' => null,  // like "18:00"
+                'time_step' => null,  // seconds (e.g., 60)
 
             // Presentation
-            'label' => 'Date & time',
-            'row_attr' => [
-                'class' => 'space-y-2 max-w-sm',
-            ],
-            'placeholder' => 'Select date',
-            'show_floating_label' => true,
+                'label' => 'Date & time',
+                'row_attr' => [
+                        'class' => 'space-y-2 max-w-sm',
+                ],
+                'placeholder' => 'Select date',
+                'show_floating_label' => true,
         ]);
         $resolver->setAllowedTypes('show_floating_label', 'bool');
     }

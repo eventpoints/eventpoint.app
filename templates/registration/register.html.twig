@@ -27,19 +27,7 @@
                 {# Right side - form #}
                 <div class="w-full max-w-md lg:w-1/2">
                     <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
-                        <div class="border-b border-gray-100 p-6">
-                            {{ include('security/_social-auth.html.twig') }}
-                        </div>
-
                         <div class="p-6">
-                            <div class="relative mb-6">
-                                <div class="absolute inset-0 flex items-center">
-                                    <div class="w-full border-t border-gray-200"></div>
-                                </div>
-                                <div class="relative flex justify-center text-sm">
-                                    <span class="bg-white px-4 text-gray-500">{{ 'or-continue-with-email'|trans|default('or register with email') }}</span>
-                                </div>
-                            </div>
 
                             {{ form_errors(registrationForm.email) }}
 
@@ -61,15 +49,7 @@
                                 </div>
                                 <div>
                                     <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'password'|trans }}</label>
-                                    <div class="flex" {{ stimulus_controller('password-visibility') }}>
-                                        {{ form_widget(registrationForm.plainPassword, {attr: {class: 'block w-full rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 transition-colors focus:border-gray-400 focus:bg-white focus:outline-none focus:ring-0'}}) }}
-                                        <button data-action="password-visibility#toggle"
-                                                class="inline-flex items-center rounded-r-lg border border-gray-200 bg-gray-50 px-4 text-gray-500 transition-colors hover:bg-gray-100"
-                                                type="button">
-                                            <span data-password-visibility-target="icon" class="bi bi-eye-fill"></span>
-                                            <span data-password-visibility-target="icon" class="bi bi-eye-slash-fill hidden"></span>
-                                        </button>
-                                    </div>
+                                    {{ form_widget(registrationForm.plainPassword) }}
                                 </div>
                             </div>
 

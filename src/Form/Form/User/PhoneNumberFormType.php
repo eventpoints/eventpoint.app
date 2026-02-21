@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form\Form\User;
 
 use App\Entity\User\PhoneNumber;
+use Kerrialnewham\Autocomplete\Form\Type\InternationalDialCodeType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -16,23 +17,15 @@ class PhoneNumberFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('code', TextType::class, [
-                'row_attr' => [
-                    'class' => 'form-floating mb-3 ',
-                ],
-            ])
-            ->add('number', TextType::class, [
-                'row_attr' => [
-                    'class' => 'form-floating mb-3 w-50',
-                ],
-            ]);
+                ->add('code', InternationalDialCodeType::class)
+                ->add('number', TextType::class);
     }
 
     #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => PhoneNumber::class,
+                'data_class' => PhoneNumber::class,
         ]);
     }
 }

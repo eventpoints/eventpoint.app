@@ -41,7 +41,7 @@
     <div class="card-footer d-flex justify-content-between">
         <a class="btn btn-secondary" data-bs-toggle="offcanvas"
            data-bs-target="#map-offcanvas"
-           aria-controls="#map-offcanvas" {{ stimulus_action('dynamic-map', 'flyToAssetOnMap', 'click', {
+           aria-controls="#map-offcanvas" {{ stimulus_action('event-map', 'flyToAssetOnMap', 'click', {
             id:  event.id,
             longitude: event.longitude,
             latitude: event.latitude

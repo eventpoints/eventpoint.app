@@ -1,0 +1,18 @@
+{% props content, contentClass = '', wrapperClass = '' %}
+<div
+    data-controller="read-more"
+    data-read-more-more-text-value="{{ 'read-more'|trans }}"
+    data-read-more-less-text-value="{{ 'read-less'|trans }}"
+    class="{{ wrapperClass }}"
+>
+    <div
+        class="line-clamp-3 {{ contentClass }}"
+        data-read-more-target="content"
+    >{{ content|nl2br }}</div>
+    <button
+        type="button"
+        class="mt-2 cursor-pointer text-sm font-medium text-gray-500 hover:text-gray-900"
+        data-read-more-target="toggle"
+        data-action="click->read-more#toggle"
+    >{{ 'read-more'|trans }}</button>
+</div>

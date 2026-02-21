@@ -12,6 +12,7 @@ use App\Form\Form\User\RegistrationFormType;
 use App\Repository\User\EmailRepository;
 use App\Security\CustomAuthenticator;
 use App\Service\AvatarService\AvatarService;
+use App\Service\EmailEventService\EmailEventService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -20,17 +21,21 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegistrationController extends AbstractController
 {
+    use TargetPathTrait;
+
     public function __construct(
         private readonly AvatarService $avatarService,
         private readonly HttpClientInterface $cloudflareTurnstileClient,
         private readonly TranslatorInterface $translator,
         private readonly EmailFactory $emailFactory,
         private readonly EmailRepository $emailRepository,
+        private readonly EmailEventService $emailEventService,
     ) {
     }
 
@@ -90,6 +95,15 @@ class RegistrationController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
+
+            // Link any pending email invitations to the newly registered user
+            $this->emailEventService->process($user);
+
+            // If a return URL was passed (e.g. from an event invitation page), honour it
+            $targetPath = $request->query->get('_target_path');
+            if ($targetPath) {
+                $this->saveTargetPath($request->getSession(), 'main', $targetPath);
+            }
 
             return $userAuthenticator->authenticateUser(
                 $user,

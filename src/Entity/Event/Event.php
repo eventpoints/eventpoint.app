@@ -106,9 +106,9 @@ class Event implements Stringable
             private null|CarbonImmutable $endAt = null,
             #[ORM\Column(type: Types::TEXT, nullable: true)]
             private null|string          $description = null,
-            #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
+            #[ORM\Column(type: 'decimal', precision: 10, scale: 7)]
             private null|string          $latitude = null,
-            #[ORM\Column(type: 'decimal', precision: 10, scale: 7, nullable: true)]
+            #[ORM\Column(type: 'decimal', precision: 10, scale: 7)]
             private null|string          $longitude = null,
             #[ORM\Column(type: Types::TEXT, nullable: true)]
             private null|string          $base64Image = null,
@@ -428,6 +428,19 @@ class Event implements Stringable
     public function isIsPrivate(): null|bool
     {
         return $this->isPrivate;
+    }
+
+    public function hasUserInvitation(User $user): bool
+    {
+        foreach ($this->eventInvitations as $invitation) {
+            if (($invitation->isPending() || $invitation->isAccepted())
+                && $invitation->getResolvedTargetUser() === $user
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function setIsPrivate(null|bool $isPrivate): static

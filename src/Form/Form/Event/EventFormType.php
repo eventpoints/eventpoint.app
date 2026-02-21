@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Form\Form\Event;
 
 use App\DataTransferObject\Event\EventDto;
-use App\Entity\Animal;
+use App\DataTransferObject\MapLocationDto;
 use App\Entity\Event\Category;
 use App\Entity\Event\Event;
 use App\Entity\EventGroup\EventGroup;
@@ -13,22 +13,21 @@ use App\Entity\User\User;
 use App\Form\Type\CustomCheckBoxType;
 use App\Form\Type\EntitySelectionGroupType;
 use App\Form\Type\FlowbiteDateTimeType;
+use App\Form\Type\MapLocationType;
 use App\Repository\Event\EventGroupRepository;
-use DateTimeZone;
 use Doctrine\ORM\QueryBuilder;
-use Kerrialnewham\Autocomplete\Form\Type\AutocompleteType;
+use Kerrialnewham\Autocomplete\Form\Type\InternationalDialCodeType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\UX\Map\Map;
 
 class EventFormType extends AbstractType
 {
@@ -43,20 +42,29 @@ class EventFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $currentUser = $this->security->getUser();
+        /** @var EventDto|null $event */
+        $event = $options['data'] ?? null;
+
         $builder
-                ->add('latitude', HiddenType::class, [
-                        'label' => $this->translator->trans('latitude'),
-                        'attr' => [
-                                'data-location-target' => 'latitude',
-                        ],
-                ])->add('longitude', HiddenType::class, [
-                        'label' => $this->translator->trans('longitude'),
-                        'attr' => [
-                                'data-location-target' => 'longitude',
-                        ],
-                ])->add('address', HiddenType::class, [
-                        'attr' => [
-                                'data-location-target' => 'address',
+                ->add('location', MapLocationType::class, [
+                        'mapped' => false,
+                        'data' => MapLocationDto::getFromEventDto($event),
+                        'map' => $options['map'],
+                        'height' => '320px',
+                        'help' => $this->translator->trans('event-location-help'),
+                        'event' => $event,
+                        'constraints' => [
+                                new Assert\Callback(function ($mapLocationDto, $context): void {
+                                    if (! $mapLocationDto instanceof MapLocationDto) {
+                                        $context->buildViolation('location.required')
+                                                ->addViolation();
+                                        return;
+                                    }
+                                    if ($mapLocationDto->getLatitude() === null || $mapLocationDto->getLongitude() === null) {
+                                        $context->buildViolation('location.required')
+                                                ->addViolation();
+                                    }
+                                }),
                         ],
                 ])
                 ->add('title', TextType::class)
@@ -68,15 +76,18 @@ class EventFormType extends AbstractType
                         'label' => $this->translator->trans('endAt')
                 ])
                 ->add('categories', EntityType::class, [
-                        'label' => false,
+                        'label' => $this->translator->trans(id: 'categories', domain: 'messages'),
+                        'attr' => [
+                                'placeholder' => $this->translator->trans(id: 'event-categories-placeholder', domain: 'messages'),
+                        ],
                         'multiple' => true,
                         'class' => Category::class,
                         'choice_label' => 'title',
                         'autocomplete' => true,
-                        'placeholder' => 'categories',
-                        'limit' => 10,
+                        'translation_domain' => 'categories',
+                        'limit' => 30,
                         'required' => false,
-                        'theme' => 'default',
+                        'theme' => 'flowbite',
                 ])
                 ->add('isPrivate', CustomCheckBoxType::class, [
                         'label' => $this->translator->trans('is-event-private'),
@@ -121,6 +132,8 @@ class EventFormType extends AbstractType
         $resolver->setDefaults([
                 'data_class' => EventDto::class,
                 'event' => null,
+                'map' => Map::class,
+                'is_edit' => false,
         ]);
     }
 }

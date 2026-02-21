@@ -1,5 +1,3 @@
-version: "3.9"
-
 networks:
   traefik:
     external: true
@@ -43,6 +41,28 @@ services:
       CORS_ALLOW_ORIGIN: "__EVENTPOINT_CORS_ALLOW_ORIGIN__"
       CLOUDFLARE_TURNSTILE_PUBLIC_KEY: "__EVENTPOINT_CLOUDFLARE_TURNSTILE_PUBLIC_KEY__"
       CLOUDFLARE_TURNSTILE_PRIVATE_KEY: "__EVENTPOINT_CLOUDFLARE_TURNSTILE_PRIVATE_KEY__"
+    networks:
+      - internal
+
+  worker:
+    image: ghcr.io/eventpoints/eventpoint.app-worker:main
+    restart: unless-stopped
+    depends_on:
+      - database
+    environment:
+      APP_ENV: "prod"
+      DATABASE_URL: "postgresql://__EVENTPOINT_POSTGRES_USER__:__EVENTPOINT_POSTGRES_PASSWORD__@database:5432/__EVENTPOINT_POSTGRES_DBNAME__?serverVersion=13&charset=utf8"
+      APP_SECRET: "__EVENTPOINT_APP_SECRET__"
+      MAILER_DSN: "__EVENTPOINT_MAILER_DSN__"
+      MESSENGER_TRANSPORT_DSN: "__EVENTPOINT_MESSENGER_TRANSPORT_DSN__"
+      MERCURE_PUBLIC_URL: "https://eventpoint.app/.well-known/mercure"
+      MERCURE_JWT_SECRET: "__EVENTPOINT_MERCURE_JWT_SECRET__"
+      APP_TIMEZONE: "__EVENTPOINT_APP_TIMEZONE__"
+      STRIPE_SECRET_KEY: "__EVENTPOINT_STRIPE_SECRET_KEY__"
+      STRIPE_PUBLISHABLE_KEY: "__EVENTPOINT_STRIPE_PUBLISHABLE_KEY__"
+      STRIPE_WEBHOOK_SECRET: "__EVENTPOINT_STRIPE_WEBHOOK_SECRET__"
+    volumes:
+      - ./php/php.ini:/usr/local/etc/php/php.ini
     networks:
       - internal
 

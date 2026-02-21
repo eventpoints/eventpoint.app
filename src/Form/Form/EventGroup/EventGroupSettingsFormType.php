@@ -16,7 +16,6 @@ use Symfony\Component\Form\Extension\Core\Type\LanguageType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\File;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EventGroupSettingsFormType extends AbstractType
@@ -38,20 +37,7 @@ class EventGroupSettingsFormType extends AbstractType
             ])
             ->add('image', FileType::class, [
                 'required' => false,
-                'mapped' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => [
-                            'image/jpeg',
-                            'image/png',
-                            'image/gif',
-                        ],
-                        'mimeTypesMessage' => $this->translator->trans('select-valid-image-format', [
-                            'formats' => implode(', ', ['JPEG', 'PNG', 'GIF']),
-                        ]),
-                    ]),
-                ],
+                'mapped' => false
             ])
             ->add('language', LanguageType::class, [
                 'required' => false,

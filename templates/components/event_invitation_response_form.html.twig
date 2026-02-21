@@ -1,40 +1,43 @@
-<div {{ attributes }} class="list-group list-group-flush list-group-horizontal">
-    {% if eventInvitation.event.isAttending(eventInvitation.owner) %}
-        <div class="list-group-item border-0 rounded-0 text-center w-100">
-            <div class="bi bi-check-circle text-success fs-4"></div>
-            <div>{{ 'response-sent'|trans }}</div>
+{% if invitation.event.isAttending(invitation.owner) %}
+    <div class="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white p-4 text-center">
+        <span class="bi bi-check-circle text-xl text-green-500"></span>
+        <span class="text-sm text-gray-600">{{ 'response-sent'|trans }}</span>
+    </div>
+{% else %}
+    <div class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4">
+        <a href="{{ path('show_event', {id: invitation.event.id}) }}"
+           class="flex min-w-0 flex-1 items-center gap-3 hover:opacity-80">
+            <img src="{{ invitation.event.base64Image }}"
+                 class="size-12 shrink-0 rounded-lg object-cover"
+                 alt="{{ invitation.event.title }}"/>
+            <div class="min-w-0">
+                <p class="truncate font-semibold text-gray-900">{{ invitation.event.title }}</p>
+                <p class="text-sm text-gray-500">
+                    {{ invitation.event.startAt|format_date(timezone=regional.timezone, pattern=day_date_pattern) }}
+                </p>
+                <p class="text-sm text-gray-500">
+                    {{ invitation.event.startAt|format_time(timezone=regional.timezone, pattern=time_pattern) }}
+                    – {{ invitation.event.endAt|format_time(timezone=regional.timezone, pattern=time_pattern) }}
+                </p>
+            </div>
+        </a>
+        <div class="flex shrink-0 flex-col gap-2">
+            <form action="{{ path('accept_invitation', {id: invitation.id}) }}" method="post">
+                <input type="hidden" name="_token" value="{{ csrf_token('respond-invitation-' ~ invitation.id) }}">
+                <button type="submit"
+                        class="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-primary-700 hover:bg-primary-50 focus:outline-none">
+                    <span class="bi bi-check-circle text-xl"></span>
+                    <span class="text-xs">{{ 'accept-invitation'|trans }}</span>
+                </button>
+            </form>
+            <form action="{{ path('decline_invitation', {id: invitation.id}) }}" method="post">
+                <input type="hidden" name="_token" value="{{ csrf_token('respond-invitation-' ~ invitation.id) }}">
+                <button type="submit"
+                        class="flex flex-col items-center gap-1 rounded-lg px-3 py-2 text-red-600 hover:bg-red-50 focus:outline-none">
+                    <span class="bi bi-x-circle text-xl"></span>
+                    <span class="text-xs">{{ 'decline-invitation'|trans }}</span>
+                </button>
+            </form>
         </div>
-    {% else %}
-        <a href="{{ path('show_event', {id: eventInvitation.event.id}) }}"
-           class="list-group-item list-group-item-action border-0 rounded-0 d-flex justify-content-start align-items-center w-50">
-            <div class="me-3">
-                <img src="{{ eventInvitation.event.base64Image }}"
-                     class=" object-fit-cover border"
-                     height="50" width="50"/>
-            </div>
-            <div>
-                <div class="fw-bold">{{ eventInvitation.event.title }}</div>
-                <div>
-                    <div>{{ eventInvitation.event.startAt|format_date(timezone=regional.timezone,pattern=day_date_pattern) }}</div>
-                    <div>{{ eventInvitation.event.startAt|format_time(timezone=regional.timezone,pattern=time_pattern) }} - {{ eventInvitation.event.endAt|format_time(timezone=regional.timezone,pattern=time_pattern) }}</div>
-                </div>
-            </div>
-        </a>
-        <a href="#"
-           data-action="live#action:prevent"
-           data-live-action-param="submit"
-           data-live-is-attending-param="true"
-           class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
-            <div class="bi bi-check-circle fs-4 text-primary"></div>
-            <div>{{ 'accept-invitation'|trans }}</div>
-        </a>
-        <a href="#"
-           data-action="live#action:prevent"
-           data-live-action-param="submit"
-           data-live-is-attending-param="false"
-           class="list-group-item border-0 border-start rounded-0 list-group-item-action text-center w-25">
-            <div class="bi bi-x-circle fs-4 text-danger"></div>
-            <div>{{ 'decline-invitation'|trans }}</div>
-        </a>
-    {% endif %}
-</div>
+    </div>
+{% endif %}

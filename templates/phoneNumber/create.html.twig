@@ -1,27 +1,41 @@
+{# templates/whatever/phone_number_add.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ 'feedback'|trans }}{% endblock %}
 
 {% block body %}
-    <div class="container my-3">
-        <div class="row justify-content-center">
-            <div class="col-md-5">
+    <div class="mx-auto w-full max-w-6xl px-4 py-6">
+        <div class="flex justify-center">
+            <div class="w-full max-w-md">
                 {{ form_start(phoneNumberForm) }}
-                <div class="card">
-                    <div class="card-header h5 fw-bold">{{ 'add-phone-number'|trans|capitalize }}</div>
-                    <div class="list-group list-group-flush">
-                        <div class="list-group-item">
-                            <div class="input-group">
-                                {{ form_row(phoneNumberForm.code) }}
-                                {{ form_row(phoneNumberForm.number) }}
+
+                <div class="rounded-lg border border-gray-200 bg-white">
+                    <div class="border-b border-gray-200 px-4 py-3 text-base font-semibold text-gray-900">
+                        {{ 'add-phone-number'|trans|capitalize }}
+                    </div>
+
+                    <div class="p-4">
+                        <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                            <div class="sm:col-span-1">
+                                {{ form_row(phoneNumberForm.code, { row_attr: { class: 'mb-0' } }) }}
+                            </div>
+
+                            <div class="sm:col-span-2">
+                                {{ form_row(phoneNumberForm.number, { row_attr: { class: 'mb-0' } }) }}
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer">
-                        <button type="submit"
-                                class="btn btn-outline-primary w-100">{{ 'add-phone-number'|trans }}</button>
+
+                    <div class="border-t border-gray-200 p-4">
+                        <button
+                                type="submit"
+                                class="w-full rounded-lg border border-primary-600 px-4 py-2.5 text-sm font-semibold bg-primary-600 hover:bg-primary-700 text-white focus:outline-none focus:ring-2 focus:ring-[#660033]/25"
+                        >
+                            {{ 'add-phone-number'|trans }}
+                        </button>
                     </div>
                 </div>
+
                 {{ form_end(phoneNumberForm) }}
             </div>
         </div>

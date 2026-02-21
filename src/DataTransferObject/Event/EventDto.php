@@ -14,7 +14,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
-class EventDto
+final class EventDto
 {
     private Collection $categories;
 

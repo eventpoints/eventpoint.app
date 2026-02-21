@@ -14,6 +14,7 @@ use App\Entity\Event\EventOrganiserInvitation;
 use App\Entity\Event\EventParticipant;
 use App\Entity\Event\EventReview;
 use App\Entity\EventGroup\EventGroup;
+use App\Entity\Ticketing\TicketMerchantProfile;
 use App\Entity\EventGroup\EventGroupDiscussionComment;
 use App\Entity\EventGroup\EventGroupDiscussionCommentVote;
 use App\Entity\EventGroup\EventGroupInvitation;
@@ -31,12 +32,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use LogicException;
 use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -46,7 +48,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
-    #[Groups(['user_contact'])]
     private Uuid $id;
 
     /**
@@ -167,11 +168,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: EventReview::class)]
     private Collection $eventReviews;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private ?Email $email = null;
+    #[ORM\OneToOne]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
+    #[Assert\NotNull]
+    private Email $email;
 
-    #[ORM\OneToMany(targetEntity: Email::class, mappedBy: 'owner', cascade: ['persist'])]
+    #[ORM\OneToMany(targetEntity: Email::class, mappedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[Assert\Count(min: 1)]
     private Collection $emails;
+
+    #[ORM\OneToOne(targetEntity: TicketMerchantProfile::class, mappedBy: 'owner', cascade: ['persist', 'remove'])]
+    private ?TicketMerchantProfile $ticketMerchantProfile = null;
 
     public function __construct()
     {
@@ -1129,31 +1136,81 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     {
         if (! $this->emails->contains($email)) {
             $this->emails->add($email);
-            $email->setOwner($this);
+        }
+
+        if ($email->getOwner() !== $this) {
+            $email->setOwner($this); // owner can be nullable, so safe to claim it
+        }
+
+        // if user has no default yet (new user), set it
+        if ($this->email === null) {
+            $this->email = $email;
         }
 
         return $this;
     }
-
+    /**
+     * Removes an email from this user. Guarantees user still has at least one email.
+     * If removing the default and there is another email, it auto-switches default.
+     */
     public function removeEmail(Email $email): static
     {
-        if ($this->emails->removeElement($email)) {
-            // set the owning side to null (unless already changed)
-            if ($email->getOwner() === $this) {
-                $email->setOwner(null);
+        if (! $this->emails->contains($email)) {
+            return $this;
+        }
+
+        if ($this->emails->count() <= 1) {
+            throw new \LogicException('User must have at least one email address.');
+        }
+
+        // If removing the default, switch default first
+        if ($this->email === $email) {
+            $replacement = null;
+
+            foreach ($this->emails as $candidate) {
+                if ($candidate !== $email) {
+                    $replacement = $candidate;
+                    break;
+                }
             }
+
+            if ($replacement === null) {
+                throw new \LogicException('Cannot remove the last remaining email.');
+            }
+
+            $this->email = $replacement;
+        }
+
+        $this->emails->removeElement($email);
+
+        // Disassociate (since owner_id may be NULL)
+        if ($email->getOwner() === $this) {
+            $email->setOwner(null);
         }
 
         return $this;
     }
-
     public function getEmail(): null|Email
     {
         return $this->email;
     }
 
-    public function setEmail(null|Email $defaultEmail): static
+    public function setEmail(Email $defaultEmail): static
     {
+        // If it's unassigned, claim it. If assigned to someone else, block.
+        if ($defaultEmail->getOwner() === null) {
+            $defaultEmail->setOwner($this);
+        }
+
+        if ($defaultEmail->getOwner() !== $this) {
+            throw new \LogicException('Default email must belong to the user.');
+        }
+
+        // Ensure it’s also in the owned collection
+        if (! $this->emails->contains($defaultEmail)) {
+            $this->emails->add($defaultEmail);
+        }
+
         $this->email = $defaultEmail;
 
         return $this;
@@ -1177,5 +1234,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
                 ->map(fn (EventParticipant $participant) => $participant->getEvent())
                 ->toArray()
         );
+    }
+
+    public function getTicketMerchantProfile(): ?TicketMerchantProfile
+    {
+        return $this->ticketMerchantProfile;
+    }
+
+    public function setTicketMerchantProfile(?TicketMerchantProfile $ticketMerchantProfile): static
+    {
+        $this->ticketMerchantProfile = $ticketMerchantProfile;
+        return $this;
     }
 }

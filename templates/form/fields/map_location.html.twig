@@ -1,0 +1,26 @@
+{% block map_location_widget %}
+    <div class="relative" data-controller="pick-location">
+        {{ form_errors(form) }}
+
+        {{ ux_map(form.vars.map, { style: 'height: ' ~ (form.vars.height ?? '300px') }) }}
+
+        <button type="button"
+                class="absolute top-2.5 right-2.5 z-[1000] rounded-lg bg-primary-600 px-3 py-2 text-white shadow-sm hover:bg-primary-700"
+                data-action="click->pick-location#useCurrentLocation"
+                title="{{ 'use_current_location'|trans }}">
+            {{ ux_icon('mdi:my-location', { style: 'height: 2em;' }) }}
+        </button>
+
+        {{ form_widget(form.latitude) }}
+        {{ form_widget(form.longitude) }}
+        {{ form_widget(form.address) }}
+    </div>
+{% endblock %}
+
+{% block map_location_help %}
+    {% if help is not empty %}
+        <p class="mt-1 px-2 text-sm text-gray-500">
+            {{ help_html ? help|raw : help }}
+        </p>
+    {% endif %}
+{% endblock %}

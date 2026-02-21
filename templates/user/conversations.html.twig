@@ -9,8 +9,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6">
-                <div class="fs-3 fw-bold text-end">{{ 'conversations'|trans|upper }}</div>
-                <hr class="mt-0"/>
+                <h2 class="mb-6 text-xl font-semibold text-gray-900">{{ 'conversations'|trans|capitalize }}</h2>
 
                 <div class="list-group mb-3">
                     {% for conversation in conversationPagination %}
@@ -31,7 +30,7 @@
                             </div>
                         </a>
                     {% else %}
-                        <div class="list-group-item text-center text-muted fw-bold">{{ 'no-conversation-found'|trans|upper }}</div>
+                        <div class="list-group-item text-center fw-bold">{{ 'no-conversation-found'|trans }}</div>
                     {% endfor %}
 
                     {% if conversationPagination.getTotalItemCount() > conversationPagination.getItemNumberPerPage() %}

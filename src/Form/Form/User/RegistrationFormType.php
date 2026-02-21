@@ -7,12 +7,10 @@ namespace App\Form\Form\User;
 use App\Entity\User\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use App\Form\Type\PasswordToggleType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 class RegistrationFormType extends AbstractType
 {
@@ -22,7 +20,7 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('firstName', TextType::class, [
                 'row_attr' => [
-                    'class' => 'form-floating mb-3',
+                    'class' => 'form-floating lmb-3',
                 ],
             ])
             ->add('lastName', TextType::class, [
@@ -36,23 +34,11 @@ class RegistrationFormType extends AbstractType
                     'class' => 'form-floating mb-3',
                 ],
             ])
-            ->add('plainPassword', PasswordType::class, [
+            ->add('plainPassword', PasswordToggleType::class, [
                 'mapped' => false,
                 'attr' => [
-                    'data-password-visibility-target' => 'input',
                     'placeholder' => 'password',
                     'autocomplete' => 'new-password',
-                ],
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter a password',
-                    ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 4096,
-                    ]),
                 ],
             ]);
     }

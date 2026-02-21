@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(docker compose exec:*)"
+      "Bash(docker compose exec:*)",
+      "WebSearch",
+      "Bash(grep:*)",
+      "Bash(curl:*)"
     ]
   }
 }

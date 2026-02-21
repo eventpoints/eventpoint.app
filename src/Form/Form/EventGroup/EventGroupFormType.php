@@ -52,16 +52,21 @@ class EventGroupFormType extends AbstractType
                     'class' => 'form-floating',
                 ],
             ])
-            ->add('categories', EntityType::class, [
-                'class' => Category::class,
-                'choice_label' => 'title',
-                'choice_translation_domain' => true,
-                'multiple' => true,
-                'autocomplete' => true,
-                'row_attr' => [
-                    'class' => 'form-floating',
-                ],
-            ]);
+                ->add('categories', EntityType::class, [
+                        'label' => $this->translator->trans(id: 'categories', domain: 'messages'),
+                        'attr' => [
+                                'placeholder' => $this->translator->trans(id: 'event-categories-placeholder', domain: 'messages'),
+                        ],
+                        'multiple' => true,
+                        'class' => Category::class,
+                        'choice_label' => 'title',
+                        'autocomplete' => true,
+                        'translation_domain' => 'categories',
+                        'limit' => 30,
+                        'required' => false,
+                        'theme' => 'flowbite',
+                ])
+        ;
 
     }
 

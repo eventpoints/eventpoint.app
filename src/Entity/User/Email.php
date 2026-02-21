@@ -30,7 +30,7 @@ class Email implements \Stringable
     private string $address;
 
     #[ORM\ManyToOne(inversedBy: 'emails')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $owner = null;
 
     #[\Override]

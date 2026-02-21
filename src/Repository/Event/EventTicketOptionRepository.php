@@ -21,6 +21,22 @@ class EventTicketOptionRepository extends ServiceEntityRepository
         parent::__construct($registry, EventTicketOption::class);
     }
 
+    public function save(EventTicketOption $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(EventTicketOption $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     //    /**
     //     * @return EventTicket[] Returns an array of EventTicket objects
     //     */

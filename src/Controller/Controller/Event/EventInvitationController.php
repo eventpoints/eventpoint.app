@@ -6,6 +6,7 @@ namespace App\Controller\Controller\Event;
 
 use App\Entity\Event\EventInvitation;
 use App\Enum\FlashEnum;
+use App\Factory\Event\EventInvitationFactory;
 use App\Repository\Event\EventInvitationRepository;
 use App\Security\Voter\EventVoter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +23,7 @@ class EventInvitationController extends AbstractController
     public function __construct(
         private readonly EventInvitationRepository $eventInvitationRepository,
         private readonly TranslatorInterface $translator,
+        private readonly EventInvitationFactory $eventInvitationFactory,
     ) {
     }
 
@@ -72,6 +74,40 @@ class EventInvitationController extends AbstractController
         return $this->redirectToRoute('show_event', [
             'id' => $invitation->getEvent()->getId(),
             'token' => $invitationToken,
+        ]);
+    }
+
+    #[Route('/accept/{id}', name: 'accept_invitation', methods: [Request::METHOD_POST])]
+    public function acceptInvitation(EventInvitation $eventInvitation, Request $request): Response
+    {
+        if (!$this->isCsrfTokenValid('respond-invitation-' . $eventInvitation->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $this->eventInvitationFactory->accept($eventInvitation);
+        $this->eventInvitationRepository->save($eventInvitation, true);
+
+        $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('accept-invitation'));
+
+        return $this->redirectToRoute('show_event', [
+            'id' => $eventInvitation->getEvent()->getId(),
+        ]);
+    }
+
+    #[Route('/decline/{id}', name: 'decline_invitation', methods: [Request::METHOD_POST])]
+    public function declineInvitation(EventInvitation $eventInvitation, Request $request): Response
+    {
+        if (!$this->isCsrfTokenValid('respond-invitation-' . $eventInvitation->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $this->eventInvitationFactory->decline($eventInvitation);
+        $this->eventInvitationRepository->save($eventInvitation, true);
+
+        $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('decline-invitation'));
+
+        return $this->redirectToRoute('show_event', [
+            'id' => $eventInvitation->getEvent()->getId(),
         ]);
     }
 }

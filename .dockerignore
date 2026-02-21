@@ -1,0 +1,9 @@
+.git
+.github
+var/cache
+var/log
+var/sessions
+node_modules
+public/build
+docker/db/data
+.deployment/db-data

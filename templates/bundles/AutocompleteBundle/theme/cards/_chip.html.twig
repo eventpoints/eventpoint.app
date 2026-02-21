@@ -1,0 +1,39 @@
+{% set td = (translation_domain is defined ? translation_domain : null) %}
+{% if td == '' %}
+    {% set td = null %}
+{% endif %}
+
+{% set label_text = item.label %}
+{% if td is not same as(false) %}
+    {% if td is null %}
+        {% set label_text = item.label|trans %}
+    {% else %}
+        {% set label_text = item.label|trans({}, td) %}
+    {% endif %}
+{% endif %}
+
+<div class="inline-flex items-center bg-primary-600 text-sm font-medium text-white no-underline transition-all hover:shadow-md
+            px-3 py-2 rounded-full gap-2"
+     data-kerrialnewham--autocomplete--ssr-autocomplete-target="chip"
+     data-autocomplete-chip-value="{{ item.id }}">
+
+    <span class="leading-none">{{ label_text }}</span>
+
+    <button type="button"
+            class="inline-flex items-center justify-center
+                   w-8 h-8 -mr-1 text-white
+                   text-heading/70 bg-transparent rounded-full
+                   hover:bg-neutral-tertiary focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-neutral-tertiary hover:bg-primary-700"
+            aria-label="Remove {{ label_text }}"
+            data-action="click->kerrialnewham--autocomplete--ssr-autocomplete#removeChip">
+        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 18 6M18 18 6 6"/>
+        </svg>
+        <span class="sr-only">Remove badge</span>
+    </button>
+
+    <input type="hidden"
+           name="{{ name }}[]"
+           value="{{ item.id }}"
+           data-kerrialnewham--autocomplete--ssr-autocomplete-target="selectedInput">
+</div>

@@ -23,7 +23,7 @@ class EventController extends AbstractController
     #[Route(path: '/events/past', name: 'user_past_events', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function pastEvents(#[CurrentUser] User $currentUser): Response
     {
-        $events = $this->eventRepository->findFutureAssociatedByUser($currentUser);
+        $events = $this->eventRepository->findPastAssociatedByUser($currentUser);
         return $this->render('user/events.html.twig', [
             'events' => $events,
         ]);
@@ -32,7 +32,7 @@ class EventController extends AbstractController
     #[Route(path: '/events/upcoming', name: 'user_future_events', methods: [Request::METHOD_GET, Request::METHOD_POST])]
     public function futureEvents(#[CurrentUser] User $currentUser): Response
     {
-        $events = $this->eventRepository->findPastAssociatedByUser($currentUser);
+        $events = $this->eventRepository->findFutureAssociatedByUser($currentUser);
         return $this->render('user/events.html.twig', [
             'events' => $events,
         ]);

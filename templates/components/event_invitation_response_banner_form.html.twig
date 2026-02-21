@@ -1,30 +1,23 @@
-<div {{ attributes }} class="card mb-3">
-    <div class="card-body px-5">
-        {% if app.user and eventInvitation.event.unansweredInvitation(app.user) %}
-            <div>
-                <div class="fw-bold fs-3">{{ 'you-are-invited'|trans|capitalize }}</div>
-                <div>
-                    {{ 'invitation-banner-text'|trans|capitalize }}
-                </div>
-            </div>
-            <hr/>
-            <div>
-                <a href="#" class="btn btn-outline-danger mb-3 w-100"
-                   data-action="live#action:prevent"
-                   data-live-action-param="submit"
-                   data-live-is-attending-param="false"
-                >{{ 'decline-invitation'|trans }}
-                </a>
-                <a href="#" class="btn btn-outline-primary w-100"
-                   data-action="live#action:prevent"
-                   data-live-action-param="submit"
-                   data-live-is-attending-param="true"
-                >{{ 'accept-invitation'|trans }}</a>
-            </div>
-        {% else %}
-            <div class="text-center">
-                <div class="bi bi-check2-circle text-success fs-2 my-3"></div>
-            </div>
-        {% endif %}
+<div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+    <div class="mb-4">
+        <p class="text-xl font-bold text-gray-900">{{ 'you-are-invited'|trans }}</p>
+        <p class="mt-1 text-sm text-gray-600">{{ 'invitation-banner-text'|trans|capitalize }}</p>
+    </div>
+    <hr class="mb-4 border-gray-200"/>
+    <div class="flex flex-col gap-3 md:flex-row md:justify-between">
+        <form action="{{ path('decline_invitation', {id: invitation.id}) }}" method="post">
+            <input type="hidden" name="_token" value="{{ csrf_token('respond-invitation-' ~ invitation.id) }}">
+            <button type="submit"
+                    class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 focus:outline-none">
+                {{ 'decline-invitation'|trans }}
+            </button>
+        </form>
+        <form action="{{ path('accept_invitation', {id: invitation.id}) }}" method="post">
+            <input type="hidden" name="_token" value="{{ csrf_token('respond-invitation-' ~ invitation.id) }}">
+            <button type="submit"
+                    class="w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700 focus:outline-none">
+                {{ 'accept-invitation'|trans }}
+            </button>
+        </form>
     </div>
 </div>

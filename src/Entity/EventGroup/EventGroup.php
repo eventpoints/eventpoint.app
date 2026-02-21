@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Entity\EventGroup;
 
-use App\Entity\City;
-use App\Entity\Country;
 use App\Entity\Event\Category;
 use App\Entity\Event\Event;
 use App\Entity\Poll\Poll;
@@ -54,6 +52,21 @@ class EventGroup
 
     #[ORM\OneToMany(targetEntity: EventGroupJoinRequest::class, mappedBy: 'eventGroup')]
     private Collection $eventGroupJoinRequests;
+
+    #[ORM\Column(length: 2, nullable: true)]
+    private null|string $country = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private null|string $city = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private null|string $entityIdentificationNumber = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private null|string $purpose = null;
+
+    #[ORM\Column]
+    private bool $isPrivate = false;
 
     public function __construct(
             #[ORM\Column(length: 255)]
@@ -249,24 +262,54 @@ class EventGroup
         return $this;
     }
 
-    public function getCountry(): ?Country
+    public function getCountry(): ?string
     {
         return $this->country;
     }
 
-    public function setCountry(?Country $country): void
+    public function setCountry(?string $country): void
     {
         $this->country = $country;
     }
 
-    public function getCity(): null|City
+    public function getCity(): ?string
     {
         return $this->city;
     }
 
-    public function setCity(?City $city): void
+    public function setCity(?string $city): void
     {
         $this->city = $city;
+    }
+
+    public function getEntityIdentificationNumber(): ?string
+    {
+        return $this->entityIdentificationNumber;
+    }
+
+    public function setEntityIdentificationNumber(?string $entityIdentificationNumber): void
+    {
+        $this->entityIdentificationNumber = $entityIdentificationNumber;
+    }
+
+    public function getPurpose(): ?string
+    {
+        return $this->purpose;
+    }
+
+    public function setPurpose(?string $purpose): void
+    {
+        $this->purpose = $purpose;
+    }
+
+    public function getIsPrivate(): bool
+    {
+        return $this->isPrivate;
+    }
+
+    public function setIsPrivate(bool $isPrivate): void
+    {
+        $this->isPrivate = $isPrivate;
     }
 
     public function getLanguage(): null|string

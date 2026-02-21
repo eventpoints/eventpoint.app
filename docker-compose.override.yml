@@ -12,3 +12,17 @@ services:
       - "1025:1025"
       - "1080:1080"
   ###< symfony/mailer ###
+
+  ###> worker with supervisor ###
+  worker:
+    build:
+      context: .
+      target: worker
+    environment:
+      APP_ENV: dev
+    volumes:
+      - .:/app:cached
+      - ./docker/php/zz-dev.ini:/usr/local/etc/php/conf.d/zz-dev.ini
+    depends_on:
+      - database
+  ###< worker with supervisor ###

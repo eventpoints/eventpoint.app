@@ -1,14 +1,12 @@
-{% import "macro/component.macro.twig" as component %}
-
-<nav class="border-b border-gray-100 bg-white/95 backdrop-blur-sm">
+<nav class="border-b border-primary-800 bg-primary-600">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <a class="flex items-center gap-3 no-underline" href="{{ path('events') }}">
-            <img class="h-10" src="{{ asset('images/logo.png') }}" alt="Event Point">
-            <span class="hidden text-lg font-semibold tracking-tight text-gray-900 lg:block">Event Point</span>
+            <img class="h-10" src="{{ asset('images/logo-90-white-01.png') }}" alt="Event Point">
+            <span class="hidden text-lg font-semibold tracking-tight text-white lg:block">Event Point</span>
         </a>
         <ul class="flex list-none items-center gap-4">
             <li>
-                <a class="inline-flex items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white no-underline transition-all hover:bg-gray-800 hover:shadow-md" href="{{ path('create_event') }}">
+                <a class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-primary-600 no-underline transition-all hover:bg-primary-50 hover:shadow-md" href="{{ path('create_event') }}">
                     <span class="hidden sm:inline">{{ 'add-event'|trans }}</span>
                     <span class="sm:hidden">
                         {{ ux_icon('mdi:plus', {class: 'text-xl'}) }}
@@ -16,24 +14,24 @@
                 </a>
             </li>
             <li>
-                <a class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900" href="{{ path('events') }}">
+                <a class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-white/70 transition-colors hover:bg-primary-700 hover:text-white" href="{{ path('events') }}">
                     {{ ux_icon('mdi:compass-outline', {class: 'text-3xl'}) }}
                 </a>
             </li>
             {% if app.user %}
                 <li>
-                    <a class="inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900" href="{{ path('user_event_invitations') }}">
+                    <a class="inline-flex h-10 w-10 items-center justify-center rounded-full text-white/70 transition-colors hover:bg-primary-700 hover:text-white" href="{{ path('user_event_invitations') }}">
                         {{ ux_icon('mdi:account-circle-outline', {class: 'text-3xl'}) }}
                     </a>
                 </li>
             {% endif %}
             <li>
-                <a class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900" data-modal-target="regional_settings" data-modal-toggle="regional_settings">
+                <a class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-white/70 transition-colors hover:bg-primary-700 hover:text-white" data-modal-target="regional_settings" data-modal-toggle="regional_settings">
                     {{ ux_icon('mdi:web', {class: 'text-3xl'}) }}
                 </a>
             </li>
             <li>
-                <a class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900" data-drawer-target="menu" data-drawer-show="menu" data-drawer-placement="right">
+                <a class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-white/70 transition-colors hover:bg-primary-700 hover:text-white" data-drawer-target="menu" data-drawer-show="menu" data-drawer-placement="right">
                     {{ ux_icon('mdi:menu', {class: 'text-3xl'}) }}
                 </a>
             </li>
@@ -47,8 +45,10 @@
     <div class="flex h-full flex-col">
         <div class="flex items-center justify-between border-b border-gray-100 p-5">
             <span class="text-sm font-medium uppercase tracking-wider text-gray-400">Menu</span>
-            <button type="button" data-drawer-hide="menu" aria-label="Close" class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600">
-                <span class="bi bi-x-lg"></span>
+            <button type="button" data-drawer-hide="menu" aria-controls="menu" aria-label="Close" class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600">
+                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
             </button>
         </div>
         {% if app.user %}

@@ -95,13 +95,7 @@
                                 {% endfor %}
                             </div>
                         </div>
-                        <div {{ stimulus_controller('read-more', {
-                            moreText: 'read-more'|trans,
-                            lessText: 'read-less'|trans,
-                        }) }} class="list-group-item">
-                            <div class="read-more-content" {{ stimulus_target('read-more', 'content') }}>{{ event.description|nl2br }}</div>
-                            <a class="link-dark mt-2 text-center d-block" {{ stimulus_action('read-more', 'toggle', 'click') }} >{{ 'read-more'|trans }}</a>
-                        </div>
+                        <twig:ReadMore :content="event.description" wrapperClass="list-group-item" />
                         {% if event.eventCancellation == null %}
                             {% if app.user and event.owner == app.user or app.user and app.user|has_event_permission(event, 'role.event.organiser') %}
                                 <a href="{{ path('event_settings', {id: event.id}) }}"

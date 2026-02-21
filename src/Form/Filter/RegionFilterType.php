@@ -35,10 +35,12 @@ class RegionFilterType extends AbstractType
                 'Русский' => 'ru',
             ],
             'data' => $this->regionalSetting->getLocale(),
+            'placeholder' => $this->translator->trans('language'),
         ])
             ->add('region', CountryType::class, [
                 'label' => $this->translator->trans('region-country'),
                 'data' => $this->regionalSetting->getRegion(),
+                'placeholder' => $this->translator->trans('region-country'),
             ])
             ->add('currency', CurrencyType::class, [
                 'choice_loader' => null,
@@ -49,9 +51,11 @@ class RegionFilterType extends AbstractType
                 ],
                 'label' => $this->translator->trans('currency'),
                 'data' => $this->regionalSetting->getCurrency(),
+                'placeholder' => $this->translator->trans('currency'),
             ])
             ->add('timezone', TimezoneType::class, [
                 'data' => $this->regionalSetting->getTimezone(),
+                'placeholder' => 'timezone'
             ]);
     }
 

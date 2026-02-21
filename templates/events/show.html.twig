@@ -2,14 +2,11 @@
 
 {% block body %}
 
-    {% if not event.isComplete %}
-        <div {{ stimulus_controller('static-map', {
-            token: mapbox_token,
-            longitude: event.longitude,
-            latitude: event.latitude,
-            interactive: true,
-        }) }}>
-            <div class="static-map w-full" style="height: 220px" {{ stimulus_target('static-map', 'map') }}></div>
+    {% if map is not null %}
+        <div class="isolate" data-controller="show-map"
+             data-show-map-lat-value="{{ event.latitude }}"
+             data-show-map-lng-value="{{ event.longitude }}">
+            {{ ux_map(map, { style: 'height: 220px; width: 100%;' }) }}
         </div>
     {% endif %}
 
@@ -88,33 +85,44 @@
                             {{ include('partials/event/_duration.html.twig') }}
                         </div>
 
-                        <div class="flex items-center justify-between px-5 py-4"
-                             {{ stimulus_controller('clipboard', {
-                                 successContent: "<span class='bi bi-check-lg text-green-600'></span>"
-                             }) }}>
+                        {% if canViewDetails %}
+                        <div class="flex items-start justify-between px-5 py-4"
+                                {{ stimulus_controller('clipboard', {
+                                    successContent: ux_icon('mdi:check', {class: 'h-5 w-5 text-green-600'})
+                                }) }}>
                             <div class="flex-1 text-sm text-gray-600"
                                  value="{{ event.address }}" {{ stimulus_target('clipboard', 'source') }}>{{ event.address }}</div>
                             <div class="flex items-center gap-2">
                                 <button class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
                                         {{ stimulus_action('clipboard', 'copy', 'click') }} {{ stimulus_target('clipboard', 'button') }}>
-                                    <span class="bi bi-copy"></span>
+                                    {{ ux_icon('mdi:content-copy', {class: 'h-5 w-5'}) }}
                                 </button>
                                 <div class="relative">
                                     <button class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
                                             data-dropdown-toggle="mapAppChooser">
                                         <i class="bi bi-map"></i>
+                                        {{ ux_icon('mdi:map', {class: 'h-5 w-5'}) }}
                                     </button>
-                                    <div id="mapAppChooser" class="z-10 hidden w-48 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-gray-100">
+                                    <div id="mapAppChooser"
+                                         class="z-10 hidden w-48 overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-gray-100">
                                         <ul class="py-1">
                                             <li><a class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
-                                                   href="https://www.google.com/maps?q={{ event.address }}" target="_blank">Open in Google Maps</a></li>
+                                                   href="https://www.google.com/maps?q={{ event.address }}"
+                                                   target="_blank">Open in Google Maps</a></li>
                                             <li><a class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
-                                                   href="http://maps.apple.com/?q={{ event.address }}" target="_blank">Open in Apple Maps</a></li>
+                                                   href="http://maps.apple.com/?q={{ event.address }}" target="_blank">Open
+                                                    in Apple Maps</a></li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        {% else %}
+                        <div class="flex items-center gap-3 px-5 py-4 text-sm text-gray-400">
+                            {{ ux_icon('mdi:lock-outline', {class: 'h-4 w-4 flex-shrink-0'}) }}
+                            <span>{{ 'event.private.description'|trans }}</span>
+                        </div>
+                        {% endif %}
 
                         {% if not event.isPrivate %}
                             <div class="px-5 py-4">
@@ -122,8 +130,8 @@
                                     {% for ticket in event.ticketOptions %}
                                         <div class="flex items-center justify-between">
                                             <span class="text-sm text-gray-600">{{ ticket.title|title }}</span>
-                                            {% if ticket.currency %}
-                                                <span class="text-sm font-medium text-gray-900">{{ ticket.price|format_currency(ticket.currency) }}</span>
+                                            {% if not ticket.price.isZero %}
+                                                <span class="text-sm font-medium text-gray-900">{{ ticket.price.baseUnit|format_currency(ticket.price.currency) }}</span>
                                             {% endif %}
                                         </div>
                                     {% else %}
@@ -133,13 +141,9 @@
                             </div>
                         {% endif %}
 
-                        <div {{ stimulus_controller('read-more', {
-                            moreText: 'read-more'|trans,
-                            lessText: 'read-less'|trans,
-                        }) }} class="px-5 py-4">
-                            <div class="read-more-content text-sm text-gray-600 leading-relaxed" {{ stimulus_target('read-more', 'content') }}>{{ event.description|nl2br }}</div>
-                            <button class="mt-3 text-sm font-medium text-gray-900 hover:text-gray-600" {{ stimulus_action('read-more', 'toggle', 'click') }}>{{ 'read-more'|trans }}</button>
-                        </div>
+                        {% if canViewDetails %}
+                        <twig:ReadMore :content="event.description" wrapperClass="px-5 py-4" contentClass="text-sm text-gray-600 leading-relaxed" />
+                        {% endif %}
 
                         {% if event.eventCancellation == null %}
                             {% if app.user and event.owner == app.user or app.user and app.user|has_event_permission(event, 'role.event.organiser') %}
@@ -156,30 +160,208 @@
 
             {# Main content #}
             <div class="flex-1">
-                {% if not app.user and invitation != null %}
-                    <div class="mb-6 overflow-hidden rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-gray-100">
-                        <div class="mb-4 text-4xl">🎉</div>
-                        <p class="mb-4 text-gray-600">{{ 'token-invitation-text'|trans({name: invitation.owner.fullName}) }}</p>
-                        <a class="inline-flex rounded-lg bg-gray-900 px-6 py-3 text-sm font-medium text-white no-underline transition-colors hover:bg-gray-800"
-                           href="{{ path('app_register') }}">{{ 'sign-up'|trans }}</a>
+                {# ── Limited view: not yet invited ── #}
+                {% if not canViewDetails %}
+                    <div class="mb-6 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+
+                        {% if not app.user %}
+                            {% if invitationEmailHasAccount %}
+                                {# Invited email already has an account — prompt to sign in #}
+                                <div class="p-6 text-center">
+                                    <p class="mb-1 text-sm font-medium text-gray-900">{{ 'token-invitation-text'|trans({name: invitation.owner.fullName}) }}</p>
+                                    <p class="mb-5 text-sm text-gray-500">{{ 'invitation-sign-in-prompt'|trans }}</p>
+                                    <a href="{{ path('app_login', {'_target_path': app.request.uri}) }}"
+                                       class="inline-flex w-full items-center justify-center rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white no-underline transition-colors hover:bg-primary-700">
+                                        {{ 'sign-in'|trans }}
+                                    </a>
+                                </div>
+                            {% elseif registrationForm is not null or requestAccessForm is not null %}
+                                {# Registration form — either to accept an invitation or to request access #}
+                                {% set activeForm = registrationForm ?? requestAccessForm %}
+                                <div class="border-b border-gray-100 p-4 text-center">
+                                    {% if registrationForm is not null %}
+                                        <p class="text-sm font-medium text-gray-900">{{ 'token-invitation-text'|trans({name: invitation.owner.fullName}) }}</p>
+                                    {% else %}
+                                        <p class="text-sm font-medium text-gray-900">{{ 'event.private.request-access-title'|trans }}</p>
+                                        <p class="mt-1 text-sm text-gray-500">{{ 'event.private.sign-up-to-view'|trans }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="p-6">
+                                    {{ form_errors(activeForm) }}
+                                    {{ form_start(activeForm) }}
+                                    <div class="space-y-3">
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'first-name'|trans }}</label>
+                                                {{ form_widget(activeForm.firstName, {attr: {class: 'block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 focus:border-gray-400 focus:bg-white focus:outline-none'}}) }}
+                                            </div>
+                                            <div>
+                                                <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'last-name'|trans }}</label>
+                                                {{ form_widget(activeForm.lastName, {attr: {class: 'block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 focus:border-gray-400 focus:bg-white focus:outline-none'}}) }}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'email'|trans }}</label>
+                                            {% if registrationForm is not null %}
+                                                {{ form_widget(activeForm.email, {attr: {class: 'block w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2.5 text-sm text-gray-500 focus:outline-none', readonly: 'readonly'}}) }}
+                                            {% else %}
+                                                {{ form_widget(activeForm.email, {attr: {class: 'block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 focus:border-gray-400 focus:bg-white focus:outline-none'}}) }}
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'password'|trans }}</label>
+                                            {{ form_widget(activeForm.plainPassword) }}
+                                        </div>
+                                        <div class="flex justify-center">
+                                            <div class="cf-turnstile" data-sitekey="{{ turnstile_public_key }}"></div>
+                                        </div>
+                                        <button type="submit"
+                                                class="w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+                                            {% if requestAccessForm is not null %}
+                                                {{ 'event.private.request-access-submit'|trans }}
+                                            {% else %}
+                                                {{ 'create-account'|trans }}
+                                            {% endif %}
+                                        </button>
+                                    </div>
+                                    {{ form_end(activeForm) }}
+                                    <p class="mt-4 text-center text-sm text-gray-500">
+                                        {{ 'already-have-account'|trans }}
+                                        <a href="{{ path('app_login', {'_target_path': app.request.uri}) }}"
+                                           class="font-medium text-gray-900 no-underline hover:underline">{{ 'sign-in'|trans }}</a>
+                                    </p>
+                                </div>
+                            {% else %}
+                                <div class="p-6 text-center">
+                                    <p class="mb-4 text-sm text-gray-500">{{ 'event.private.sign-in-if-invited'|trans }}</p>
+                                    <a href="{{ path('app_login', {'_target_path': app.request.uri}) }}"
+                                       class="inline-flex items-center justify-center rounded-lg bg-gray-900 px-5 py-2.5 text-sm font-medium text-white no-underline transition-colors hover:bg-gray-800">
+                                        {{ 'sign-in'|trans }}
+                                    </a>
+                                </div>
+                            {% endif %}
+
+                        {% else %}
+                            {# Authenticated but no access yet #}
+                            <div class="p-6 text-center">
+                                {% if event.hasRequestedToAttend(app.user) %}
+                                    <p class="mb-4 text-sm text-gray-600">{{ 'event-request-sent-explainer'|trans|capitalize }}</p>
+                                    <a href="{{ path('cancel_event_rsvp_request', {id: event.attendRequest(app.user).id}) }}"
+                                       class="inline-flex rounded-lg border border-red-200 px-6 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50">
+                                        {{ 'cancel-request'|trans }}
+                                    </a>
+                                {% else %}
+                                    <p class="mb-4 text-sm text-gray-600">{{ 'request-explainer-text'|trans }}</p>
+                                    <a href="{{ path('event_rsvp_request', {id: event.id}) }}"
+                                       class="inline-flex rounded-lg bg-gray-900 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-gray-800">
+                                        {{ 'request-to-attend'|trans }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endif %}
                     </div>
                 {% endif %}
 
-                {% if app.user and event.unansweredInvitation(app.user) %}
+                {# ── Invitation banner (full-access public events with an invitation token) ── #}
+                {% if not app.user and invitation != null and canViewDetails %}
+                    {% if invitationEmailHasAccount %}
+                        <div class="mb-6 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+                            <div class="p-6 text-center">
+                                <div class="mb-2 text-3xl">🎉</div>
+                                <p class="mb-1 text-sm font-medium text-gray-900">{{ 'token-invitation-text'|trans({name: invitation.owner.fullName}) }}</p>
+                                <p class="mb-5 text-sm text-gray-500">{{ 'invitation-sign-in-prompt'|trans }}</p>
+                                <a href="{{ path('app_login', {'_target_path': app.request.uri}) }}"
+                                   class="inline-flex w-full items-center justify-center rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white no-underline transition-colors hover:bg-primary-700">
+                                    {{ 'sign-in'|trans }}
+                                </a>
+                            </div>
+                        </div>
+                    {% elseif registrationForm is not null %}
+                        <div class="mb-6 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+                            <div class="border-b border-gray-100 p-6 text-center">
+                                <div class="mb-2 text-3xl">🎉</div>
+                                <p class="text-sm font-medium text-gray-900">{{ 'token-invitation-text'|trans({name: invitation.owner.fullName}) }}</p>
+                            </div>
+                            <div class="p-6">
+                                {{ form_errors(registrationForm) }}
+                                {{ form_start(registrationForm) }}
+                                <div class="space-y-3">
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'first-name'|trans }}</label>
+                                            {{ form_widget(registrationForm.firstName, {attr: {class: 'block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 focus:border-gray-400 focus:bg-white focus:outline-none'}}) }}
+                                        </div>
+                                        <div>
+                                            <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'last-name'|trans }}</label>
+                                            {{ form_widget(registrationForm.lastName, {attr: {class: 'block w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 focus:border-gray-400 focus:bg-white focus:outline-none'}}) }}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'email'|trans }}</label>
+                                        {{ form_widget(registrationForm.email, {attr: {class: 'block w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2.5 text-sm text-gray-500 focus:outline-none', readonly: 'readonly'}}) }}
+                                    </div>
+                                    <div>
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'password'|trans }}</label>
+                                        {{ form_widget(registrationForm.plainPassword) }}
+                                    </div>
+                                    <div class="flex justify-center">
+                                        <div class="cf-turnstile" data-sitekey="{{ turnstile_public_key }}"></div>
+                                    </div>
+                                    <button type="submit"
+                                            class="w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+                                        {{ 'create-account'|trans }}
+                                    </button>
+                                </div>
+                                {{ form_end(registrationForm) }}
+                                <p class="mt-4 text-center text-sm text-gray-500">
+                                    {{ 'already-have-account'|trans }}
+                                    <a href="{{ path('app_login', {'_target_path': app.request.uri}) }}"
+                                       class="font-medium text-gray-900 no-underline hover:underline">{{ 'sign-in'|trans }}</a>
+                                </p>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                {% if canViewDetails and app.user and event.unansweredInvitation(app.user) %}
                     {% set invitation = event.unansweredInvitation(app.user) %}
                     <div class="mb-6">
-                        {{ component('event_invitation_response_banner_form', {
-                            eventInvitation: invitation
-                        }) }}
+                        <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                            <div class="mb-4">
+                                <p class="text-xl font-bold text-gray-900">{{ 'you-are-invited'|trans }}</p>
+                                <p class="mt-1 text-sm text-gray-600">{{ 'invitation-banner-text'|trans|capitalize }}</p>
+                            </div>
+                            <hr class="mb-4 border-gray-200"/>
+                            <div class="flex flex-col gap-3 md:flex-row md:justify-between">
+                                <form action="{{ path('decline_invitation', {id: invitation.id}) }}" method="post">
+                                    <input type="hidden" name="_token"
+                                           value="{{ csrf_token('respond-invitation-' ~ invitation.id) }}">
+                                    <button type="submit"
+                                            class="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 focus:outline-none">
+                                        {{ 'decline-invitation'|trans }}
+                                    </button>
+                                </form>
+                                <form action="{{ path('accept_invitation', {id: invitation.id}) }}" method="post">
+                                    <input type="hidden" name="_token"
+                                           value="{{ csrf_token('respond-invitation-' ~ invitation.id) }}">
+                                    <button type="submit"
+                                            class="w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700 focus:outline-none">
+                                        {{ 'accept-invitation'|trans }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
                     </div>
                 {% endif %}
 
-                {% if app.user and not event.hasRated(app.user) and event.isComplete %}
+                {% if canViewDetails and app.user and not event.hasRated(app.user) and event.isComplete %}
                     <div class="mb-6">
                         {{ component('event_rating_form_component', {event: event}) }}
                     </div>
                 {% endif %}
 
+                {% if canViewDetails %}
                 {{ include('partials/event/_image-upload.html.twig') }}
 
                 {# Timeline #}
@@ -198,7 +380,8 @@
                                         <h3 class="text-sm font-semibold text-red-900">{{ moment.type.value|trans|title }}</h3>
                                         <p class="text-sm text-red-700">{{ event.eventCancellation.reason.value|trans|title }}</p>
                                         <div class="flex items-start gap-3 mt-3 pt-3 border-t border-red-100">
-                                            <img src="{{ event.eventCancellation.owner.avatar }}" class="w-8 h-8 rounded-full object-cover" alt="">
+                                            <img src="{{ event.eventCancellation.owner.avatar }}"
+                                                 class="w-8 h-8 rounded-full object-cover" alt="">
                                             <div>
                                                 <div class="text-sm font-medium text-gray-900">{{ event.eventCancellation.owner.fullName }}</div>
                                                 <p class="text-xs text-gray-600">{{ event.eventCancellation.notice|nl2br }}</p>
@@ -226,13 +409,15 @@
                             <div class="p-4 bg-gray-50 border border-gray-100 rounded-lg shadow-sm">
                                 <time class="mb-1 text-xs font-medium text-gray-400 sm:order-last">{{ event.createdAt.diffForHumans }}</time>
                                 <div class="flex items-center gap-3">
-                                    <img src="{{ event.owner.avatar }}" class="w-8 h-8 rounded-full object-cover" alt="">
+                                    <img src="{{ event.owner.avatar }}" class="w-8 h-8 rounded-full object-cover"
+                                         alt="">
                                     <p class="text-sm text-gray-600">{{ 'event-created-at'|trans({name: event.owner.firstName}) }}</p>
                                 </div>
                             </div>
                         </li>
                     </ol>
                 </div>
+                {% endif %}{# canViewDetails #}
             </div>
         </div>
     </div>
@@ -244,8 +429,13 @@
             <div class="relative flex max-h-[80vh] flex-col overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-100">
                 <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
                     <h2 class="text-base font-semibold text-gray-900">{{ 'send-invitations'|trans|capitalize }}</h2>
-                    <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600" data-modal-hide="invitations">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+                    <button type="button"
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                            data-modal-hide="invitations">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
                     </button>
                 </div>
                 {{ component('InvitationEmailAutocompleteComponent', {event: event}) }}
@@ -260,8 +450,13 @@
             <div class="relative overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-100">
                 <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
                     <h2 class="text-base font-semibold text-gray-900">{{ 'going'|trans|capitalize }}</h2>
-                    <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600" data-modal-hide="going">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+                    <button type="button"
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                            data-modal-hide="going">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
                     </button>
                 </div>
                 <div class="max-h-96 divide-y divide-gray-100 overflow-y-auto">
@@ -269,7 +464,8 @@
                         <a href="{{ path('show_profile', {id: participant.owner.id}) }}"
                            class="flex items-center justify-between px-6 py-4 no-underline transition-colors hover:bg-gray-50">
                             <div class="flex items-center gap-3">
-                                <img src="{{ participant.owner.avatar }}" class="h-10 w-10 rounded-full object-cover" alt="">
+                                <img src="{{ participant.owner.avatar }}" class="h-10 w-10 rounded-full object-cover"
+                                     alt="">
                                 <div>
                                     <div class="font-medium text-gray-900">{{ participant.owner.fullName|title }}</div>
                                     <div class="text-xs text-gray-500">{{ participant.createdAt|time_ago }}</div>
@@ -297,8 +493,13 @@
             <div class="relative overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-100">
                 <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
                     <h2 class="text-base font-semibold text-gray-900">{{ 'invited'|trans|capitalize }}</h2>
-                    <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600" data-modal-hide="invited">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+                    <button type="button"
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                            data-modal-hide="invited">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
                     </button>
                 </div>
                 <div class="max-h-96 divide-y divide-gray-100 overflow-y-auto">
@@ -306,7 +507,8 @@
                         <div class="flex items-center justify-between px-6 py-4">
                             {% if invitation.targetUser %}
                                 <div class="flex items-center gap-3">
-                                    <img src="{{ invitation.targetUser.avatar }}" class="h-10 w-10 rounded-full object-cover" alt="">
+                                    <img src="{{ invitation.targetUser.avatar }}"
+                                         class="h-10 w-10 rounded-full object-cover" alt="">
                                     <div>
                                         <div class="font-medium text-gray-900">{{ invitation.targetUser.fullName|title }}</div>
                                         <div class="text-xs text-gray-500">{{ invitation.createdAt|time_ago }}</div>
@@ -315,7 +517,8 @@
                             {% elseif invitation.targetEmail %}
                                 <div class="flex items-center gap-3">
                                     <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
-                                        <span class="mdi mdi-at text-gray-500"></span>
+                                        <img src="{{ generate_avatar(invitation.targetEmail.address) }}"
+                                             class="h-10 w-10 rounded-full object-cover" alt="">
                                     </div>
                                     <div>
                                         <div class="font-medium text-gray-900">{{ invitation.targetEmail.address }}</div>
@@ -353,8 +556,13 @@
             <div class="relative overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-gray-100">
                 <div class="flex items-center justify-between border-b border-gray-100 px-6 py-4">
                     <h2 class="text-base font-semibold text-gray-900">{{ 'requested'|trans|capitalize }}</h2>
-                    <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600" data-modal-hide="requests">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 14 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/></svg>
+                    <button type="button"
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                            data-modal-hide="requests">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                        </svg>
                     </button>
                 </div>
                 <div class="divide-y divide-gray-100">

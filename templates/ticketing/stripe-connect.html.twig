@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'ticketing.stripe_connect.page_title'|trans }} - Event Point{% endblock %}
+
+{% block body %}
+<div class="mx-auto max-w-lg px-4 py-12">
+    <div class="rounded-lg border border-gray-200 bg-white p-8 shadow-sm text-center">
+        {% if profile and profile.stripeOnboardingComplete %}
+            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+                <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <h1 class="mb-2 text-xl font-bold text-gray-900">{{ 'ticketing.stripe_connect.connected'|trans }}</h1>
+            <p class="mb-6 text-gray-600">{{ 'ticketing.stripe_connect.connected_description'|trans }}</p>
+            {% set eventId = app.request.query.get('event_id') %}
+            {% if eventId %}
+                <a href="{{ path('event_tickets', {'id': eventId}) }}"
+                   class="inline-block rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
+                    {{ 'ticketing.stripe_connect.go_to_tickets'|trans }}
+                </a>
+            {% else %}
+                <a href="{{ path('events') }}"
+                   class="inline-block rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
+                    {{ 'ticketing.stripe_connect.go_to_dashboard'|trans }}
+                </a>
+            {% endif %}
+        {% else %}
+            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+                <svg class="h-8 w-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+            </div>
+            <h1 class="mb-2 text-xl font-bold text-gray-900">{{ 'ticketing.stripe_connect.page_title'|trans }}</h1>
+            <p class="mb-6 text-gray-600">{{ 'ticketing.stripe_connect.description'|trans }}</p>
+            <form method="post" action="{{ path('stripe_connect_start') }}">
+                <button type="submit"
+                        class="inline-block rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700">
+                    {{ 'ticketing.stripe_connect.connect_button'|trans }}
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

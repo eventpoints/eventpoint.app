@@ -25,8 +25,10 @@
         "league/oauth2-google": "^4.0",
         "nelmio/cors-bundle": "^2.4",
         "nesbot/carbon": "*",
+        "nette/utils": "*",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.24",
+        "stripe/stripe-php": "^19.3",
         "symfony/asset": "8.0.*",
         "symfony/console": "8.0.*",
         "symfony/doctrine-messenger": "8.0.*",
@@ -54,7 +56,9 @@
         "symfony/uid": "8.0.*",
         "symfony/ux-chartjs": "^2.22",
         "symfony/ux-icons": "*",
+        "symfony/ux-leaflet-map": "*",
         "symfony/ux-live-component": "^2.22",
+        "symfony/ux-map": "*",
         "symfony/ux-turbo": "^2.22",
         "symfony/ux-twig-component": "^2.22",
         "symfony/validator": "8.0.*",
@@ -63,6 +67,7 @@
         "symfony/workflow": "8.0.*",
         "symfony/yaml": "8.0.*",
         "symfonycasts/dynamic-forms": "*",
+        "symfonycasts/tailwind-bundle": "*",
         "symfonycasts/verify-email-bundle": "^1.13",
         "twig/cssinliner-extra": "^3.8",
         "twig/extra-bundle": "^3.0",
@@ -109,7 +114,8 @@
         "test": "vendor/bin/phpunit",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+            "assets:install %PUBLIC_DIR%": "symfony-cmd",
+            "importmap:install": "symfony-cmd"
         },
         "post-install-cmd": [
             "@auto-scripts"

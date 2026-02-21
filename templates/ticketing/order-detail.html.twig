@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'ticketing.order_detail.page_title'|trans }} - Event Point{% endblock %}
+
+{% block body %}
+<div class="mx-auto max-w-2xl px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">{{ 'ticketing.order_detail.page_title'|trans }}</h1>
+        <p class="mt-1 font-mono text-sm text-gray-500">{{ order.id }}</p>
+    </div>
+
+    <div class="space-y-4">
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-800">{{ 'ticketing.order_detail.summary'|trans }}</h2>
+                <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium
+                    {% if order.status.value == 'paid' %}bg-green-100 text-green-800
+                    {% elseif order.status.value == 'pending' %}bg-yellow-100 text-yellow-800
+                    {% elseif order.status.value == 'refunded' %}bg-gray-100 text-gray-800
+                    {% elseif order.status.value == 'failed' %}bg-red-100 text-red-800
+                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                    {{ ('ticketing.order_status.' ~ order.status.value)|trans }}
+                </span>
+            </div>
+
+            <dl class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <dt class="text-gray-500">{{ 'ticketing.order_detail.event'|trans }}</dt>
+                    <dd class="font-medium text-gray-900">
+                        <a href="{{ path('show_event', {'id': order.event.id}) }}" class="text-blue-600 hover:underline">
+                            {{ order.event.title }}
+                        </a>
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">{{ 'ticketing.order_detail.created'|trans }}</dt>
+                    <dd class="font-medium text-gray-900">{{ order.createdAt|date('d M Y, H:i') }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">{{ 'ticketing.order_detail.total'|trans }}</dt>
+                    <dd class="font-medium text-gray-900">{{ order.total.baseUnit|format_currency(order.total.currency) }}</dd>
+                </div>
+                <div>
+                    <dt class="text-gray-500">{{ 'ticketing.order_detail.buyer'|trans }}</dt>
+                    <dd class="font-medium text-gray-900">{{ order.buyer.fullName }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <h2 class="mb-4 text-lg font-semibold text-gray-800">{{ 'ticketing.order_detail.tickets'|trans }}</h2>
+            {% for line in order.orderLines %}
+                <div class="border-b border-gray-100 py-3 last:border-0">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium text-gray-900">{{ line.ticketOption.title }}</p>
+                            <p class="text-sm text-gray-500">{{ 'ticketing.order_detail.qty'|trans }}: {{ line.quantity }}</p>
+                        </div>
+                        <p class="font-medium text-gray-900">
+                            {{ line.lineTotal.baseUnit|format_currency(line.unitPrice.currency) }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if is_granted('ROLE_USER') and order.event.getIsOrganiser(app.user) and order.status.value == 'paid' %}
+            <div class="rounded-lg border border-red-200 bg-red-50 p-6">
+                <h2 class="mb-2 text-lg font-semibold text-red-800">{{ 'ticketing.order_detail.refund_section'|trans }}</h2>
+                <p class="mb-4 text-sm text-red-700">{{ 'ticketing.order_detail.refund_warning'|trans }}</p>
+                <form method="post" action="{{ path('order_refund', {'id': order.id}) }}"
+                      onsubmit="return confirm('{{ 'ticketing.order_detail.refund_confirm'|trans }}')">
+                    <button type="submit"
+                            class="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
+                        {{ 'ticketing.order_detail.issue_refund'|trans }}
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

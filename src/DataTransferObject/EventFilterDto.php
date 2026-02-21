@@ -8,6 +8,7 @@ use App\Entity\City;
 use App\Entity\Country;
 use App\Entity\Event\Category;
 use App\Enum\EventFilterDateRangeEnum;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class EventFilterDto
 {
@@ -15,13 +16,18 @@ class EventFilterDto
 
     private null|EventFilterDateRangeEnum $period = EventFilterDateRangeEnum::TODAY;
 
-    private null|Category $category = null;
+    private ArrayCollection $categories;
 
     private null|City $city = null;
 
     private null|Country $country = null;
 
     private null|int $radius = null;
+
+    public function __construct()
+    {
+        $this->categories = new ArrayCollection();
+    }
 
     public function getKeyword(): ?string
     {
@@ -43,14 +49,26 @@ class EventFilterDto
         $this->period = $period;
     }
 
-    public function getCategory(): ?Category
+    /**
+     * @return ArrayCollection<int, Category>
+     */
+    public function getCategories(): ArrayCollection
     {
-        return $this->category;
+        return $this->categories;
     }
 
-    public function setCategory(?Category $category): void
+    public function addCategory(Category $category): void
     {
-        $this->category = $category;
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+        }
+    }
+
+    public function removeCategory(Category $category): void
+    {
+        if ($this->categories->contains($category)) {
+            $this->categories->removeElement($category);
+        }
     }
 
     public function getCity(): ?City

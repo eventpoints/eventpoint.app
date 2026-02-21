@@ -15,22 +15,52 @@ COPY composer.json composer.lock symfony.lock ./
 
 RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts
 
-# Install npm packages
-COPY package.json package-lock.json webpack.config.js ./
+FROM node:22-alpine AS js-builder
+
+WORKDIR /app
+
+# Vendor is needed because assets reference files under ../vendor/ (e.g. kerrialnewham/autocomplete)
+COPY --from=php /app/vendor ./vendor
+
+COPY package.json package-lock.json webpack.config.js tailwind.config.js ./
+
 RUN npm install
 
-# Production yarn build
+# Tailwind JIT scans templates, so copy them before building
 COPY ./assets ./assets
+COPY ./templates ./templates
 
 RUN npm run build
 
+FROM php AS app
+
+WORKDIR /app
+
 COPY . .
+
+# Overlay compiled assets from the node stage
+COPY --from=js-builder /app/public/build ./public/build
 
 # Need to run again to trigger scripts with application code present
 RUN composer install --no-dev --no-interaction --classmap-authoritative
 RUN composer symfony:dump-env prod
 RUN chmod -R 777 var
 
+FROM app AS worker
+
+# Install supervisor for managing background processes
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    supervisor \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /var/log/supervisor
+
+COPY .deployment/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD supervisorctl status | grep -E "RUNNING" || exit 1
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
 FROM ghcr.io/eventpoints/caddy:main AS caddy
 
-COPY --from=php /app/public public/
+COPY --from=app /app/public public/

@@ -2,6 +2,7 @@
 
 namespace App\Entity\Event;
 
+use App\Entity\Embeddable\Money;
 use App\Repository\Event\EventTicketOptionRepository;
 use Carbon\CarbonImmutable;
 use DateTimeImmutable;
@@ -25,16 +26,25 @@ class EventTicketOption
     #[ORM\Column(nullable: true)]
     private null|int $quantityAvailable = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $maxPerOrder = null;
+
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $isEnabled = true;
+
+    #[ORM\Embedded(class: Money::class, columnPrefix: 'price_')]
+    private Money $price;
+
     public function __construct(
         #[ORM\ManyToOne(inversedBy: 'ticketOptions')]
         private ?Event $event = null,
         #[ORM\Column(length: 255)]
         private ?string $title = null,
-        #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
-        private ?string $price = null,
-        #[ORM\Column(length: 3)]
-        private ?string $currency = null
     ) {
+        $this->price = new Money();
         $this->createdAt = new DateTimeImmutable();
     }
 
@@ -67,12 +77,12 @@ class EventTicketOption
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getPrice(): Money
     {
         return $this->price;
     }
 
-    public function setPrice(?string $price): static
+    public function setPrice(Money $price): static
     {
         $this->price = $price;
 
@@ -103,14 +113,38 @@ class EventTicketOption
         return $this;
     }
 
-    public function getCurrency(): ?string
+    public function getDescription(): ?string
     {
-        return $this->currency;
+        return $this->description;
     }
 
-    public function setCurrency(string $currency): static
+    public function setDescription(?string $description): static
     {
-        $this->currency = $currency;
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getMaxPerOrder(): ?int
+    {
+        return $this->maxPerOrder;
+    }
+
+    public function setMaxPerOrder(?int $maxPerOrder): static
+    {
+        $this->maxPerOrder = $maxPerOrder;
+
+        return $this;
+    }
+
+    public function isEnabled(): bool
+    {
+        return $this->isEnabled;
+    }
+
+    public function setIsEnabled(bool $isEnabled): static
+    {
+        $this->isEnabled = $isEnabled;
 
         return $this;
     }

@@ -10,15 +10,12 @@ use App\Entity\Event\EventInvitation;
 use App\Entity\Event\EventParticipant;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
-use App\Repository\Event\CategoryRepository;
 use Carbon\CarbonImmutable;
 
 final readonly class EventFactory
 {
-    public function __construct(
-        private CategoryRepository $categoryRepository
-    ) {
-    }
+    public function __construct() {}
+
 
     public function create(
         null|string $title = null,
@@ -75,8 +72,8 @@ final readonly class EventFactory
     ): Event {
         $event = new Event(
             title: $eventDto->getTitle(),
-            startAt: CarbonImmutable::create($eventDto->getStartAt()),
-            endAt: CarbonImmutable::create($eventDto->getEndAt()),
+            startAt: $eventDto->getStartAt(),
+            endAt: $eventDto->getEndAt(),
             description: $eventDto->getDescription(),
             latitude: $eventDto->getLatitude(),
             longitude: $eventDto->getLongitude(),
@@ -85,8 +82,7 @@ final readonly class EventFactory
             eventGroup: $eventDto->getEventGroup(),
         );
 
-        foreach ($eventDto->getCategories() as $id) {
-            $category = $this->categoryRepository->find($id);
+        foreach ($eventDto->getCategories() as $category) {
             $event->addCategory($category);
         }
 

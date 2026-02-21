@@ -39,12 +39,17 @@ class EventVoter extends Voter
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         $currentUser = $token->getUser();
+
+        // VIEW_EVENT is special: unauthenticated users can view public events
+        if ($attribute === self::VIEW_EVENT) {
+            return $this->canViewEvent($subject, $currentUser instanceof User ? $currentUser : null);
+        }
+
         if (! $currentUser instanceof User) {
             return false;
         }
 
         return match ($attribute) {
-            self::VIEW_EVENT => $this->canViewEvent($subject, $currentUser),
             self::EDIT_EVENT => $this->canEditEvent($subject, $currentUser),
             self::CANCEL_EVENT => $this->canCancelEvent($subject, $currentUser),
             default => false
@@ -79,10 +84,28 @@ class EventVoter extends Voter
         return $participant->getRole() === EventParticipantRoleEnum::ROLE_ORGANISER;
     }
 
-    private function canViewEvent(Event $event, User $currentUser): bool
+    private function canViewEvent(Event $event, ?User $currentUser): bool
     {
-        $participant = $this->getCurrentUserParticipant($event, $currentUser);
+        // Unauthenticated users always see limited details
+        if ($currentUser === null) {
+            return false;
+        }
 
-        return $participant instanceof EventParticipant;
+        // Owner always has access
+        if ($event->getOwner() === $currentUser) {
+            return true;
+        }
+
+        // Any participant (organiser, moderator, sponsor, regular participant) can view
+        if ($this->getCurrentUserParticipant($event, $currentUser) instanceof EventParticipant) {
+            return true;
+        }
+
+        // Users who have been invited (pending or accepted) can view
+        if ($event->hasUserInvitation($currentUser)) {
+            return true;
+        }
+
+        return false;
     }
 }

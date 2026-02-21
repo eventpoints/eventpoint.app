@@ -45,7 +45,7 @@ final class FlowbiteDateTimeTransformer implements DataTransformerInterface
 
         return [
             'date' => $dt->format($this->dateFormat),
-            'time' => $dt->format($this->timeFormat),
+            'time' => $dt->format('H:i:s'),
         ];
     }
 
@@ -65,10 +65,12 @@ final class FlowbiteDateTimeTransformer implements DataTransformerInterface
             return null;
         }
         if ($date !== '' && $time === '') {
-            $time = '00:00';
+            $time = '00:00:00';
         }
 
-        $format = $this->dateFormat . ' ' . $this->timeFormat;
+        // TimeType with input='string' always returns seconds (H:i:s),
+        // so always parse with seconds included
+        $format = $this->dateFormat . ' H:i:s';
         $tz = $this->modelTimezone ? new DateTimeZone($this->modelTimezone) : null;
 
         $dt = $tz instanceof \DateTimeZone

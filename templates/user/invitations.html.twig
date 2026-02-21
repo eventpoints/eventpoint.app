@@ -10,17 +10,16 @@
             </div>
             <div class="col-12 col-md-6">
                 <div class="row justify-content-start my-3">
-                    <div class="fs-3 fw-bold text-end">{{ 'invitations'|trans|upper }}</div>
-                    <hr/>
+                    <h2 class="mb-6 text-xl font-semibold text-gray-900">{{ 'invitations'|trans|capitalize }}</h2>
                     <div class="col-12">
                         <div class="card mb-3">
                             <div class="list-group list-group-flush">
                                 {% for invitation in eventInvitations %}
-                                    {{ component('event_invitation_response_form', {
-                                        eventInvitation:  invitation
+                                    {{ include('components/event_invitation_response_form.html.twig', {
+                                        invitation: invitation
                                     }) }}
                                 {% else %}
-                                    <div class="list-group-item text-center text-muted fw-bold">{{ 'no-invitations-found'|trans|upper }}</div>
+                                    <div class="list-group-item text-center fw-bold">{{ 'no-invitations-found'|trans }}</div>
                                 {% endfor %}
                             </div>
                         </div>

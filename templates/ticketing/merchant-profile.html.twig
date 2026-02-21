@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'ticketing.merchant.page_title'|trans }} - Event Point{% endblock %}
+
+{% block body %}
+<div class="mx-auto max-w-xl px-4 py-8">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">{{ 'ticketing.merchant.page_title'|trans }}</h1>
+        <p class="mt-1 text-sm text-gray-600">{{ 'ticketing.merchant.page_subtitle'|trans }}</p>
+    </div>
+
+    {{ form_start(form, {'attr': {'class': 'space-y-6', 'data-turbo': 'false'}}) }}
+
+    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-4 text-lg font-semibold text-gray-800">{{ 'ticketing.merchant.section_identity'|trans }}</h2>
+        <div class="space-y-4">
+            {{ form_row(form.sellerType) }}
+            {{ form_row(form.supportEmail) }}
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-4 text-lg font-semibold text-gray-800">{{ 'ticketing.merchant.section_refund_policy'|trans }}</h2>
+        <p class="mb-4 text-sm text-gray-500">{{ 'ticketing.merchant.refund_policy_hint'|trans }}</p>
+        <div class="space-y-4">
+            {{ form_row(form.refundPolicyType) }}
+            {{ form_row(form.refundPolicyDaysBefore) }}
+            {{ form_row(form.refundPolicyText) }}
+            {{ form_row(form.eventCancellationPolicyText) }}
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-4 text-lg font-semibold text-gray-800">{{ 'ticketing.merchant.section_agreements'|trans }}</h2>
+        <p class="mb-4 text-sm text-gray-500">{{ 'ticketing.merchant.stripe_note'|trans }}</p>
+        <div class="space-y-3">
+            {{ form_row(form.termsAccepted) }}
+            {{ form_row(form.lawfulEventsCert) }}
+        </div>
+    </div>
+
+    <div class="flex justify-end">
+        <button type="submit" class="rounded-lg bg-primary-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500">
+            {{ 'ticketing.merchant.save_and_continue'|trans }}
+        </button>
+    </div>
+
+    {{ form_end(form) }}
+</div>
+{% endblock %}
