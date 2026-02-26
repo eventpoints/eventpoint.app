@@ -10,9 +10,14 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\UX\LiveComponent\Form\Type\LiveCollectionType;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PollFormType extends AbstractType
 {
+    public function __construct(private readonly TranslatorInterface $translator)
+    {
+    }
+
     #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -23,7 +28,7 @@ class PollFormType extends AbstractType
                     'class' => 'form-floating',
                 ],
                 'attr' => [
-                    'placeholder' => 'What would you like to ask?',
+                    'placeholder' => $this->translator->trans('poll-prompt-placeholder'),
                 ],
             ])
             ->add('pollOptions', LiveCollectionType::class, [

@@ -12,9 +12,14 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class FlowbiteDateTimeType extends AbstractType
 {
+    public function __construct(private readonly TranslatorInterface $translator)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // Date part (Flowbite)
@@ -22,7 +27,7 @@ final class FlowbiteDateTimeType extends AbstractType
                 'required' => $options['required'],
                 'attr' => array_replace([
                         'autocomplete' => 'off',
-                        'placeholder' => $options['placeholder'] ?: 'Select date',
+                        'placeholder' => $this->translator->trans($options['placeholder'] ?: 'select-date'),
                 ], $options['date_attr']),
         ]);
 
@@ -71,11 +76,11 @@ final class FlowbiteDateTimeType extends AbstractType
                 'time_step' => null,  // seconds (e.g., 60)
 
             // Presentation
-                'label' => 'Date & time',
+                'label' => 'date-and-time',
                 'row_attr' => [
                         'class' => 'space-y-2 max-w-sm',
                 ],
-                'placeholder' => 'Select date',
+                'placeholder' => 'select-date',
                 'show_floating_label' => true,
         ]);
         $resolver->setAllowedTypes('show_floating_label', 'bool');

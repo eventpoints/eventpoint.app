@@ -2471,12 +2471,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Kerrialn/autocomplete.git",
-                "reference": "abc85564c0fe5dcbfbaf703d5d33d2d6d2382c06"
+                "reference": "5fa7080f178aa7a6c05e4d3e51ffe123e885294c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Kerrialn/autocomplete/zipball/abc85564c0fe5dcbfbaf703d5d33d2d6d2382c06",
-                "reference": "abc85564c0fe5dcbfbaf703d5d33d2d6d2382c06",
+                "url": "https://api.github.com/repos/Kerrialn/autocomplete/zipball/5fa7080f178aa7a6c05e4d3e51ffe123e885294c",
+                "reference": "5fa7080f178aa7a6c05e4d3e51ffe123e885294c",
                 "shasum": ""
             },
             "require": {
@@ -2527,7 +2527,7 @@
                 "issues": "https://github.com/Kerrialn/autocomplete/issues",
                 "source": "https://github.com/Kerrialn/autocomplete/tree/main"
             },
-            "time": "2026-02-20T09:06:15+00:00"
+            "time": "2026-02-23T11:16:06+00:00"
         },
         {
             "name": "knplabs/knp-components",

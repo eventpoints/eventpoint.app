@@ -26,7 +26,9 @@ readonly class RegionalConfigurationSubscriber implements EventSubscriberInterfa
     public static function getSubscribedEvents(): array
     {
         return [
-            RequestEvent::class => ['resolveRegionalConfiguration', 100],
+            // Priority must be lower than the security firewall (priority 8) so that
+            // Security::getUser() returns the authenticated user when this runs.
+            RequestEvent::class => ['resolveRegionalConfiguration', 0],
         ];
     }
 
@@ -60,7 +62,22 @@ readonly class RegionalConfigurationSubscriber implements EventSubscriberInterfa
             $this->regionalConfigurationService->resolveUnauthenticatedUserRegionalConfiguration($this->regionalConfiguration);
         }
 
-        // 3. add regional configuration to session
+        // 3. If the URL contains a _locale route parameter, it takes priority over
+        //    session/user preferences and also updates the session for future requests.
+        $urlLocale = $request->attributes->get('_locale');
+        if ($urlLocale !== null) {
+            $this->regionalConfiguration->setLocale($urlLocale);
+            if (!($user instanceof User)) {
+                $session->set('_locale', $urlLocale);
+            }
+        }
+
+        // 4. apply resolved locale to the request so translations and URL generation use it
+        if ($this->regionalConfiguration->getLocale() !== null) {
+            $request->setLocale($this->regionalConfiguration->getLocale());
+        }
+
+        // 5. add regional configuration to session
         $session->set('regional_configuration', $this->regionalConfiguration);
     }
 }

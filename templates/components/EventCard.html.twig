@@ -35,8 +35,8 @@
                                             latitude: event.latitude
                                         }) }}
                                         class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
-                                        title="locate"
-                                        aria-label="locate event on map"
+                                        title="{{ 'locate-event'|trans }}"
+                                        aria-label="{{ 'locate-event'|trans }}"
                                 >
                                     {{ ux_icon('mdi:location',  { class: 'text-xl' }) }}
                                 </a>
@@ -56,8 +56,8 @@
                                     data-action="click->clipboard#copy"
                                     data-clipboard-target="button"
                                     class="inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
-                                    title="Share"
-                                    aria-label="Copy event link"
+                                    title="{{ 'share-event'|trans }}"
+                                    aria-label="{{ 'share-event'|trans }}"
                             >
                                 {{ ux_icon('mdi:content-copy') }}
                             </a>

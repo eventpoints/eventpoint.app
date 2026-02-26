@@ -15,13 +15,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PhoneNumberController extends AbstractController
 {
     public function __construct(
         private readonly PhoneNumberFactory $phoneNumberFactory,
         private readonly PhoneNumberHelperService $phoneNumberHelperService,
-        private readonly UserRepository $userRepository
+        private readonly UserRepository $userRepository,
+        private readonly TranslatorInterface $translator
     ) {
     }
 
@@ -38,7 +40,7 @@ class PhoneNumberController extends AbstractController
             $codeWithoutPrefix = $this->phoneNumberHelperService->getCodeWithoutPrefix($code);
 
             if (! array_key_exists($codeWithoutPrefix, $this->phoneNumberHelperService->getDialCodes())) {
-                $this->addFlash(FlashEnum::MESSAGE->value, 'Hmm... can\'t  find that dial code');
+                $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('phone-dial-code-not-found'));
                 return $this->redirectToRoute('create_user_phone_number');
             }
 

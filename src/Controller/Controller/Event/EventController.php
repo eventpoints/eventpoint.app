@@ -510,7 +510,7 @@ class EventController extends AbstractController
         $imageCollection = $this->imageCollectionFactory->create(images: $images, owner: $currentUser, event: $event);
         $this->imageCollectionRepository->save($imageCollection, true);
 
-        $this->addFlash('message', 'images uploaded');
+        $this->addFlash('message', $this->translator->trans('changes-saved'));
         return $this->redirectToRoute('show_event', [
                 'id' => $event->getId(),
         ]);

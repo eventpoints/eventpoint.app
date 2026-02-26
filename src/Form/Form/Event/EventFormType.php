@@ -7,7 +7,6 @@ namespace App\Form\Form\Event;
 use App\DataTransferObject\Event\EventDto;
 use App\DataTransferObject\MapLocationDto;
 use App\Entity\Event\Category;
-use App\Entity\Event\Event;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
 use App\Form\Type\CustomCheckBoxType;
@@ -16,7 +15,6 @@ use App\Form\Type\FlowbiteDateTimeType;
 use App\Form\Type\MapLocationType;
 use App\Repository\Event\EventGroupRepository;
 use Doctrine\ORM\QueryBuilder;
-use Kerrialnewham\Autocomplete\Form\Type\InternationalDialCodeType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
@@ -55,7 +53,7 @@ class EventFormType extends AbstractType
                         'event' => $event,
                         'constraints' => [
                                 new Assert\Callback(function ($mapLocationDto, $context): void {
-                                    if (! $mapLocationDto instanceof MapLocationDto) {
+                                    if (!$mapLocationDto instanceof MapLocationDto) {
                                         $context->buildViolation('location.required')
                                                 ->addViolation();
                                         return;
@@ -67,8 +65,12 @@ class EventFormType extends AbstractType
                                 }),
                         ],
                 ])
-                ->add('title', TextType::class)
-                ->add('description', TextareaType::class)
+                ->add('title', TextType::class, [
+                        'label' => 'title',
+                ])
+                ->add('description', TextareaType::class, [
+                        'label' => 'description',
+                ])
                 ->add('startAt', FlowbiteDateTimeType::class, [
                         'label' => $this->translator->trans('startAt')
                 ])
@@ -120,9 +122,15 @@ class EventFormType extends AbstractType
             ]);
         } else {
             $builder
-                    ->add('email', EmailType::class)
-                    ->add('firstName', TextType::class)
-                    ->add('lastName', TextType::class);
+                    ->add('email', EmailType::class, [
+                            'label' => 'email',
+                    ])
+                    ->add('firstName', TextType::class, [
+                            'label' => 'first-name',
+                    ])
+                    ->add('lastName', TextType::class, [
+                            'label' => 'last-name',
+                    ]);
         }
     }
 

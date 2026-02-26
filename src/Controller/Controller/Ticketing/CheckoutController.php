@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_USER')]
 class CheckoutController extends AbstractController
@@ -28,6 +29,7 @@ class CheckoutController extends AbstractController
         private readonly StripeCheckoutService $stripeCheckoutService,
         private readonly OrderRepository $orderRepository,
         private readonly TicketMerchantGate $merchantGate,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -39,7 +41,7 @@ class CheckoutController extends AbstractController
         )->toArray();
 
         if (empty($ticketOptions)) {
-            $this->addFlash('warning', 'ticketing.checkout.no_tickets_available');
+            $this->addFlash('warning', $this->translator->trans('ticketing.checkout.no_tickets_available'));
             return $this->redirectToRoute('show_event', ['id' => $event->getId()]);
         }
 
@@ -70,7 +72,7 @@ class CheckoutController extends AbstractController
             }
 
             if ($totalCents === 0) {
-                $this->addFlash('warning', 'ticketing.checkout.select_at_least_one');
+                $this->addFlash('warning', $this->translator->trans('ticketing.checkout.select_at_least_one'));
                 return $this->redirectToRoute('event_checkout', ['id' => $event->getId()]);
             }
 
@@ -113,7 +115,7 @@ class CheckoutController extends AbstractController
     #[Route(path: '/checkout/cancel', name: 'checkout_cancel', methods: ['GET'])]
     public function cancel(): Response
     {
-        $this->addFlash('info', 'ticketing.checkout.cancelled');
+        $this->addFlash('info', $this->translator->trans('ticketing.checkout.cancelled'));
         return $this->redirectToRoute('events');
     }
 }

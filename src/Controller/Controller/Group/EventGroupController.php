@@ -327,7 +327,7 @@ class EventGroupController extends AbstractController
             }
             $this->eventGroupRepository->save(entity: $eventGroup, flush: true);
 
-            $this->addFlash('message', $this->translator->trans(''));
+            $this->addFlash('message', $this->translator->trans('changes-saved'));
             return $this->redirectToRoute('event_group_settings', [
                     'id' => $eventGroup->getId(),
             ]);

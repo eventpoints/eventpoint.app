@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[IsGranted('ROLE_USER')]
 class EventTicketingController extends AbstractController
@@ -25,6 +26,7 @@ class EventTicketingController extends AbstractController
         private readonly EventRepository $eventRepository,
         private readonly EventTicketOptionRepository $ticketOptionRepository,
         private readonly TicketMerchantGate $merchantGate,
+        private readonly TranslatorInterface $translator,
     ) {
     }
 
@@ -87,7 +89,7 @@ class EventTicketingController extends AbstractController
         $event->removeTicketOption($ticketOption);
         $this->ticketOptionRepository->remove($ticketOption, true);
 
-        $this->addFlash('success', 'ticketing.ticket_option.deleted');
+        $this->addFlash('success', $this->translator->trans('ticketing.ticket_option.deleted'));
         return $this->redirectToRoute('event_tickets', ['id' => $event->getId()]);
     }
 

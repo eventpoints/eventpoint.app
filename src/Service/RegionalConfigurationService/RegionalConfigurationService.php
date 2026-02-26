@@ -9,7 +9,7 @@ use App\Enum\RegionalEnum;
 use App\Model\RegionalConfiguration;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class RegionalConfigurationService
+final class RegionalConfigurationService
 {
     public function __construct(
         private readonly RequestStack $requestStack
@@ -18,10 +18,27 @@ class RegionalConfigurationService
 
     public function resolveAuthenticatedUserRegionalConfiguration(User $user, RegionalConfiguration $regionalConfiguration): void
     {
-        $regionalConfiguration->setLocale($user->getLocale());
-        $regionalConfiguration->setRegion($user->getCountry());
-        $regionalConfiguration->setCurrency($user->getCurrency());
-        $regionalConfiguration->setTimezone($user->getTimezone());
+        // User preferences take priority; fall back to browser data, then system defaults.
+        $regionalConfiguration->setLocale(
+            $user->getLocale()
+            ?? RegionalEnum::REGIONAL_LOCALE->value
+        );
+
+        $regionalConfiguration->setRegion(
+            $user->getCountry()
+            ?? $regionalConfiguration->getBrowserRegionalData()?->getCountryCode()
+            ?? RegionalEnum::REGIONAL_REGION->value
+        );
+
+        $regionalConfiguration->setCurrency(
+            $user->getCurrency()
+            ?? RegionalEnum::REGIONAL_CURRENCY->value
+        );
+
+        $regionalConfiguration->setTimezone(
+            $regionalConfiguration->getBrowserRegionalData()?->getTimezone()
+            ?? RegionalEnum::REGIONAL_TIMEZONE->value
+        );
     }
 
     public function resolveUnauthenticatedUserRegionalConfiguration(RegionalConfiguration $regionalConfiguration): void
@@ -38,7 +55,7 @@ class RegionalConfigurationService
         $unauthenticatedUserTimezone = $this->resolveUnauthenticatedUserTimezone($regionalConfiguration);
         $regionalConfiguration->setTimezone($unauthenticatedUserTimezone);
 
-        // 2. resolve unauthenticated user currency
+        // 4. resolve unauthenticated user region
         $unauthenticatedUserRegion = $this->resolveUnauthenticatedUserRegion($regionalConfiguration);
         $regionalConfiguration->setRegion($unauthenticatedUserRegion);
     }
@@ -50,16 +67,20 @@ class RegionalConfigurationService
 
     public function resolveUnauthenticatedUserCurrency(): null|string
     {
-        return $this->requestStack->getSession()->get('_currency') ?? RegionalEnum::REGIONAL_CURRECNY->value;
+        return $this->requestStack->getSession()->get('_currency') ?? RegionalEnum::REGIONAL_CURRENCY->value;
     }
 
     public function resolveUnauthenticatedUserTimezone(RegionalConfiguration $regionalConfiguration): null|string
     {
-        return $this->requestStack->getSession()->get('_timezone') ?? $regionalConfiguration->getBrowserRegionalData()?->getTimezone();
+        return $this->requestStack->getSession()->get('_timezone')
+            ?? $regionalConfiguration->getBrowserRegionalData()?->getTimezone()
+            ?? RegionalEnum::REGIONAL_TIMEZONE->value;
     }
 
     private function resolveUnauthenticatedUserRegion(RegionalConfiguration $regionalConfiguration): null|string
     {
-        return $this->requestStack->getSession()->get('_region') ?? $regionalConfiguration->getBrowserRegionalData()?->getCountryCode();
+        return $this->requestStack->getSession()->get('_region')
+            ?? $regionalConfiguration->getBrowserRegionalData()?->getCountryCode()
+            ?? RegionalEnum::REGIONAL_REGION->value;
     }
 }

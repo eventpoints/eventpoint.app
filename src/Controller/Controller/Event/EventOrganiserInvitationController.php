@@ -47,7 +47,7 @@ class EventOrganiserInvitationController extends AbstractController
             $eventOrganiserInvitation->setOwner($owner);
 
             $event->addEventOrganiserInvitation($eventOrganiserInvitation);
-            $this->addFlash(FlashEnum::MESSAGE->value, 'invitation sent');
+            $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('invitation-sent'));
             $this->eventOrganiserInvitationRepository->save($eventOrganiserInvitation, true);
             return $this->redirectToRoute('manage_event_organisers', [
                 'id' => $event->getId(),

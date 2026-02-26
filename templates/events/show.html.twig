@@ -212,9 +212,7 @@
                                             <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'password'|trans }}</label>
                                             {{ form_widget(activeForm.plainPassword) }}
                                         </div>
-                                        <div class="flex justify-center">
-                                            <div class="cf-turnstile" data-sitekey="{{ turnstile_public_key }}"></div>
-                                        </div>
+                                        <div class="cf-turnstile" data-sitekey="{{ turnstile_public_key }}" data-size="invisible"></div>
                                         <button type="submit"
                                                 class="w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700">
                                             {% if requestAccessForm is not null %}
@@ -304,9 +302,7 @@
                                         <label class="mb-1.5 block text-sm font-medium text-gray-700">{{ 'password'|trans }}</label>
                                         {{ form_widget(registrationForm.plainPassword) }}
                                     </div>
-                                    <div class="flex justify-center">
-                                        <div class="cf-turnstile" data-sitekey="{{ turnstile_public_key }}"></div>
-                                    </div>
+                                    <div class="cf-turnstile" data-sitekey="{{ turnstile_public_key }}" data-size="invisible"></div>
                                     <button type="submit"
                                             class="w-full rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-700">
                                         {{ 'create-account'|trans }}
@@ -593,4 +589,9 @@
         </div>
     </div>
 
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 {% endblock %}

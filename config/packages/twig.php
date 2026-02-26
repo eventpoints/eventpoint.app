@@ -33,6 +33,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
                     'form/fields/category_group_type.html.twig',
                     'form/fields/custom_enum_group.html.twig',
                     'form/fields/custom_checkbox.html.twig',
+                    'form/fields/selection_type.html.twig',
                     'form/fields/flowbite_datetime.html.twig',
                     'form/fields/map_location.html.twig',
                     'form/fields/password_toggle.html.twig'

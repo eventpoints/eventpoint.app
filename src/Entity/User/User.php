@@ -96,7 +96,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     private ?string $locale = RegionalEnum::REGIONAL_LOCALE->value;
 
     #[ORM\Column(length: 3, nullable: true)]
-    private ?string $currency = RegionalEnum::REGIONAL_CURRECNY->value;
+    private ?string $currency = RegionalEnum::REGIONAL_CURRENCY->value;
 
     #[ORM\Column(length: 3, nullable: true)]
     private ?string $country = RegionalEnum::REGIONAL_REGION->value;

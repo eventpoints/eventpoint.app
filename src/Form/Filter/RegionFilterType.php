@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Form\Filter;
 
+use App\Form\Type\CustomCheckBoxType;
+use App\Form\Type\SelectionType;
 use App\Model\RegionalConfiguration;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
 use Symfony\Component\Form\Extension\Core\Type\LanguageType;
-use Symfony\Component\Form\Extension\Core\Type\TimezoneType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -17,46 +18,43 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class RegionFilterType extends AbstractType
 {
     public function __construct(
-        private readonly TranslatorInterface $translator,
-        private readonly RegionalConfiguration $regionalSetting,
-    ) {
+            private readonly TranslatorInterface   $translator,
+            private readonly RegionalConfiguration $regionalSetting,
+    )
+    {
     }
 
     #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->setMethod('get');
-        $builder->add('locale', LanguageType::class, [
-            'label' => $this->translator->trans('language'),
-            'choice_loader' => null,
-            'choices' => [
-                'English' => 'en',
-                'Čeština' => 'cz',
-                'Русский' => 'ru',
-            ],
-            'data' => $this->regionalSetting->getLocale(),
-            'placeholder' => $this->translator->trans('language'),
-        ])
-            ->add('region', CountryType::class, [
-                'label' => $this->translator->trans('region-country'),
-                'data' => $this->regionalSetting->getRegion(),
-                'placeholder' => $this->translator->trans('region-country'),
-            ])
-            ->add('currency', CurrencyType::class, [
-                'choice_loader' => null,
+        $builder->add('locale', SelectionType::class, [
+                'label' => $this->translator->trans('language'),
+                'required' => true,
                 'choices' => [
-                    'EUR' => 'EUR',
-                    'CZK' => 'CZK',
-                    'USD' => 'USD',
+                        'English' => 'en',
+                        'Čeština' => 'cs',
+                        'Русский' => 'ru',
                 ],
-                'label' => $this->translator->trans('currency'),
-                'data' => $this->regionalSetting->getCurrency(),
-                'placeholder' => $this->translator->trans('currency'),
-            ])
-            ->add('timezone', TimezoneType::class, [
-                'data' => $this->regionalSetting->getTimezone(),
-                'placeholder' => 'timezone'
-            ]);
+                'data' => $this->regionalSetting->getLocale(),
+        ])
+                ->add('region', SelectionType::class, [
+                        'label' => $this->translator->trans('region-country'),
+                        'required' => true,
+                        'choices' => [
+                                'Česká republika' => 'cz',
+                        ],
+                        'empty_data' => $this->regionalSetting->getRegion(),
+                ])
+                ->add('currency', SelectionType::class, [
+                        'label' => $this->translator->trans('currency'),
+                        'required' => true,
+                        'choices' => [
+                                'EUR' => 'EUR',
+                                'CZK' => 'CZK',
+                        ],
+                        'empty_data' => $this->regionalSetting->getLocale(),
+                ]);
     }
 
     #[\Override]
@@ -64,7 +62,7 @@ class RegionFilterType extends AbstractType
     {
         $resolver->setRequired(['request']);
         $resolver->setDefaults([
-            'data_class' => RegionalConfiguration::class,
+                'data_class' => RegionalConfiguration::class,
         ]);
     }
 }

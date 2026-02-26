@@ -64,9 +64,9 @@ class EmailController extends AbstractController
 
             if ($email instanceof Email) {
                 if ($email->getOwner() === $currentUser) {
-                    $this->addFlash(FlashEnum::MESSAGE->value, 'email address already on your account');
+                    $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('email-already-on-account'));
                 } else {
-                    $this->addFlash(FlashEnum::MESSAGE->value, 'an account already exists with that email address. if you still wish to add this email address to this account, close the other account first.');
+                    $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('email-account-exists-elsewhere'));
                 }
                 return $this->redirectToRoute('create_user_email');
             }

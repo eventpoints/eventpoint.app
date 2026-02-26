@@ -24,12 +24,12 @@
                    w-8 h-8 -mr-1 text-white
                    text-heading/70 bg-transparent rounded-full
                    hover:bg-neutral-tertiary focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-neutral-tertiary hover:bg-primary-700"
-            aria-label="Remove {{ label_text }}"
+            aria-label="{{ 'remove-badge'|trans }} {{ label_text }}"
             data-action="click->kerrialnewham--autocomplete--ssr-autocomplete#removeChip">
         <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 18 6M18 18 6 6"/>
         </svg>
-        <span class="sr-only">Remove badge</span>
+        <span class="sr-only">{{ 'remove-badge'|trans }}</span>
     </button>
 
     <input type="hidden"
