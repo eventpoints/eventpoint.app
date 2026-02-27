@@ -72,8 +72,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-php.outputs.tags }}
           labels: ${{ steps.meta-php.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: true
 
       - name: Build and push Caddy
         uses: docker/build-push-action@v5
@@ -83,8 +82,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-caddy.outputs.tags }}
           labels: ${{ steps.meta-caddy.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: true
 
       - name: Build and push Worker
         uses: docker/build-push-action@v5
@@ -94,8 +92,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-worker.outputs.tags }}
           labels: ${{ steps.meta-worker.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          no-cache: true
 
   deploy:
     runs-on: ubuntu-latest
