@@ -23,9 +23,12 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Uid\Uuid;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
+#[Vich\Uploadable]
 class Event implements Stringable
 {
     #[ORM\Id]
@@ -79,9 +82,6 @@ class Event implements Stringable
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventTicketOption::class, cascade: ['persist'])]
     private Collection $ticketOptions;
 
-    #[ORM\Column(nullable: true)]
-    private null|string $url = null;
-
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private null|CarbonImmutable $updatedAt = null;
 
@@ -97,6 +97,12 @@ class Event implements Stringable
     #[ORM\Column(length: 30, enumType: EventStatusEnum::class, options: ['default' => EventStatusEnum::DRAFT->value])]
     private EventStatusEnum $status = EventStatusEnum::DRAFT;
 
+    #[Vich\UploadableField(mapping: 'event_image', fileNameProperty: 'imageName')]
+    private ?File $imageFile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $imageName = null;
+
     public function __construct(
             #[ORM\Column(length: 255)]
             private null|string          $title = null,
@@ -110,8 +116,6 @@ class Event implements Stringable
             private null|string          $latitude = null,
             #[ORM\Column(type: 'decimal', precision: 10, scale: 7)]
             private null|string          $longitude = null,
-            #[ORM\Column(type: Types::TEXT, nullable: true)]
-            private null|string          $base64Image = null,
             #[ORM\Column]
             private null|bool            $isPrivate = false,
             #[ORM\Column(length: 255, nullable: true)]
@@ -278,14 +282,29 @@ class Event implements Stringable
         return $now->isAfter($this->getEndAt());
     }
 
-    public function getBase64Image(): null|string
+    public function getImageFile(): ?File
     {
-        return $this->base64Image;
+        return $this->imageFile;
     }
 
-    public function setBase64Image(null|string $base64Image): static
+    public function setImageFile(?File $imageFile): static
     {
-        $this->base64Image = $base64Image;
+        $this->imageFile = $imageFile;
+        if ($imageFile !== null) {
+            $this->updatedAt = new CarbonImmutable();
+        }
+
+        return $this;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageName(?string $imageName): static
+    {
+        $this->imageName = $imageName;
 
         return $this;
     }
@@ -815,17 +834,6 @@ class Event implements Stringable
     {
         return $this->getEventParticipants()->count();
     }
-
-    public function getUrl(): ?string
-    {
-        return $this->url;
-    }
-
-    public function setUrl(?string $url): void
-    {
-        $this->url = $url;
-    }
-
     public function getUpdatedAt(): ?CarbonImmutable
     {
         return $this->updatedAt;

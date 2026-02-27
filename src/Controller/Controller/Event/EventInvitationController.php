@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Controller\Controller\Event;
 
 use App\Entity\Event\EventInvitation;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\Event\EventInvitationFactory;
 use App\Repository\Event\EventInvitationRepository;
 use App\Security\Voter\EventVoter;
+use App\Service\MixpanelService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -24,6 +27,7 @@ class EventInvitationController extends AbstractController
         private readonly EventInvitationRepository $eventInvitationRepository,
         private readonly TranslatorInterface $translator,
         private readonly EventInvitationFactory $eventInvitationFactory,
+        private readonly MixpanelService $mixpanel,
     ) {
     }
 
@@ -78,7 +82,7 @@ class EventInvitationController extends AbstractController
     }
 
     #[Route('/accept/{id}', name: 'accept_invitation', methods: [Request::METHOD_POST])]
-    public function acceptInvitation(EventInvitation $eventInvitation, Request $request): Response
+    public function acceptInvitation(EventInvitation $eventInvitation, Request $request, #[CurrentUser] User $currentUser): Response
     {
         if (!$this->isCsrfTokenValid('respond-invitation-' . $eventInvitation->getId(), $request->request->get('_token'))) {
             throw $this->createAccessDeniedException();
@@ -86,6 +90,7 @@ class EventInvitationController extends AbstractController
 
         $this->eventInvitationFactory->accept($eventInvitation);
         $this->eventInvitationRepository->save($eventInvitation, true);
+        $this->mixpanel->trackInvitationAccepted($currentUser, $eventInvitation);
 
         $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('accept-invitation'));
 
@@ -95,7 +100,7 @@ class EventInvitationController extends AbstractController
     }
 
     #[Route('/decline/{id}', name: 'decline_invitation', methods: [Request::METHOD_POST])]
-    public function declineInvitation(EventInvitation $eventInvitation, Request $request): Response
+    public function declineInvitation(EventInvitation $eventInvitation, Request $request, #[CurrentUser] User $currentUser): Response
     {
         if (!$this->isCsrfTokenValid('respond-invitation-' . $eventInvitation->getId(), $request->request->get('_token'))) {
             throw $this->createAccessDeniedException();
@@ -103,6 +108,7 @@ class EventInvitationController extends AbstractController
 
         $this->eventInvitationFactory->decline($eventInvitation);
         $this->eventInvitationRepository->save($eventInvitation, true);
+        $this->mixpanel->trackInvitationDeclined($currentUser, $eventInvitation);
 
         $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('decline-invitation'));
 

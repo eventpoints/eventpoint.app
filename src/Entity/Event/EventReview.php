@@ -96,7 +96,7 @@ class EventReview
         return $this->venueRating;
     }
 
-    public function setVenueRating(string $venueRating): static
+    public function setVenueRating(null|string $venueRating): static
     {
         $this->venueRating = $venueRating;
 
@@ -108,7 +108,7 @@ class EventReview
         return $this->contentRating;
     }
 
-    public function setContentRating(string $contentRating): static
+    public function setContentRating(null|string $contentRating): static
     {
         $this->contentRating = $contentRating;
 
@@ -120,7 +120,7 @@ class EventReview
         return $this->hostRating;
     }
 
-    public function setHostRating(string $hostRating): static
+    public function setHostRating(null|string $hostRating): static
     {
         $this->hostRating = $hostRating;
 
@@ -132,7 +132,7 @@ class EventReview
         return $this->guestRating;
     }
 
-    public function setGuestRating(string $guestRating): static
+    public function setGuestRating(null|string $guestRating): static
     {
         $this->guestRating = $guestRating;
 
@@ -144,7 +144,7 @@ class EventReview
         return $this->expectationRating;
     }
 
-    public function setExpectationRating(string $expectationRating): static
+    public function setExpectationRating(null|string $expectationRating): static
     {
         $this->expectationRating = $expectationRating;
 

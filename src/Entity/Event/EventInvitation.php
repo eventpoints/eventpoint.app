@@ -9,6 +9,7 @@ use App\Entity\User\PhoneNumber;
 use App\Entity\User\User;
 use App\Enum\EventInvitationStatusEnum;
 use App\Enum\EventInvitationTypeEnum;
+use App\Enum\EventRequestDeclineReasonEnum;
 use App\Repository\Event\EventInvitationRepository;
 use Carbon\CarbonImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -56,6 +57,9 @@ class EventInvitation
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private null|CarbonImmutable $resolvedAt = null;
+
+    #[ORM\Column(length: 20, nullable: true, enumType: EventRequestDeclineReasonEnum::class)]
+    private null|EventRequestDeclineReasonEnum $declineReason = null;
 
     public function __construct()
     {
@@ -234,10 +238,16 @@ class EventInvitation
         return $this;
     }
 
-    public function decline(): self
+    public function getDeclineReason(): null|EventRequestDeclineReasonEnum
+    {
+        return $this->declineReason;
+    }
+
+    public function decline(null|EventRequestDeclineReasonEnum $reason = null): self
     {
         $this->status = EventInvitationStatusEnum::DECLINED;
         $this->resolvedAt = new CarbonImmutable();
+        $this->declineReason = $reason;
 
         return $this;
     }

@@ -43,8 +43,8 @@
                         {% endif %}
                     {% endif %}
 
-                    {% if event.base64Image %}
-                        <img src="{{ event.base64Image }}"
+                    {% if event.imageFile %}
+                        <img src="{{ vich_uploader_asset(event, 'imageFile') }}"
                              class="h-48 w-full object-cover"
                              alt="{{ event.title }}">
                     {% endif %}
@@ -376,7 +376,7 @@
                                         <h3 class="text-sm font-semibold text-red-900">{{ moment.type.value|trans|title }}</h3>
                                         <p class="text-sm text-red-700">{{ event.eventCancellation.reason.value|trans|title }}</p>
                                         <div class="flex items-start gap-3 mt-3 pt-3 border-t border-red-100">
-                                            <img src="{{ event.eventCancellation.owner.avatar }}"
+                                            <img src="{{ user_avatar(event.eventCancellation.owner) }}"
                                                  class="w-8 h-8 rounded-full object-cover" alt="">
                                             <div>
                                                 <div class="text-sm font-medium text-gray-900">{{ event.eventCancellation.owner.fullName }}</div>
@@ -405,7 +405,7 @@
                             <div class="p-4 bg-gray-50 border border-gray-100 rounded-lg shadow-sm">
                                 <time class="mb-1 text-xs font-medium text-gray-400 sm:order-last">{{ event.createdAt.diffForHumans }}</time>
                                 <div class="flex items-center gap-3">
-                                    <img src="{{ event.owner.avatar }}" class="w-8 h-8 rounded-full object-cover"
+                                    <img src="{{ user_avatar(event.owner) }}" class="w-8 h-8 rounded-full object-cover"
                                          alt="">
                                     <p class="text-sm text-gray-600">{{ 'event-created-at'|trans({name: event.owner.firstName}) }}</p>
                                 </div>
@@ -460,7 +460,7 @@
                         <a href="{{ path('show_profile', {id: participant.owner.id}) }}"
                            class="flex items-center justify-between px-6 py-4 no-underline transition-colors hover:bg-gray-50">
                             <div class="flex items-center gap-3">
-                                <img src="{{ participant.owner.avatar }}" class="h-10 w-10 rounded-full object-cover"
+                                <img src="{{ user_avatar(participant.owner) }}" class="h-10 w-10 rounded-full object-cover"
                                      alt="">
                                 <div>
                                     <div class="font-medium text-gray-900">{{ participant.owner.fullName|title }}</div>
@@ -503,7 +503,7 @@
                         <div class="flex items-center justify-between px-6 py-4">
                             {% if invitation.targetUser %}
                                 <div class="flex items-center gap-3">
-                                    <img src="{{ invitation.targetUser.avatar }}"
+                                    <img src="{{ user_avatar(invitation.targetUser) }}"
                                          class="h-10 w-10 rounded-full object-cover" alt="">
                                     <div>
                                         <div class="font-medium text-gray-900">{{ invitation.targetUser.fullName|title }}</div>

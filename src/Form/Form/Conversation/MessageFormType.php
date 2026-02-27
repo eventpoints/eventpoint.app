@@ -16,9 +16,12 @@ class MessageFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('content', TextareaType::class, [
-            'row_attr' => [
-                'class' => 'form-floating mb-3',
-            ],
+                'attr' => [
+                        'data-controller' => 'textarea-autogrow'
+                ],
+                'row_attr' => [
+                        'class' => 'form-floating mb-3',
+                ],
         ]);
     }
 
@@ -26,7 +29,7 @@ class MessageFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Message::class,
+                'data_class' => Message::class,
         ]);
     }
 }

@@ -178,4 +178,8 @@ return array (
   'ticketing.merchant.terms_must_be_accepted' => '__ticketing.merchant.terms_must_be_accepted',
   'ticketing.merchant.lawful_events_cert_required' => '__ticketing.merchant.lawful_events_cert_required',
   'There\'s already a group with this name' => '__There\'s already a group with this name',
+  'event.start_date_required' => 'Start date is required',
+  'event.start_date_must_be_in_future' => 'Event start date must be in the future',
+  'event.end_date_required' => 'End date is required',
+  'event.end_date_must_be_after_start_date' => 'Event end date must be after the start date',
 );

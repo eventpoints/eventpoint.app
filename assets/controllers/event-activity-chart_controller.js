@@ -8,37 +8,39 @@ export default class extends Controller {
 
     connect() {
         this.loadChart();
-
     }
 
     loadChart() {
-        const chartCanvas = this.element;
+        const canvas = this.element;
         const dailyActivity = JSON.parse(this.eventsValue);
+        const ctx = canvas.getContext('2d');
 
-        const ctx = chartCanvas.getContext('2d');
+        // Brand gradient fill
+        const gradient = ctx.createLinearGradient(0, 0, 0, canvas.offsetHeight || 160);
+        gradient.addColorStop(0, 'rgba(102, 0, 51, 0.18)');
+        gradient.addColorStop(1, 'rgba(102, 0, 51, 0)');
 
-        const chart = new Chart(ctx, {
+        new Chart(ctx, {
             type: 'line',
             data: {
                 labels: Object.keys(dailyActivity),
                 datasets: [{
                     data: Object.values(dailyActivity),
-                    borderColor: '#00695c',
-                    borderWidth: 5,
-                    backgroundColor: 'transparent',
-                    fill: false,
+                    borderColor: '#660033',
+                    borderWidth: 2.5,
+                    backgroundColor: gradient,
+                    fill: true,
                     pointRadius: 0,
-                    pointHoverRadius: 0,
+                    pointHoverRadius: 4,
+                    pointHoverBackgroundColor: '#660033',
+                    pointHoverBorderColor: '#fff',
+                    pointHoverBorderWidth: 2,
+                    tension: 0.4,
                 }],
             },
             options: {
                 layout: {
-                    padding: {
-                        left: 0,
-                        right: 0,
-                        top: 10,
-                        bottom: 0,
-                    },
+                    padding: { top: 8, bottom: 0, left: 0, right: 0 },
                 },
                 scales: {
                     x: {
@@ -47,42 +49,36 @@ export default class extends Controller {
                             unit: 'day',
                             tooltipFormat: 'EEE, d MMM',
                         },
-                        grid: {
-                            display: false,
-                            drawBorder: false,
-                        },
-                        ticks: {
-                            display: false,
-                        },
+                        grid: { display: false, drawBorder: false },
+                        ticks: { display: false },
+                        border: { display: false },
                     },
                     y: {
                         beginAtZero: true,
-                        grid: {
-                            display: false,
-                            drawBorder: false,
-                        },
-                        ticks: {
-                            display: false,
-                        },
+                        grid: { display: false, drawBorder: false },
+                        ticks: { display: false },
+                        border: { display: false },
                     },
                 },
                 plugins: {
-                    legend: {
-                        display: false,
-                    },
+                    legend: { display: false },
                     tooltip: {
                         enabled: true,
                         intersect: false,
                         mode: 'index',
                         position: 'nearest',
+                        backgroundColor: '#1f2937',
+                        titleColor: '#9ca3af',
+                        bodyColor: '#f9fafb',
+                        padding: 10,
+                        cornerRadius: 8,
+                        displayColors: false,
                         callbacks: {
-                            label: (context) => {
-                                return context.dataset.label
-                            },
+                            title: (items) => items[0]?.label ?? '',
+                            label: (ctx) => `${ctx.parsed.y} event${ctx.parsed.y !== 1 ? 's' : ''}`,
                         },
                     },
                 },
-                cubicInterpolationMode: 'monotone',
                 responsive: true,
                 maintainAspectRatio: false,
             },

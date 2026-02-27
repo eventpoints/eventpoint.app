@@ -84,7 +84,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
                         lastName: $googleUser->getLastName() . '',
                         email: $email,
                         password: null,
-                        avatar: $googleUser->getAvatar(),
+                        avatarUrl: $googleUser->getAvatar(),
                     );
                     $user->addEmail($email);
                     $user->setEmail($email);

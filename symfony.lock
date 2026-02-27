@@ -88,6 +88,18 @@
             "config/packages/knpu_oauth2_client.yaml"
         ]
     },
+    "mixpanel/mixpanel-php": {
+        "version": "2.11",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "2.8",
+            "ref": "11d9b1125137cb0ddb519084f3884d4c5f72d6a1"
+        },
+        "files": [
+            "config/packages/mixpanel.yaml"
+        ]
+    },
     "nelmio/cors-bundle": {
         "version": "2.4",
         "recipe": {
@@ -393,6 +405,9 @@
     "symfony/ux-chartjs": {
         "version": "v2.13.2"
     },
+    "symfony/ux-dropzone": {
+        "version": "v2.32.0"
+    },
     "symfony/ux-icons": {
         "version": "2.32",
         "recipe": {
@@ -536,6 +551,15 @@
     },
     "twig/extra-bundle": {
         "version": "v3.7.1"
+    },
+    "vich/uploader-bundle": {
+        "version": "2.9",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.13",
+            "ref": "1b3064c2f6b255c2bc2f56461aaeb76b11e07e36"
+        }
     },
     "willdurand/geocoder-bundle": {
         "version": "5.19",

@@ -6,6 +6,7 @@
         "@hotwired/turbo": "^7.0.1",
         "@symfony/stimulus-bridge": "^3.0.0",
         "@symfony/ux-chartjs": "file:vendor/symfony/ux-chartjs/assets",
+        "@symfony/ux-dropzone": "file:vendor/symfony/ux-dropzone/assets",
         "@symfony/ux-leaflet-map": "file:vendor/symfony/ux-leaflet-map/assets",
         "@symfony/ux-live-component": "file:vendor/symfony/ux-live-component/assets",
         "@symfony/ux-turbo": "file:vendor/symfony/ux-turbo/assets",

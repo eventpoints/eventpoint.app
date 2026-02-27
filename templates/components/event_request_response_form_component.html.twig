@@ -1,35 +1,63 @@
 {% if eventRequest.event.isAttending(eventRequest.owner) %}
-    <div {{ attributes }} class="list-group-item text-center">
-        <div class="bi bi-check-circle text-success fs-4"></div>
-        <div>{{ 'response-sent'|trans }}</div>
+    <div {{ attributes }} class="flex items-center gap-3 px-6 py-4 text-sm text-gray-500">
+        <svg class="h-5 w-5 shrink-0 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        {{ 'response-sent'|trans }}
+    </div>
+{% elseif eventRequest.isDeclined %}
+    <div {{ attributes }} class="flex items-center gap-3 px-6 py-4 text-sm text-gray-400 line-through">
+        <img src="{{ user_avatar(eventRequest.owner) }}" class="h-8 w-8 rounded-full object-cover opacity-50" alt="">
+        {{ eventRequest.owner.fullName }}
     </div>
 {% else %}
-    <div {{ attributes }}
-            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-        <div class="d-flex justify-content-start align-items-start">
-            <div class="me-3">
-                <img src="{{ eventRequest.owner.avatar }}" class=" border" height="50"/>
+    <div {{ attributes }}>
+        <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center gap-3">
+                <img src="{{ user_avatar(eventRequest.owner) }}" class="h-10 w-10 rounded-full object-cover" alt="">
+                <div>
+                    <div class="font-medium text-gray-900">{{ eventRequest.owner.fullName }}</div>
+                    <div class="text-xs text-gray-500">{{ eventRequest.createdAt|time_ago }}</div>
+                </div>
             </div>
-            <div>
-                <div class="fw-bold">{{ eventRequest.owner.fullName }}</div>
-                <div>{{ eventRequest.createdAt|time_ago }}</div>
+            <div class="flex items-center gap-2">
+                <button type="button"
+                        data-action="live#action:prevent"
+                        data-live-action-param="accept"
+                        class="inline-flex h-8 w-8 items-center justify-center rounded-full text-green-600 transition-colors hover:bg-green-50"
+                        title="{{ 'accept-request'|trans }}">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </button>
+                <button type="button"
+                        data-action="live#action:prevent"
+                        data-live-action-param="toggleReasonPicker"
+                        class="inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors {{ showReasonPicker ? 'bg-red-50 text-red-600' : 'text-red-400 hover:bg-red-50 hover:text-red-600' }}"
+                        title="{{ 'decline-request'|trans }}">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
             </div>
         </div>
-        <div class="d-flex justify-content-between align-items-center">
-            <a href="#"
-               data-action="live#action:prevent"
-               data-live-action-param="submit"
-               data-live-is-attending-param="true"
-               class="me-5">
-                <div class="bi bi-check-circle fs-1 text-primary"></div>
-            </a>
-            <a href="#"
-               data-action="live#action:prevent"
-               data-live-action-param="submit"
-               data-live-is-attending-param="false"
-            >
-                <div class="bi bi-x-circle fs-1 text-danger"></div>
-            </a>
-        </div>
+
+        {% if showReasonPicker %}
+            <div class="border-t border-gray-100 bg-gray-50 px-6 py-4">
+                <p class="mb-3 text-xs font-medium text-gray-500">{{ 'decline-reason-prompt'|trans }}</p>
+                <div class="flex flex-wrap gap-2">
+                    {% for reason in this.declineReasons %}
+                        <button type="button"
+                                data-action="live#action:prevent"
+                                data-live-action-param="confirmDecline"
+                                data-live-reason-param="{{ reason.value }}"
+                                class="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-700">
+                            {{ ('decline-reason.' ~ reason.value)|trans }}
+                        </button>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
     </div>
 {% endif %}

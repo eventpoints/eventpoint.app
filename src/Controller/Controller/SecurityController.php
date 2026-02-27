@@ -12,6 +12,7 @@ use App\Form\Form\PasswordFormType;
 use App\Form\Form\PasswordResetFormType;
 use App\Repository\User\EmailRepository;
 use App\Service\EmailService\EmailService;
+use App\Service\MixpanelService;
 use App\Service\UserTokenService\UserTokenService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -32,6 +33,7 @@ class SecurityController extends AbstractController
         private readonly EmailRepository $emailRepository,
         private readonly EmailService $emailService,
         private readonly UserTokenService $userTokenService,
+        private readonly MixpanelService $mixpanel,
     ) {
     }
 
@@ -68,6 +70,8 @@ class SecurityController extends AbstractController
 
             $emailEntity = $this->emailRepository->findOneBy(['address' => $dto->getEmail()]);
             $user = $emailEntity?->getOwner();
+
+            $this->mixpanel->trackPasswordResetRequested();
 
             // Always show success to prevent user enumeration
             if ($user instanceof User) {
@@ -124,6 +128,7 @@ class SecurityController extends AbstractController
 
             $this->entityManager->flush();
 
+            $this->mixpanel->trackPasswordResetCompleted($user);
             $this->addFlash('success', $this->translator->trans('password.changed-success'));
 
             return $this->redirectToRoute('app_login');

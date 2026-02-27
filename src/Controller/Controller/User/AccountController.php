@@ -11,7 +11,8 @@ use App\Form\Form\User\DefaultPhoneNumberFormType;
 use App\Form\Form\User\UserAccountFormType;
 use App\Form\Form\User\UserPasswordFormType;
 use App\Repository\User\UserRepository;
-use App\Service\ImageUploadService\ImageService;
+use App\Service\ImageUploadService\ImageUploadService;
+use App\Service\MixpanelService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,8 +27,9 @@ class AccountController extends AbstractController
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly UserPasswordHasherInterface $hasher,
-        private readonly ImageService $imageUploadService,
+        private readonly ImageUploadService $imageUploadService,
         private readonly TranslatorInterface $translator,
+        private readonly MixpanelService $mixpanel,
     ) {
     }
 
@@ -37,14 +39,14 @@ class AccountController extends AbstractController
         $userAccountForm = $this->createForm(UserAccountFormType::class, $currentUser);
         $userAccountForm->handleRequest($request);
         if ($userAccountForm->isSubmitted() && $userAccountForm->isValid()) {
-            $avatarData = $userAccountForm->get('avatar')->getData();
-
-            if (! empty($avatarData)) {
-                $avatar = $this->imageUploadService->processAvatar($avatarData);
-                $currentUser->setAvatar($avatar->getEncoded());
+            $avatarFile = $currentUser->getAvatarFile();
+            if ($avatarFile !== null) {
+                $optimized = $this->imageUploadService->processAvatar($avatarFile);
+                $currentUser->setAvatarFile($optimized);
             }
 
             $this->userRepository->save($currentUser, true);
+            $this->mixpanel->trackProfileUpdated($currentUser);
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changes-saved'));
             return $this->redirectToRoute('user_account');
         }
@@ -103,6 +105,7 @@ class AccountController extends AbstractController
                     $hashedPassword = $this->hasher->hashPassword($currentUser, $plainNewPassword);
                     $currentUser->setPassword($hashedPassword);
                     $this->userRepository->save($currentUser, true);
+                    $this->mixpanel->trackPasswordChanged($currentUser);
                     $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changed-saved'));
                 }
             } else {

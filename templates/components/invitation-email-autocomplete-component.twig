@@ -29,7 +29,7 @@
                 <div class="min-w-0 flex-1">
                     {% if contact.email.owner %}
                         <div class="flex items-center gap-3">
-                            <img class="h-10 w-10 rounded-full object-cover" src="{{ contact.email.owner.avatar }}" alt="">
+                            <img class="h-10 w-10 rounded-full object-cover" src="{{ user_avatar(contact.email.owner) }}" alt="">
                             <div class="min-w-0">
                                 <div class="truncate text-sm font-medium text-gray-900">{{ contact.email.owner.fullName }}</div>
                                 <div class="truncate text-xs text-gray-500">{{ contact.email.address }}</div>

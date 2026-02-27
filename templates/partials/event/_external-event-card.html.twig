@@ -1,6 +1,6 @@
 <div class="mb-2 rounded-lg border border-gray-200 bg-white shadow-sm">
-    {% if event.base64Image %}
-        <img src="{{ event.base64Image }}"
+    {% if event.imageFile %}
+        <img src="{{ vich_uploader_asset(event, 'imageFile') }}"
              class="rounded-t-lg w-full"
              alt="{{ event.title }}">
     {% endif %}

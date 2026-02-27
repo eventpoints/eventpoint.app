@@ -13,21 +13,15 @@ use Carbon\CarbonImmutable;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 final class EventDto
 {
+
+    #[Assert\Count(min: 1, max: 4, minMessage: 'event.categories.min', maxMessage: 'event.categories.max')]
     private Collection $categories;
-
-    private Collection $imageCollections;
-
     private null|CarbonImmutable $createdAt;
-
-    private null|EventCancellation $eventCancellation = null;
-
-    private Collection $eventOrganiserInvitations;
-
-    private null|string $url = null;
-
     public function __construct(
             private null|string          $email = null,
             private null|string          $firstName = null,
@@ -45,9 +39,30 @@ final class EventDto
     )
     {
         $this->categories = new ArrayCollection();
-        $this->imageCollections = new ArrayCollection();
-        $this->eventOrganiserInvitations = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
+    }
+
+    #[Assert\Callback]
+    public function validate(ExecutionContextInterface $context): void
+    {
+        // Validate start date is not in the past
+        if ($this->startAt !== null) {
+            $now = new CarbonImmutable();
+            if ($this->startAt->lessThan($now)) {
+                $context->buildViolation('event.start_date_must_be_in_future')
+                    ->atPath('startAt')
+                    ->addViolation();
+            }
+        }
+
+        // Validate end date is after start date
+        if ($this->startAt !== null && $this->endAt !== null) {
+            if ($this->endAt->lessThanOrEqualTo($this->startAt)) {
+                $context->buildViolation('event.end_date_must_be_after_start_date')
+                    ->atPath('endAt')
+                    ->addViolation();
+            }
+        }
     }
 
     public function getTitle(): null|string
@@ -132,14 +147,6 @@ final class EventDto
         return $this;
     }
 
-    /**
-     * @return Collection<int, ImageCollection>
-     */
-    public function getImageCollections(): Collection
-    {
-        return $this->imageCollections;
-    }
-
     public function getLatitude(): null|string
     {
         return $this->latitude;
@@ -206,16 +213,6 @@ final class EventDto
         $this->owner = $owner;
 
         return $this;
-    }
-
-    public function getUrl(): ?string
-    {
-        return $this->url;
-    }
-
-    public function setUrl(?string $url): void
-    {
-        $this->url = $url;
     }
 
     public function getEmail(): ?string

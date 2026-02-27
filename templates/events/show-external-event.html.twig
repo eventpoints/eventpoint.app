@@ -40,8 +40,8 @@
                         </div>
                     {% endif %}
 
-                    {% if event.base64Image %}
-                        <img src="{{ event.base64Image }}"
+                    {% if event.imageFile %}
+                        <img src="{{ vich_uploader_asset(event, 'imageFile') }}"
                              class="{{ event.eventGroup == null ? 'card-img-top' : '' }} object-fit-cover"
                              height="150px"
                              alt="{{ event.title }}">

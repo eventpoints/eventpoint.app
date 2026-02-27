@@ -11,6 +11,7 @@ use App\Enum\FlashEnum;
 use App\Factory\Event\EventInvitationFactory;
 use App\Repository\Event\EventInvitationRepository;
 use App\Repository\Event\EventRepository;
+use App\Service\MixpanelService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +23,8 @@ class EventRequestController extends AbstractController
     public function __construct(
         private readonly EventInvitationFactory $eventInvitationFactory,
         private readonly EventInvitationRepository $eventInvitationRepository,
-        private readonly EventRepository $eventRepository
+        private readonly EventRepository $eventRepository,
+        private readonly MixpanelService $mixpanel,
     ) {
     }
 
@@ -46,6 +48,7 @@ class EventRequestController extends AbstractController
         $eventRequest = $this->eventInvitationFactory->createRequest(owner: $currentUser, event: $event);
         $event->addEventInvitation($eventRequest);
         $this->eventRepository->save($event, true);
+        $this->mixpanel->trackEventRSVPRequested($currentUser, $event);
         $this->addFlash(FlashEnum::MESSAGE->value, 'request-sent');
         return $this->redirectToRoute('show_event', [
             'id' => $event->getId(),
@@ -64,6 +67,7 @@ class EventRequestController extends AbstractController
         }
 
         $this->eventInvitationRepository->remove($eventRequest, true);
+        $this->mixpanel->trackEventRSVPCancelled($currentUser, $event);
         $this->addFlash(FlashEnum::MESSAGE->value, 'request-canceled');
         return $this->redirectToRoute('show_event', [
             'id' => $event->getId(),

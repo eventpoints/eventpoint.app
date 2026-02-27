@@ -72,10 +72,24 @@ class EventFormType extends AbstractType
                         'label' => 'description',
                 ])
                 ->add('startAt', FlowbiteDateTimeType::class, [
-                        'label' => $this->translator->trans('startAt')
+                        'label' => $this->translator->trans('startAt'),
+                        'constraints' => [
+                                new Assert\NotBlank(),
+                                new Assert\GreaterThanOrEqual([
+                                        'value' => 'now',
+                                        'message' => 'event.start_date_must_be_in_future',
+                                ]),
+                        ],
                 ])
                 ->add('endAt', FlowbiteDateTimeType::class, [
-                        'label' => $this->translator->trans('endAt')
+                        'label' => $this->translator->trans('endAt'),
+                        'constraints' => [
+                                new Assert\NotBlank(),
+                                new Assert\GreaterThan([
+                                        'propertyPath' => 'parent.all[startAt].data',
+                                        'message' => 'event.end_date_must_be_after_start_date',
+                                ]),
+                        ],
                 ])
                 ->add('categories', EntityType::class, [
                         'label' => $this->translator->trans(id: 'categories', domain: 'messages'),
@@ -96,31 +110,7 @@ class EventFormType extends AbstractType
                         'required' => false,
                 ]);
 
-        if ($currentUser instanceof User) {
-            $builder->add('eventGroup', EntitySelectionGroupType::class, [
-                    'required' => false,
-                    'searchable' => false,
-                    'expanded' => true,
-                    'multiple' => false,
-                    'label' => $this->translator->trans('add-event-group'),
-                    'empty_message' => $this->translator->trans('no-groups-found'),
-                    'class' => EventGroup::class,
-                    'choice_label' => 'name',
-                    'empty_data' => null,
-                    'query_builder' => function (EventGroupRepository $er) use ($currentUser): QueryBuilder {
-                        $qb = $er->createQueryBuilder('event_group');
-                        $qb->andWhere(
-                                $qb->expr()->eq('event_group.owner', ':owner')
-                        )->setParameter('owner', $currentUser->getId());
-
-                        $qb->andWhere(
-                                $qb->expr()->eq('event_group.owner', ':owner')
-                        )->setParameter('owner', $currentUser->getId());
-
-                        return $qb;
-                    },
-            ]);
-        } else {
+        if (!$currentUser instanceof User) {
             $builder
                     ->add('email', EmailType::class, [
                             'label' => 'email',

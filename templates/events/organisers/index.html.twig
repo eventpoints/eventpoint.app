@@ -28,7 +28,7 @@
                                 <div class="flex items-start justify-start">
                                     <div>
                                         <div class="mb-3 flex">
-                                            <img height="50" class="me-3" src="{{ participant.owner.avatar }}"/>
+                                            <img height="50" class="me-3" src="{{ user_avatar(participant.owner) }}"/>
                                             <div>
                                                 <div class="mb-1 font-bold">{{ participant.owner.fullName }}</div>
                                                 <div class="mb-2 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">{{ participant.role.value|trans }}</div>
@@ -60,7 +60,7 @@
                                     <div class="flex items-start justify-start">
                                         <div>
                                             <div class="mb-3 flex">
-                                                <img height="50" class="me-3" src="{{ inviation.owner.avatar }}"/>
+                                                <img height="50" class="me-3" src="{{ user_avatar(inviation.owner) }}"/>
                                                 <div>
                                                     <div class="mb-1 font-bold">{{ inviation.owner.fullName }}</div>
                                                     <div class="mb-1 inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800">{{ inviation.role.value|trans }}</div>

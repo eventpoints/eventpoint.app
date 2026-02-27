@@ -9,12 +9,15 @@ use App\Entity\Event\EventOrganiserInvitation;
 use App\Enum\FlashEnum;
 use App\Factory\Event\EventOrganiserInvitationFactory;
 use App\Form\Form\Event\EventOrganiserInviationFormType;
+use App\Entity\User\User;
 use App\Repository\Event\EventOrganiserInvitationRepository;
 use App\Security\Voter\EventVoter;
+use App\Service\EmailService\EmailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EventOrganiserInvitationController extends AbstractController
@@ -22,12 +25,13 @@ class EventOrganiserInvitationController extends AbstractController
     public function __construct(
         private readonly EventOrganiserInvitationRepository $eventOrganiserInvitationRepository,
         private readonly EventOrganiserInvitationFactory $eventOrganiserInvitationFactory,
-        private readonly TranslatorInterface $translator
+        private readonly TranslatorInterface $translator,
+        private readonly EmailService $emailService,
     ) {
     }
 
     #[Route(path: '/event/{id}/invite/organiser', name: 'invite_event_organiser')]
-    public function invite(Event $event, Request $request): Response
+    public function invite(Event $event, Request $request, #[CurrentUser] User $currentUser): Response
     {
         $eventOrganiserInvitation = $this->eventOrganiserInvitationFactory->create(event: $event);
         $eventOrganiserInvitationForm = $this->createForm(EventOrganiserInviationFormType::class);
@@ -47,8 +51,19 @@ class EventOrganiserInvitationController extends AbstractController
             $eventOrganiserInvitation->setOwner($owner);
 
             $event->addEventOrganiserInvitation($eventOrganiserInvitation);
-            $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('invitation-sent'));
             $this->eventOrganiserInvitationRepository->save($eventOrganiserInvitation, true);
+
+            $invitedUserEmail = $eventOrganiserInvitation->getOwner()?->getEmail();
+            if ($invitedUserEmail !== null) {
+                $this->emailService->sendEventOrgniserInvitationEmail($invitedUserEmail, [
+                    'target' => $eventOrganiserInvitation->getOwner(),
+                    'owner' => $currentUser,
+                    'event' => $event,
+                    'token' => $eventOrganiserInvitation->getToken(),
+                ]);
+            }
+
+            $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('invitation-sent'));
             return $this->redirectToRoute('manage_event_organisers', [
                 'id' => $event->getId(),
             ]);

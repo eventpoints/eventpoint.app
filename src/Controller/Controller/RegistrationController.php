@@ -13,6 +13,8 @@ use App\Repository\User\EmailRepository;
 use App\Security\CustomAuthenticator;
 use App\Service\AvatarService\AvatarService;
 use App\Service\EmailEventService\EmailEventService;
+use App\Service\EmailService\EmailService;
+use App\Service\MixpanelService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -36,6 +38,8 @@ class RegistrationController extends AbstractController
         private readonly EmailFactory $emailFactory,
         private readonly EmailRepository $emailRepository,
         private readonly EmailEventService $emailEventService,
+        private readonly EmailService $emailService,
+        private readonly MixpanelService $mixpanel,
     ) {
     }
 
@@ -90,14 +94,16 @@ class RegistrationController extends AbstractController
                 )
             );
 
-            $avatar = $this->avatarService->createAvatar($user->getEmail()->getAddress());
-            $user->setAvatar($avatar);
+            $user->setAvatarFile($this->avatarService->createAvatarFile($user->getEmail()->getAddress()));
 
             $entityManager->persist($user);
             $entityManager->flush();
 
             // Link any pending email invitations to the newly registered user
             $this->emailEventService->process($user);
+
+            $this->emailService->sendRegistrationWelcomeEmail($user->getEmail(), ['user' => $user]);
+            $this->mixpanel->trackSignUp($user, 'user', 'email');
 
             // If a return URL was passed (e.g. from an event invitation page), honour it
             $targetPath = $request->query->get('_target_path');

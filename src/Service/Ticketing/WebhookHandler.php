@@ -12,6 +12,7 @@ use App\Enum\TicketStatusEnum;
 use App\Repository\Ticketing\OrderRepository;
 use App\Repository\Ticketing\StripeWebhookEventRepository;
 use App\Repository\Ticketing\TicketRepository;
+use App\Service\MixpanelService;
 use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Stripe\Event;
@@ -28,6 +29,7 @@ final class WebhookHandler
         private readonly TicketRepository $ticketRepository,
         private readonly StripeWebhookEventRepository $webhookEventRepository,
         private readonly EntityManagerInterface $entityManager,
+        private readonly MixpanelService $mixpanel,
     ) {
     }
 
@@ -81,6 +83,8 @@ final class WebhookHandler
         $order->setStatus(OrderStatusEnum::PAID);
         $order->setStripePaymentIntentId($session->payment_intent);
 
+        $this->mixpanel->trackOrderCompleted($order->getBuyer(), $order);
+
         foreach ($order->getOrderLines() as $line) {
             for ($i = 0; $i < $line->getQuantity(); $i++) {
                 $ticket = new Ticket($line);
@@ -124,6 +128,8 @@ final class WebhookHandler
 
         $order->setStatus(OrderStatusEnum::REFUNDED);
         $order->setStripeChargeId($charge->id);
+
+        $this->mixpanel->trackOrderRefunded($order->getBuyer(), $order);
 
         foreach ($order->getOrderLines() as $line) {
             $tickets = $this->ticketRepository->findBy(['orderLine' => $line]);

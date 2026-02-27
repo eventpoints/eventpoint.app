@@ -3,10 +3,6 @@
      data-event-map-event-id="{{ event.id }}"
      data-event-card-highlight>
 
-    {% for category in event.categories %}
-    <div>{{ category.title }}</div>
-    {% endfor %}
-
     {% if event.eventCancellation %}
         <div class="flex items-center justify-center bg-gray-50 py-3 text-center">
             <span class="text-xs font-medium uppercase tracking-widest text-gray-500">{{ 'event-canceled'|trans }}</span>
@@ -71,9 +67,17 @@
             </div>
         </div>
 
-        {% if event.base64Image %}
+        {% if event.imageFile %}
             <div class="h-40 w-full">
-                <img src="{{ event.base64Image }}" class="h-full w-full object-cover" alt="{{ event.title }}">
+                <img src="{{ vich_uploader_asset(event, 'imageFile') }}" class="h-full w-full object-cover" alt="{{ event.title }}">
+            </div>
+        {% endif %}
+
+        {% if not event.categories.empty %}
+            <div class="border-t border-gray-100 px-4 py-3 flex gap-3">
+                {% for category in event.categories %}
+                    <span class="border border-primary-600 text-primary text-sm font-medium px-2 py-1 rounded-full">{{ category.title|trans(domain='categories') }}</span>
+                {% endfor %}
             </div>
         {% endif %}
 
@@ -83,7 +87,7 @@
                     <div class="flex -space-x-2">
                         {% set maxAvatars = 3 %}
                         {% for i in 0..(min(event.allParticipantsCount - 1, maxAvatars - 1)) %}
-                            <img src="{{ event.owner.avatar }}"
+                            <img src="{{ user_avatar(event.owner) }}"
                                  class="h-8 w-8 rounded-full border-2 border-white object-cover shadow-sm"
                                  alt="">
                         {% endfor %}

@@ -1,6 +1,6 @@
 {% macro minCard(eventGroup) %}
     <div class="card card-hover h-100">
-        <img class="object-fit-cover card-img-top" src="{{ eventGroup.base64Image }}"/>
+        <img class="object-fit-cover card-img-top" src="{{ vich_uploader_asset(eventGroup, 'imageFile') }}"/>
         <div class="card-body text-center">
             <div class="fw-bold">{{ eventGroup.name }}</div>
         </div>
@@ -24,7 +24,7 @@
                class="list-group-item list-group-item-action">
                 <div class="d-flex justify-content-start align-items-center">
                     <div>
-                        <img src="{{ comment.owner.avatar }}" class=" border me-2"
+                        <img src="{{ user_avatar(comment.owner) }}" class=" border me-2"
                              height="50"/>
                     </div>
                     <div>
@@ -47,7 +47,7 @@
                class="list-group-item list-group-item-action">
                 <div class="d-flex justify-content-start align-items-center">
                     <div>
-                        <img src="{{ discussion.owner.avatar }}" class=" border me-2"
+                        <img src="{{ user_avatar(discussion.owner) }}" class=" border me-2"
                              height="50"/>
                     </div>
                     <div>

@@ -11,12 +11,12 @@ use App\Form\Type\CustomCheckBoxType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\LanguageType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Vich\UploaderBundle\Form\Type\VichFileType;
 
 class EventGroupSettingsFormType extends AbstractType
 {
@@ -35,9 +35,10 @@ class EventGroupSettingsFormType extends AbstractType
                 ],
                 'disabled' => true,
             ])
-            ->add('image', FileType::class, [
+            ->add('imageFile', VichFileType::class, [
                 'required' => false,
-                'mapped' => false
+                'allow_delete' => false,
+                'download_uri' => false,
             ])
             ->add('language', LanguageType::class, [
                 'required' => false,

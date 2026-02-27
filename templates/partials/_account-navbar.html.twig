@@ -63,69 +63,6 @@
         </div>
     </div>
     <div>
-        {% set isGroupShowing = app.request.attributes.get('_route') == 'user_group_memberships' or app.request.attributes.get('_route') == 'user_group_managed' or app.request.attributes.get('_route') == 'user_group_invitations' or app.request.attributes.get('_route') == 'user_group_join_requests' %}
-        <h2>
-            <button class="flex w-full items-center justify-between border-b border-gray-200 px-4 py-3 font-bold text-gray-900"
-                    type="button" data-accordion-target="#user-groups"
-                    aria-expanded="{{ isGroupShowing ? 'true' : 'false' }}"
-                    aria-controls="user-groups">
-                <span>{{ 'groups'|trans|title }}</span>
-                <svg class="h-3 w-3 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
-                </svg>
-            </button>
-        </h2>
-        <div id="user-groups" class="{{ isGroupShowing ? '' : 'hidden' }}">
-            <div class="divide-y divide-gray-200">
-                <a href="{{ path('create_event_group') }}"
-                   class="flex items-center justify-between px-4 py-3 text-gray-900 no-underline hover:bg-gray-50">
-                    <div>
-                        {{ 'create-group'|trans|title }}
-                    </div>
-                    <div class="flex items-center justify-between text-lg">
-                        <span class="bi bi-plus-circle text-2xl"></span>
-                    </div>
-                </a>
-                <a href="{{ path('user_group_memberships') }}"
-                   class="{{ app.request.attributes.get('_route') == 'user_group_memberships' ? 'bg-gray-100 text-gray-800' : '' }} flex items-center justify-between px-4 py-3 text-gray-900 no-underline hover:bg-gray-50">
-                    <div>
-                        {{ 'group-memberships'|trans|title }}
-                    </div>
-                    <div class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
-                        <span>{{ app.user.getUserGroupMemberships.count|compact_notation }}</span>
-                    </div>
-                </a>
-                <a href="{{ path('user_group_managed') }}"
-                   class="{{ app.request.attributes.get('_route') == 'user_group_managed' ? 'bg-gray-100 text-gray-800' : '' }} flex items-center justify-between px-4 py-3 text-gray-900 no-underline hover:bg-gray-50">
-                    <div>
-                        {{ 'groups-you-manage'|trans|title }}
-                    </div>
-                    <div class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
-                        <span>{{ app.user.getUserManagedGroups.count|compact_notation }}</span>
-                    </div>
-                </a>
-                <a href="{{ path('user_group_invitations') }}"
-                   class="{{ app.request.attributes.get('_route') == 'user_group_invitations' ? 'bg-gray-100 text-gray-800' : '' }} flex items-center justify-between px-4 py-3 text-gray-900 no-underline hover:bg-gray-50">
-                    <div>
-                        {{ 'groups-invitations'|trans|title }}
-                    </div>
-                    <div class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
-                        <span>{{ app.user.getUserUnansweredEventGroupInvitations.count|compact_notation }}</span>
-                    </div>
-                </a>
-                <a href="{{ path('user_group_join_requests') }}"
-                   class="{{ app.request.attributes.get('_route') == 'user_group_join_requests' ? 'bg-gray-100 text-gray-800' : '' }} flex items-center justify-between px-4 py-3 text-gray-900 no-underline hover:bg-gray-50">
-                    <div>
-                        {{ 'groups-requests'|trans|title }}
-                    </div>
-                    <div class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
-                        <span>{{ app.user.getUserEventGroupRequests.count|compact_notation }}</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-    <div>
         <div class="divide-y divide-gray-200">
             <a href="{{ path('user_conversations') }}"
                class="{{ app.request.attributes.get('_route') == 'user_conversations' ? 'bg-blue-50 text-blue-700 font-semibold' : '' }} flex items-center justify-between px-4 py-3 text-gray-900 no-underline hover:bg-gray-50">

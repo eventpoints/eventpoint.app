@@ -2,7 +2,7 @@
     <div class="divide-y divide-gray-200">
         <div class="flex items-start justify-start px-4 py-3">
             <div class="me-3">
-                <img alt="{{ eventGroup.name }} logo" src="{{ eventGroup.base64Image }}" height="50"
+                <img alt="{{ eventGroup.name }} logo" src="{{ vich_uploader_asset(eventGroup, 'imageFile') }}" height="50"
                      class="border"/>
             </div>
             <div>

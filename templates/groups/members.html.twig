@@ -15,7 +15,7 @@
                                 <div class="me-2 d-flex justify-content-start align-items-start">
                                     <a href="{{ path('show_profile', {id: groupMember.owner.id}) }}">
                                         <img class=" border me-3" height="50"
-                                             src="{{ groupMember.owner.avatar }}">
+                                             src="{{ user_avatar(groupMember.owner) }}">
                                     </a>
                                     <div>
                                         <div class="lead">{{ groupMember.owner.fullName }}</div>
@@ -57,7 +57,7 @@
                                     <div class="me-2 d-flex justify-content-start align-items-start">
                                         <a href="{{ path('show_profile', {id: joinRequest.owner.id}) }}">
                                             <img class=" border me-3" height="50"
-                                                 src="{{ joinRequest.owner.avatar }}">
+                                                 src="{{ user_avatar(joinRequest.owner) }}">
                                         </a>
                                         <div>
                                             <div class="lead">{{ joinRequest.owner.fullName }}</div>
@@ -100,7 +100,7 @@
                                     <div class="me-2 d-flex justify-content-start align-items-start">
                                         <a href="{{ path('show_profile', {id: invitation.owner.id}) }}">
                                             <img class=" border me-3" height="50"
-                                                 src="{{ invitation.owner.avatar }}">
+                                                 src="{{ user_avatar(invitation.owner) }}">
                                         </a>
                                         <div>
                                             <div class="lead">{{ invitation.owner.fullName }}</div>

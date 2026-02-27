@@ -1,71 +1,97 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container">
-        <div class="row justify-content-center g-2 mt-3">
-            <div class="col-12 col-md-3">
-                <div class="card">
-                    <div class="card-header">{{ 'conversation-members'|trans }}</div>
-                    <div class="list-group list-group-flush">
-                        {% for participant in conversation.conversationParticipants %}
-                            <a class="list-group-item list-group-item-action d-flex justify-content-start align-items-center"
-                               href="{{ path('show_profile', {id: participant.owner.id}) }}">
-                                <div>
-                                    <img src="{{ participant.owner.avatar }}" height="50"
-                                         class="border cle me-2"/>
-                                </div>
-                                <div>
-                                    <div class="fw-bold lh-1">{{ participant.owner.fullName }}</div>
-                                </div>
-                            </a>
-                        {% endfor %}
-                    </div>
+<div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-start">
+
+        {# --- Participants sidebar --- #}
+        <div class="w-full shrink-0 lg:w-60">
+            <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+                <div class="border-b border-gray-100 px-4 py-3">
+                    <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-400">{{ 'conversation-members'|trans }}</h2>
                 </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="card">
-                    <div class="card-header p-1 text-end">
-                        <div class="dropdown">
-                            <button class="btn btn-white shadow-none" type="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-three-dots-vertical fs-4 lh-1"></i>
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><a class="dropdown-item" href="#">Another action</a></li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div {{ stimulus_controller('messages') }} class="list-group messages_container list-group-flush">
-                        {% for message in conversation.messages %}
-                            {% if loop.first or message.conversationParticipant.owner != conversation.messages[loop.index0 - 1].conversationParticipant.owner %}
-                                <div class="list-group-item sticky-top z-3 d-flex justify-content-start align-items-center">
-                                    <div>
-                                        <img src="{{ message.conversationParticipant.owner.avatar }}" height="30"
-                                             class="border cle me-3"/>
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold lh-1">{{ message.conversationParticipant.owner.fullName }}</div>
-                                    </div>
-                                </div>
-                            {% endif %}
-                            <div class="list-group-item list-group-item-action">
-                                {{ message.content|nl2br }}
-                                <div class="text-center text-muted">{{ message.createdAt|format_datetime(timezone=regional.timezone,pattern=date_time_pattern) }}</div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <div class="card-footer">
-                        {{ form_start(messageForm) }}
-                        {{ form_row(messageForm.content) }}
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-primary">{{ 'send'|trans }}</button>
-                        </div>
-                        {{ form_end(messageForm) }}
-                    </div>
-                </div>
+                {% for participant in conversation.conversationParticipants %}
+                    <a href="{{ path('show_profile', {id: participant.owner.id}) }}"
+                       class="flex items-center gap-3 border-b border-gray-50 px-4 py-3 no-underline transition-colors last:border-0 hover:bg-gray-50">
+                        <img src="{{ user_avatar(participant.owner) }}"
+                             class="h-9 w-9 rounded-full object-cover ring-2 ring-white shadow-sm"
+                             alt="{{ participant.owner.fullName }}">
+                        <span class="text-sm font-medium text-gray-900">{{ participant.owner.fullName }}</span>
+                        {% if app.user and participant.owner.id == app.user.id %}
+                            <span class="ms-auto text-xs text-gray-400">{{ 'you'|trans }}</span>
+                        {% endif %}
+                    </a>
+                {% endfor %}
             </div>
         </div>
-    </div
+
+        {# --- Chat panel --- #}
+        <div class="flex flex-1 flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
+
+            {# Messages feed #}
+            <div {{ stimulus_controller('messages') }}
+                 class="flex flex-col gap-0.5 overflow-y-auto p-4"
+                 style="min-height: 320px; max-height: 62vh;">
+
+                {% for message in conversation.messages %}
+                    {% set isOwn = app.user and message.conversationParticipant.owner.id == app.user.id %}
+
+                    {# Sender header — only when sender changes #}
+                    {% if loop.first or message.conversationParticipant.owner != conversation.messages[loop.index0 - 1].conversationParticipant.owner %}
+                        <div class="mt-4 mb-1 flex items-center gap-2 first:mt-0 {{ isOwn ? 'justify-end' : 'justify-start' }}">
+                            {% if not isOwn %}
+                                <img src="{{ user_avatar(message.conversationParticipant.owner) }}"
+                                     class="h-5 w-5 rounded-full object-cover"
+                                     alt="{{ message.conversationParticipant.owner.fullName }}">
+                                <span class="text-xs font-medium text-gray-400">{{ message.conversationParticipant.owner.fullName }}</span>
+                            {% else %}
+                                <span class="text-xs font-medium text-gray-400">{{ 'you'|trans }}</span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {# Message bubble #}
+                    <div class="flex {{ isOwn ? 'justify-end' : 'justify-start' }}">
+                        <div class="max-w-xs rounded-2xl px-4 py-2 lg:max-w-md
+                                    {{ isOwn
+                                        ? 'rounded-br-sm bg-[#660033] text-white'
+                                        : 'rounded-bl-sm bg-gray-100 text-gray-900' }}">
+                            <p class="whitespace-pre-wrap text-sm leading-relaxed">{{ message.content }}</p>
+                        </div>
+                    </div>
+                    <p class="mt-1 {{ isOwn ? 'text-right' : 'text-left'  }} text-[11px] {{ isOwn ? 'text-gray-600' : 'text-gray-700' }}">
+                        {{ message.createdAt|format_datetime(timezone=regional.timezone) }}
+                    </p>
+                {% else %}
+                    <div class="flex flex-1 items-center justify-center py-16 text-center">
+                        <div>
+                            {{ ux_icon('mdi:message-outline', {class: 'mx-auto mb-3 h-10 w-10 text-gray-200'}) }}
+                            <p class="text-sm text-gray-400">{{ 'no-messages-yet'|trans }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {# Message composer #}
+            <div class="border-t border-gray-100 px-4 py-4">
+                {{ form_start(messageForm) }}
+                <div class="flex items-end gap-3">
+                    <div class="flex-1">
+                        {{ form_widget(messageForm.content, {attr: {
+                            class: 'block w-full resize-none rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#660033] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#660033]',
+                            rows: '2',
+                            placeholder: 'message-placeholder'|trans
+                        }}) }}
+                    </div>
+                    <button type="submit"
+                            class="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#660033] text-white transition-colors hover:bg-[#4d0026]">
+                        {{ ux_icon('mdi:send', {class: 'h-5 w-5'}) }}
+                    </button>
+                </div>
+                {{ form_end(messageForm) }}
+            </div>
+
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Twig\Component;
 
 use App\Entity\Event\EventInvitation;
+use App\Enum\EventRequestDeclineReasonEnum;
 use App\Factory\Event\EventInvitationFactory;
 use App\Repository\Event\EventInvitationRepository;
 use App\Repository\Event\EventRepository;
@@ -23,6 +24,9 @@ class EventRequestResponseFormComponent extends AbstractController
     #[LiveProp(writable: true)]
     public null|EventInvitation $eventRequest = null;
 
+    #[LiveProp(writable: true)]
+    public bool $showReasonPicker = false;
+
     public function __construct(
         private readonly EventRepository $eventRepository,
         private readonly EventInvitationRepository $eventInvitationRepository,
@@ -30,14 +34,30 @@ class EventRequestResponseFormComponent extends AbstractController
     ) {
     }
 
-    #[LiveAction]
-    public function submit(#[LiveArg] bool $isAttending): void
+    /** @return EventRequestDeclineReasonEnum[] */
+    public function getDeclineReasons(): array
     {
-        if ($isAttending) {
-            $this->eventInvitationFactory->accept($this->eventRequest);
-        } else {
-            $this->eventInvitationFactory->decline($this->eventRequest);
-        }
+        return EventRequestDeclineReasonEnum::cases();
+    }
+
+    #[LiveAction]
+    public function toggleReasonPicker(): void
+    {
+        $this->showReasonPicker = !$this->showReasonPicker;
+    }
+
+    #[LiveAction]
+    public function accept(): void
+    {
+        $this->eventInvitationFactory->accept($this->eventRequest);
         $this->eventInvitationRepository->save($this->eventRequest, true);
+    }
+
+    #[LiveAction]
+    public function confirmDecline(#[LiveArg] string $reason): void
+    {
+        $this->eventInvitationFactory->decline($this->eventRequest, EventRequestDeclineReasonEnum::from($reason));
+        $this->eventInvitationRepository->save($this->eventRequest, true);
+        $this->showReasonPicker = false;
     }
 }

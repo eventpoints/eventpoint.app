@@ -394,4 +394,9 @@ return array (
   'locate-event' => 'locate',
   'share-event' => 'Share',
   'remove-badge' => 'Remove',
+  'drag-and-drop-image-upload-placeholder' => 'Drag & drop images here, or click to browse',
+  'decline-reason-prompt' => 'Why are you declining?',
+  'decline-reason.full' => 'Event is full',
+  'decline-reason.not_this_time' => 'Sorry, not this time',
+  'decline-reason.not_a_good_fit' => 'Not a good fit',
 );

@@ -54,7 +54,7 @@
         {% if app.user %}
             <a class="flex items-center gap-4 border-b border-gray-100 p-5 no-underline transition-colors hover:bg-gray-50"
                href="{{ path('user_future_events') }}">
-                <img src="{{ app.user.avatar }}" class="h-12 w-12 rounded-full object-cover ring-2 ring-gray-100" alt="">
+                <img src="{{ user_avatar(app.user) }}" class="h-12 w-12 rounded-full object-cover ring-2 ring-gray-100" alt="">
                 <div class="min-w-0 flex-1">
                     <div class="truncate font-medium text-gray-900">{{ app.user.fullName }}</div>
                     <div class="truncate text-sm text-gray-500">{{ app.user.email.address }}</div>
@@ -68,11 +68,6 @@
                     {{ ux_icon('mdi:calendar-search', {class: 'text-lg text-gray-400'}) }}
                     <span>{{ 'all-events'|trans }}</span>
                 </a>
-                <a href="{{ path('event_groups') }}"
-                   class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
-                    {{ ux_icon('mdi:account-group-outline', {class: 'text-lg text-gray-400'}) }}
-                    <span>{{ 'all-groups'|trans }}</span>
-                </a>
                 <a href="{{ path('user_future_events') }}"
                    class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
                     {{ ux_icon('mdi:view-dashboard-outline', {class: 'text-lg text-gray-400'}) }}
@@ -83,11 +78,6 @@
                    class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
                     {{ ux_icon('mdi:calendar-plus', {class: 'text-lg text-gray-400'}) }}
                     <span>{{ 'create-event'|trans }}</span>
-                </a>
-                <a href="{{ path('create_event_group') }}"
-                   class="flex items-center gap-3 px-5 py-3 text-gray-700 no-underline transition-colors hover:bg-gray-50 hover:text-gray-900">
-                    {{ ux_icon('mdi:account-multiple-plus-outline', {class: 'text-lg text-gray-400'}) }}
-                    <span>{{ 'create-group'|trans }}</span>
                 </a>
                 <div class="my-2 border-t border-gray-100"></div>
                 <a href="{{ path('user_account') }}"

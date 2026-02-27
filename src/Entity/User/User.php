@@ -35,13 +35,16 @@ use Doctrine\ORM\Mapping as ORM;
 use LogicException;
 use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[Vich\Uploadable]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringable, UpdatedAtInterface
 {
     #[ORM\Id]
@@ -74,8 +77,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[ORM\Column(nullable: true)]
     private null|int $age = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $avatar = null;
+    #[Vich\UploadableField(mapping: 'user_avatar', fileNameProperty: 'avatarName')]
+    private ?File $avatarFile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $avatarName = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $avatarUrl = null;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: ImageCollection::class)]
     private Collection $imageCollections;
@@ -170,11 +179,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
     #[ORM\OneToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'RESTRICT')]
-    #[Assert\NotNull]
+    #[Assert\NotNull(groups: ['user_profile'])]
     private Email $email;
 
     #[ORM\OneToMany(targetEntity: Email::class, mappedBy: 'owner', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[Assert\Count(min: 1)]
+    #[Assert\Count(min: 1, groups: ['user_profile'])]
     private Collection $emails;
 
     #[ORM\OneToOne(targetEntity: TicketMerchantProfile::class, mappedBy: 'owner', cascade: ['persist', 'remove'])]
@@ -282,6 +291,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         // $this->plainPassword = null;
     }
 
+    public function __serialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'password' => $this->password,
+            'roles' => $this->roles,
+            'isVerified' => $this->isVerified,
+            'isEnabled' => $this->isEnabled,
+        ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->id = $data['id'];
+        $this->email = $data['email'];
+        $this->password = $data['password'];
+        $this->roles = $data['roles'];
+        $this->isVerified = $data['isVerified'];
+        $this->isEnabled = $data['isEnabled'];
+    }
+
     public function isVerified(): bool
     {
         return $this->isVerified;
@@ -330,14 +361,41 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         return $this;
     }
 
-    public function getAvatar(): ?string
+    public function getAvatarFile(): ?File
     {
-        return $this->avatar;
+        return $this->avatarFile;
     }
 
-    public function setAvatar(string $avatar): static
+    public function setAvatarFile(?File $avatarFile): static
     {
-        $this->avatar = $avatar;
+        $this->avatarFile = $avatarFile;
+        if ($avatarFile !== null) {
+            $this->updatedAt = new CarbonImmutable();
+        }
+
+        return $this;
+    }
+
+    public function getAvatarName(): ?string
+    {
+        return $this->avatarName;
+    }
+
+    public function setAvatarName(?string $avatarName): static
+    {
+        $this->avatarName = $avatarName;
+
+        return $this;
+    }
+
+    public function getAvatarUrl(): ?string
+    {
+        return $this->avatarUrl;
+    }
+
+    public function setAvatarUrl(?string $avatarUrl): static
+    {
+        $this->avatarUrl = $avatarUrl;
 
         return $this;
     }

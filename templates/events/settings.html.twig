@@ -8,8 +8,8 @@
             <div class="w-full md:w-1/3">
 
                 <div class="mb-3 rounded-lg border border-gray-200 bg-white shadow-sm">
-                    {% if event.base64Image %}
-                        <img src="{{ event.base64Image }}"
+                    {% if event.imageFile %}
+                        <img src="{{ vich_uploader_asset(event, 'imageFile') }}"
                              class="{{ event.eventGroup == null ? 'rounded-t-lg w-full' : '' }} object-cover"
                              height="150px"
                              alt="{{ event.title }}">

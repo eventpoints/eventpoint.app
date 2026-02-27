@@ -13,6 +13,7 @@ use App\Factory\EventGroup\EventGroupDiscussionCommentFactory;
 use App\Form\Form\EventGroup\EventGroupDiscussionCommentFormType;
 use App\Form\Form\EventGroup\EventGroupDiscussionFormType;
 use App\Repository\EventGroup\EventGroupDiscussionRepository;
+use App\Service\MixpanelService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +28,8 @@ class EventGroupDiscussionController extends AbstractController
         private readonly EventGroupDiscusionFactroy $eventGroupDiscusionFactroy,
         private readonly EventGroupDiscussionCommentFactory $eventGroupDiscussionCommentFactory,
         private readonly EventGroupDiscussionRepository $discussionRepository,
-        private readonly TranslatorInterface $translator
+        private readonly TranslatorInterface $translator,
+        private readonly MixpanelService $mixpanel,
     ) {
     }
 
@@ -40,6 +42,7 @@ class EventGroupDiscussionController extends AbstractController
         if ($eventDiscussionCommentForm->isSubmitted() && $eventDiscussionCommentForm->isValid()) {
             $eventGroupDiscussion->addComment($comment);
             $this->discussionRepository->save($eventGroupDiscussion, true);
+            $this->mixpanel->trackDiscussionCommentCreated($currentUser, $eventGroupDiscussion);
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changes-saved'));
             return $this->redirectToRoute('show_group_discussion', [
                 'id' => $eventGroupDiscussion->getId(),
@@ -60,6 +63,7 @@ class EventGroupDiscussionController extends AbstractController
         $eventDiscussionForm->handleRequest($request);
         if ($eventDiscussionForm->isSubmitted() && $eventDiscussionForm->isValid()) {
             $this->discussionRepository->save($discussion, true);
+            $this->mixpanel->trackDiscussionCreated($currentUser, $discussion);
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changes-saved'));
             return $this->redirectToRoute('event_group_discussion', [
                 'id' => $eventGroup->getId(),

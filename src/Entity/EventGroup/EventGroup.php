@@ -18,11 +18,14 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: EventGroupRepository::class)]
 #[UniqueEntity(fields: ['name'], message: 'There\'s already a group with this name')]
+#[Vich\Uploadable]
 class EventGroup
 {
     #[ORM\Id]
@@ -68,6 +71,12 @@ class EventGroup
     #[ORM\Column]
     private bool $isPrivate = false;
 
+    #[Vich\UploadableField(mapping: 'event_group_image', fileNameProperty: 'imageName')]
+    private ?File $imageFile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?string $imageName = null;
+
     public function __construct(
             #[ORM\Column(length: 255)]
             #[Assert\NotBlank]
@@ -78,8 +87,6 @@ class EventGroup
             private null|string $description = null,
             #[ORM\ManyToOne(inversedBy: 'eventGroups')]
             private null|User   $owner = null,
-            #[ORM\Column(type: Types::TEXT, nullable: true)]
-            private null|string $base64Image = null,
             #[ORM\Column(length: 255, nullable: true)]
             private null|string $language = null,
     )
@@ -226,14 +233,26 @@ class EventGroup
         return $this->getEventGroupMembers()->findFirst(fn(int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user);
     }
 
-    public function getBase64Image(): null|string
+    public function getImageFile(): ?File
     {
-        return $this->base64Image;
+        return $this->imageFile;
     }
 
-    public function setBase64Image(null|string $base64Image): static
+    public function setImageFile(?File $imageFile): static
     {
-        $this->base64Image = $base64Image;
+        $this->imageFile = $imageFile;
+
+        return $this;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
+    public function setImageName(?string $imageName): static
+    {
+        $this->imageName = $imageName;
 
         return $this;
     }

@@ -19,17 +19,17 @@ class UserFactory
     ) {
     }
 
-    public function create(string $firstName, string $lastName, Email $email, null|string $password = null, null|string $avatar = null): User
+    public function create(string $firstName, string $lastName, Email $email, null|string $password = null, null|string $avatarUrl = null): User
     {
         $user = new User();
         $user->setFirstName($firstName);
         $user->setLastName($lastName);
         $email->setOwner($user);
         $user->setEmail($email);
-        if (! $avatar) {
-            $user->setAvatar($this->avatarService->createAvatar($email->getAddress()));
+        if ($avatarUrl !== null) {
+            $user->setAvatarUrl($avatarUrl);
         } else {
-            $user->setAvatar($avatar);
+            $user->setAvatarFile($this->avatarService->createAvatarFile($email->getAddress()));
         }
         if ($password) {
             $user->setPassword($this->userPasswordHasher->hashPassword($user, $password));

@@ -1,8 +1,8 @@
 <div class="card mb-2">
 
     <div class="position-relative">
-        {% if event.base64Image %}
-            <img src="{{ event.base64Image }}"
+        {% if event.imageFile %}
+            <img src="{{ vich_uploader_asset(event, 'imageFile') }}"
                  class="object-fit-cover w-100 "
                  height="150px!important"
                  alt="{{ event.title }}">

@@ -11,8 +11,8 @@
                             {{ 'event-complete'|trans }}
                         </div>
                     {% endif %}
-                    {% if event.base64Image %}
-                        <img src="{{ event.base64Image }}" class="img-fluid object-fit-cover" height="150px"
+                    {% if event.imageFile %}
+                        <img src="{{ vich_uploader_asset(event, 'imageFile') }}" class="img-fluid object-fit-cover" height="150px"
                              alt="{{ event.title }}">
                     {% endif %}
                     <div class="card-body rounded-top">

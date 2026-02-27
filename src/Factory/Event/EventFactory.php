@@ -22,7 +22,6 @@ final readonly class EventFactory
         null|string $address = null,
         null|CarbonImmutable $startAt = null,
         null|CarbonImmutable $endAt = null,
-        null|string $base64Image = null,
         null|string $latitude = null,
         null|string $longitude = null,
         null|string $description = null,
@@ -36,7 +35,6 @@ final readonly class EventFactory
         $event->setDescription($description);
         $event->setStartAt($startAt);
         $event->setEndAt($endAt);
-        $event->setBase64Image($base64Image);
         $event->setLatitude($latitude);
         $event->setLongitude($longitude);
         $event->setIsPrivate($isPrivate);

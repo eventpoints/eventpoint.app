@@ -12,6 +12,7 @@ use App\Entity\User\PhoneNumber;
 use App\Entity\User\User;
 use App\Enum\EventInvitationStatusEnum;
 use App\Enum\EventInvitationTypeEnum;
+use App\Enum\EventRequestDeclineReasonEnum;
 use App\Repository\Event\EventParticipantRepository;
 use Carbon\CarbonImmutable;
 use Symfony\Component\Uid\Uuid;
@@ -141,9 +142,9 @@ final readonly class EventInvitationFactory
     /**
      * Decline an invitation or request.
      */
-    public function decline(EventInvitation $invitation): void
+    public function decline(EventInvitation $invitation, null|EventRequestDeclineReasonEnum $reason = null): void
     {
-        $invitation->decline();
+        $invitation->decline($reason);
     }
 
     /**

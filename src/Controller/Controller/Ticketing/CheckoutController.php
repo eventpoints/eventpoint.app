@@ -10,6 +10,7 @@ use App\Entity\Ticketing\Order;
 use App\Entity\Ticketing\OrderLine;
 use App\Form\Form\Ticketing\CheckoutForm;
 use App\Repository\Ticketing\OrderRepository;
+use App\Service\MixpanelService;
 use App\Service\Ticketing\FeeCalculator;
 use App\Service\Ticketing\StripeCheckoutService;
 use App\Service\Ticketing\TicketMerchantGate;
@@ -30,6 +31,7 @@ class CheckoutController extends AbstractController
         private readonly OrderRepository $orderRepository,
         private readonly TicketMerchantGate $merchantGate,
         private readonly TranslatorInterface $translator,
+        private readonly MixpanelService $mixpanel,
     ) {
     }
 
@@ -81,6 +83,8 @@ class CheckoutController extends AbstractController
             $order->getPlatformFee()->setAmount($feeCents);
 
             $this->orderRepository->save($order, true);
+
+            $this->mixpanel->trackCheckoutStarted($user, $order);
 
             $successUrl = $this->generateUrl('checkout_success', [], UrlGeneratorInterface::ABSOLUTE_URL);
             $cancelUrl = $this->generateUrl('checkout_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL);

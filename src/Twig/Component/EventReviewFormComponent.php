@@ -85,7 +85,7 @@ class EventReviewFormComponent extends AbstractController
             venueRating: $this->venueRating,
             hostRating: $this->hostRating,
             guestRating: $this->guestRating,
-            expectationRating: $this->guestRating
+            expectationRating: $this->expectationRating
         );
         $this->eventReviewRepository->save($eventReview, true);
     }

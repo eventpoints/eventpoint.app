@@ -8,13 +8,13 @@ use App\Entity\User\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\LanguageType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TimezoneType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Vich\UploaderBundle\Form\Type\VichFileType;
 
 class UserAccountFormType extends AbstractType
 {
@@ -60,12 +60,10 @@ class UserAccountFormType extends AbstractType
                 ->add('timezone', TimezoneType::class, [
                         'required' => false,
                 ])
-                ->add('avatar', FileType::class, [
-                        'row_attr' => [
-                                'class' => 'w-75',
-                        ],
-                        'mapped' => false,
+                ->add('avatarFile', VichFileType::class, [
                         'required' => false,
+                        'allow_delete' => false,
+                        'download_uri' => false,
                 ]);
     }
 

@@ -29,7 +29,8 @@ use App\Repository\EventGroup\EventGroupRoleRepository;
 use App\Repository\Poll\PollRepository;
 use App\Security\Voter\EventGroupVoter;
 use App\Service\EventGroupAnalyzer\EventActivityAnalyzer;
-use App\Service\ImageUploadService\ImageService;
+use App\Service\ImageUploadService\ImageUploadService;
+use App\Service\MixpanelService;
 use Carbon\CarbonImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
@@ -59,9 +60,10 @@ class EventGroupController extends AbstractController
             private readonly PaginatorInterface                    $paginator,
             private readonly TranslatorInterface                   $translator,
             private readonly EventActivityAnalyzer                 $eventGroupAnalyzer,
-            private readonly ImageService                          $imageUploadService,
+            private readonly ImageUploadService                    $imageUploadService,
             private readonly CountryRepository                     $countryRepository,
             private readonly RegionalConfiguration                 $regionalConfiguration,
+            private readonly MixpanelService                       $mixpanel,
     )
     {
     }
@@ -129,8 +131,10 @@ class EventGroupController extends AbstractController
         $eventGroup->setCountry($countryCodeEnum?->value ?? CountryCodeEnum::CzechRepublic->value);
 
         if ($eventGroupForm->isSubmitted() && $eventGroupForm->isValid()) {
-            $image = $eventGroupForm->get('image')->getData();
-            $eventGroup->setBase64Image($this->imageUploadService->processAvatar($image)->getEncoded());
+            $imageFile = $eventGroup->getImageFile();
+            if ($imageFile !== null) {
+                $eventGroup->setImageFile($this->imageUploadService->processAvatar($imageFile));
+            }
 
             $eventGroupMember = new EventGroupMember(owner: $currentUser, eventGroup: $eventGroup, approvedAt: new CarbonImmutable());
             $eventGroupMaintainerRole = $this->eventGroupRoleRepository->findOneBy([
@@ -145,6 +149,7 @@ class EventGroupController extends AbstractController
             $eventGroup->addEventGroupMember($eventGroupMember);
             $this->eventGroupRepository->save(entity: $eventGroup, flush: true);
 
+            $this->mixpanel->trackGroupCreated($currentUser, $eventGroup);
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changes-saved'));
             return $this->redirectToRoute('event_group_show', ['id' => $eventGroup->getId()]);
         }
@@ -224,6 +229,7 @@ class EventGroupController extends AbstractController
     {
         $eventGroup = $eventGroupJoinRequest->getEventGroup();
         $this->eventGroupJoinRequestRepository->remove($eventGroupJoinRequest, true);
+        $this->mixpanel->trackGroupJoinRequestCancelled($currentUser, $eventGroup);
         $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('request-canceled'));
         return $this->redirectToRoute('event_group_show', [
                 'id' => $eventGroup->getId(),
@@ -254,6 +260,7 @@ class EventGroupController extends AbstractController
 
         $eventGroupRequest = $this->eventGroupJoinRequestFactory->create(eventGroup: $eventGroup, owner: $currentUser);
         $this->eventGroupJoinRequestRepository->save($eventGroupRequest, true);
+        $this->mixpanel->trackGroupJoinRequested($currentUser, $eventGroup);
         $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('request-sent'));
         return $this->redirectToRoute('event_group_show', [
                 'id' => $eventGroup->getId(),
@@ -277,6 +284,7 @@ class EventGroupController extends AbstractController
         $eventGroupMember->addRole($memberRole);
         $eventGroup->addEventGroupMember($eventGroupMember);
         $this->eventGroupRepository->save($eventGroup, true);
+        $this->mixpanel->trackGroupJoined($currentUser, $eventGroup);
         $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('group-joined'));
 
         return $this->redirectToRoute('event_group_show', [
@@ -296,6 +304,7 @@ class EventGroupController extends AbstractController
         }
 
         $this->eventGroupMemberRepository->remove($eventGroupMember, true);
+        $this->mixpanel->trackGroupLeft($currentUser, $eventGroup);
         $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('group-left'));
         return $this->redirectToRoute('event_group_show', [
                 'id' => $eventGroup->getId(),
@@ -321,9 +330,9 @@ class EventGroupController extends AbstractController
         $eventGroupSettingForm = $this->createForm(EventGroupSettingsFormType::class, $eventGroup);
         $eventGroupSettingForm->handleRequest($request);
         if ($eventGroupSettingForm->isSubmitted() && $eventGroupSettingForm->isValid()) {
-            $image = $eventGroupSettingForm->get('image')->getData();
-            if (!empty($image)) {
-                $eventGroup->setBase64Image($this->imageUploadService->processAvatar($image)->getEncoded());
+            $imageFile = $eventGroup->getImageFile();
+            if ($imageFile !== null) {
+                $eventGroup->setImageFile($this->imageUploadService->processAvatar($imageFile));
             }
             $this->eventGroupRepository->save(entity: $eventGroup, flush: true);
 

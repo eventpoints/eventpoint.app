@@ -7,8 +7,8 @@
 
         {# Event header #}
         <div class="mb-8 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
-            {% if event.base64Image %}
-                <img src="{{ event.base64Image }}" alt="{{ event.title }}"
+            {% if event.imageFile %}
+                <img src="{{ vich_uploader_asset(event, 'imageFile') }}" alt="{{ event.title }}"
                      class="h-40 w-full object-cover">
             {% endif %}
 

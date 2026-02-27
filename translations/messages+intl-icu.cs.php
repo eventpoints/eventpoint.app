@@ -413,4 +413,9 @@ return [
         'locate-event' => 'najít na mapě',
         'share-event' => 'Sdílet',
         'remove-badge' => 'Odebrat',
+        'drag-and-drop-image-upload-placeholder' => 'Přetáhněte obrázky sem nebo klikněte pro výběr',
+        'decline-reason-prompt' => 'Proč odmítáte?',
+        'decline-reason.full' => 'Akce je plná',
+        'decline-reason.not_this_time' => 'Promiňte, tentokrát ne',
+        'decline-reason.not_a_good_fit' => 'Bohužel to nevyhovuje',
 ];

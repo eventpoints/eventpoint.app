@@ -42,14 +42,17 @@ use App\Repository\User\UserRepository;
 use App\Security\CustomAuthenticator;
 use App\Service\AvatarService\AvatarService;
 use App\Service\EmailEventService\EmailEventService;
+use App\Service\EmailService\EmailService;
 use App\Service\EventStatusService;
-use App\Service\ImageUploadService\ImageService;
+use App\Service\ImageUploadService\ImageUploadService;
+use App\Service\MixpanelService;
 use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -73,7 +76,7 @@ class EventController extends AbstractController
 
     public function __construct(
             private readonly EventRepository           $eventRepository,
-            private readonly ImageService              $imageUploadService,
+            private readonly ImageUploadService        $imageUploadService,
             private readonly ImageFactory              $imageFactory,
             private readonly ImageCollectionFactory    $imageCollectionFactory,
             private readonly ImageCollectionRepository $imageCollectionRepository,
@@ -94,6 +97,9 @@ class EventController extends AbstractController
             private readonly EmailRepository           $emailRepository,
             private readonly EventInvitationFactory    $eventInvitationFactory,
             private readonly EmailEventService         $emailEventService,
+            private readonly EmailService              $emailService,
+            private readonly MixpanelService           $mixpanel,
+            private readonly MessageBusInterface        $messageBus,
     )
     {
     }
@@ -235,6 +241,8 @@ class EventController extends AbstractController
             $event->addEventParticipant($participant);
             $this->eventRepository->save($event, true);
 
+            $this->mixpanel->trackEventCreated($currentUser, $event);
+
             return $this->redirectToRoute('show_event', [
                     'id' => $event->getId(),
             ]);
@@ -255,17 +263,16 @@ class EventController extends AbstractController
         ]);
         $eventForm->handleRequest($request);
         if ($eventForm->isSubmitted() && $eventForm->isValid()) {
-            $image = $eventForm->get('image')->getData();
-
-            if (!empty($image)) {
-                /** @var Event $event */
-                $event = $eventForm->getData();
-                $event->setBase64Image(
-                        $this->imageUploadService->processPhoto($image)->getEncoded()
-                );
+            $imageFile = $event->getImageFile();
+            if ($imageFile !== null) {
+                $event->setImageFile($this->imageUploadService->processPhoto($imageFile));
             }
 
             $this->eventRepository->save(entity: $event, flush: true);
+
+            /** @var \App\Entity\User\User $currentUser */
+            $currentUser = $this->getUser();
+            $this->mixpanel->trackEventUpdated($currentUser, $event);
 
             return $this->redirectToRoute('edit_event', [
                     'id' => $event->getId(),
@@ -333,6 +340,7 @@ class EventController extends AbstractController
             $event->setEventCancellation($eventCancellation);
             $event->addEventMoment($eventChangeLog);
             $this->eventRepository->save($event, true);
+            $this->mixpanel->trackEventCancelled($currentUser, $event);
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('event-canceled'));
         }
 
@@ -385,12 +393,6 @@ class EventController extends AbstractController
             $imageForm->handleRequest($request);
             if ($imageForm->isSubmitted() && $imageForm->isValid()) {
                 return $this->handleEventImageUploadForm(imageForm: $imageForm, currentUser: $currentUser, event: $event);
-            }
-
-            if (!empty($event->getUrl())) {
-                return $this->render('events/show-external-event.html.twig', [
-                        'event' => $event,
-                ]);
             }
         }
 
@@ -467,12 +469,13 @@ class EventController extends AbstractController
             }
 
             $user->setPassword($userPasswordHasher->hashPassword($user, $form->get('plainPassword')->getData()));
-            $user->setAvatar($this->avatarService->createAvatar($emailAddress));
+            $user->setAvatarFile($this->avatarService->createAvatarFile($emailAddress));
 
             $entityManager->persist($user);
             $entityManager->flush();
 
             $this->emailEventService->process($user);
+            $this->emailService->sendRegistrationWelcomeEmail($user->getEmail(), ['user' => $user]);
 
             // Create a request to attend
             $eventRequest = $this->eventInvitationFactory->createRequest(owner: $user, event: $event);
@@ -500,15 +503,18 @@ class EventController extends AbstractController
 
     private function handleEventImageUploadForm(FormInterface $imageForm, null|User $currentUser, Event $event): Response
     {
-        $UploadedImageFiles = $imageForm->get('images')->getData();
+        $uploadedFiles = $imageForm->get('images')->getData();
         $images = [];
-        foreach ($UploadedImageFiles as $img) {
-            $base64 = $this->imageUploadService->processPhoto($img);
-            $image = $this->imageFactory->create(dataUrl: $base64->getEncoded());
+        foreach ($uploadedFiles as $file) {
+            $image = $this->imageFactory->create($file);
             $images[] = $image;
         }
         $imageCollection = $this->imageCollectionFactory->create(images: $images, owner: $currentUser, event: $event);
         $this->imageCollectionRepository->save($imageCollection, true);
+
+        foreach ($images as $image) {
+            $this->messageBus->dispatch(new \App\Message\OptimizeEventPhotoMessage((string) $image->getId()));
+        }
 
         $this->addFlash('message', $this->translator->trans('changes-saved'));
         return $this->redirectToRoute('show_event', [
