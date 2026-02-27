@@ -42,7 +42,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
     {
         $emailAddressOrPhoneNumber = preg_replace('/\s+/', '', $request->request->get('email', ''));
         $email = null;
-        
+
         if ($this->emailHelperService->isEmail($emailAddressOrPhoneNumber)) {
             $email = $this->emailRepository->findOneBy([
                 'address' => $emailAddressOrPhoneNumber,
