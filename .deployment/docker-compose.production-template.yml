@@ -5,7 +5,6 @@ networks:
     external: false
 
 volumes:
-  php_socket:
   caddy_data:
   caddy_config:
 
@@ -13,7 +12,6 @@ services:
   php:
     image: ghcr.io/eventpoints/eventpoint.app-php:main
     volumes:
-      - php_socket:/var/run/php
       - ./php/php.ini:/usr/local/etc/php/php.ini
       - ./public/uploads:/app/public/uploads
     healthcheck:
@@ -95,7 +93,6 @@ services:
       MERCURE_PUBLISHER_JWT_KEY: "__EVENTPOINT_MERCURE_JWT_SECRET__"
       MERCURE_SUBSCRIBER_JWT_KEY: "__EVENTPOINT_MERCURE_JWT_SECRET__"
     volumes:
-      - php_socket:/var/run/php
       - caddy_data:/data
       - caddy_config:/config
       - ./Caddyfile:/etc/caddy/Caddyfile
