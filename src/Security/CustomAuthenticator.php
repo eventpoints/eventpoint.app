@@ -41,19 +41,22 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
     public function authenticate(Request $request): Passport
     {
         $emailAddressOrPhoneNumber = preg_replace('/\s+/', '', $request->request->get('email', ''));
+        $email = null;
+        
         if ($this->emailHelperService->isEmail($emailAddressOrPhoneNumber)) {
             $email = $this->emailRepository->findOneBy([
                 'address' => $emailAddressOrPhoneNumber,
             ]);
         } else {
             $phoneNumber = $this->phoneNumberRepository->findByFullNumber($emailAddressOrPhoneNumber);
-            $email = $phoneNumber->getOwner()?->getEmail();
+            $email = $phoneNumber?->getOwner()?->getEmail();
         }
 
-        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email->getAddress());
+        $emailAddress = $email?->getAddress() ?? $emailAddressOrPhoneNumber;
+        $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $emailAddress);
 
         return new Passport(
-            new UserBadge($email->getAddress()),
+            new UserBadge($emailAddress),
             new PasswordCredentials($request->request->get('password', '')),
             [
                 new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
