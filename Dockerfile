@@ -22,7 +22,7 @@ WORKDIR /app
 # Vendor is needed because assets reference files under ../vendor/ (e.g. kerrialnewham/autocomplete)
 COPY --from=php /app/vendor ./vendor
 
-COPY package.json package-lock.json webpack.config.js tailwind.config.js ./
+COPY package.json package-lock.json webpack.config.js tailwind.config.js postcss.config.mjs ./
 
 RUN npm install
 
@@ -30,7 +30,13 @@ RUN npm install
 COPY ./assets ./assets
 COPY ./templates ./templates
 
+# Debug: List files to verify templates are copied
+RUN ls -la templates/ || echo "Templates directory not found"
+
 RUN npm run build
+
+# Debug: Check if CSS was generated
+RUN ls -la public/build/ || echo "Build directory not found"
 
 FROM php AS app
 
