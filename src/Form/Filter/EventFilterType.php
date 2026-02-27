@@ -66,7 +66,7 @@ class EventFilterType extends AbstractType
                 'provider' => CityProvider::class,
                 'choice_label' => fn (City $city): string => $this->translator->trans('city.' . strtolower((string) $city->getCountry()->getAlpha2()) . '.' . $city->getName(), domain: 'cities'),
                 'extra_params' => [
-                    'country' => $country->getId(),
+                    'country' => $country?->getId(),
                 ],
                 'autocomplete' => true,
                 'theme' => 'flowbite',
