@@ -35,7 +35,9 @@ class EventInvitation
     #[ORM\Column(length: 20, enumType: EventInvitationTypeEnum::class)]
     private EventInvitationTypeEnum $type;
 
-    #[ORM\Column(length: 20, enumType: EventInvitationStatusEnum::class, options: ['default' => EventInvitationStatusEnum::PENDING->value])]
+    #[ORM\Column(length: 20, enumType: EventInvitationStatusEnum::class, options: [
+        'default' => EventInvitationStatusEnum::PENDING->value,
+    ])]
     private EventInvitationStatusEnum $status = EventInvitationStatusEnum::PENDING;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'receivedEventInvitations')]

@@ -11,13 +11,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class CityProvider implements AutocompleteProviderInterface
 {
     public function __construct(
-            private readonly CityRepository      $cityRepository,
-            private readonly RequestStack        $requestStack,
-            private readonly TranslatorInterface $translator,
-    )
-    {
+        private readonly CityRepository $cityRepository,
+        private readonly RequestStack $requestStack,
+        private readonly TranslatorInterface $translator,
+    ) {
     }
 
+    /**
+     * @param array<mixed> $selected
+     * @return array<mixed>
+     */
+    #[\Override]
     public function search(string $query, int $limit, array $selected): array
     {
         $request = $this->requestStack->getCurrentRequest();
@@ -25,17 +29,17 @@ class CityProvider implements AutocompleteProviderInterface
         $countryId = $request?->query->get('country');
 
         $qb = $this->cityRepository->createQueryBuilder('c')
-                ->leftJoin('c.country', 'country')
-                ->orderBy('c.name', 'ASC');
+            ->leftJoin('c.country', 'country')
+            ->orderBy('c.name', 'ASC');
 
         if ($countryId) {
             $qb->andWhere('country.id = :country')
-                    ->setParameter('country', $countryId, 'uuid');
+                ->setParameter('country', $countryId, 'uuid');
         }
 
-        if (!empty($selected)) {
+        if (! empty($selected)) {
             $qb->andWhere($qb->expr()->notIn('c.id', ':selected'))
-                    ->setParameter('selected', $selected);
+                ->setParameter('selected', $selected);
         }
 
         $cities = $qb->getQuery()->getResult();
@@ -43,21 +47,24 @@ class CityProvider implements AutocompleteProviderInterface
         $results = [];
         foreach ($cities as $city) {
             $label = $this->translator->trans(
-                    'city.' . strtolower($city->getCountry()->getAlpha2()) . '.' . Strings::webalize($city->getName()),
-                    [],
-                    'cities',
-                    $locale,
+                'city.' . strtolower((string) $city->getCountry()->getAlpha2()) . '.' . Strings::webalize($city->getName()),
+                [],
+                'cities',
+                $locale,
             );
 
             // Filter by translated label
-            if ($query !== '' && !str_contains(mb_strtolower($label), mb_strtolower($query))) {
+            if ($query !== '' && ! str_contains(mb_strtolower($label), mb_strtolower($query))) {
                 continue;
             }
 
-            $results[] = ['id' => (string) $city->getId(), 'label' => $label];
+            $results[] = [
+                'id' => (string) $city->getId(),
+                'label' => $label,
+            ];
         }
 
-        usort($results, fn($a, $b) => $a['label'] <=> $b['label']);
+        usort($results, fn ($a, $b) => $a['label'] <=> $b['label']);
 
         return array_slice($results, 0, $limit);
     }

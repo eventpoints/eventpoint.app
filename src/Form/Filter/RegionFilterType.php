@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace App\Form\Filter;
 
-use App\Form\Type\CustomCheckBoxType;
 use App\Form\Type\SelectionType;
 use App\Model\RegionalConfiguration;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CountryType;
-use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
-use Symfony\Component\Form\Extension\Core\Type\LanguageType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -18,10 +14,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class RegionFilterType extends AbstractType
 {
     public function __construct(
-            private readonly TranslatorInterface   $translator,
-            private readonly RegionalConfiguration $regionalSetting,
-    )
-    {
+        private readonly TranslatorInterface $translator,
+        private readonly RegionalConfiguration $regionalSetting,
+    ) {
     }
 
     #[\Override]
@@ -29,32 +24,32 @@ class RegionFilterType extends AbstractType
     {
         $builder->setMethod('get');
         $builder->add('locale', SelectionType::class, [
-                'label' => $this->translator->trans('language'),
+            'label' => $this->translator->trans('language'),
+            'required' => true,
+            'choices' => [
+                'English' => 'en',
+                'Čeština' => 'cs',
+                'Русский' => 'ru',
+            ],
+            'data' => $this->regionalSetting->getLocale(),
+        ])
+            ->add('region', SelectionType::class, [
+                'label' => $this->translator->trans('region-country'),
                 'required' => true,
                 'choices' => [
-                        'English' => 'en',
-                        'Čeština' => 'cs',
-                        'Русский' => 'ru',
+                    'Česká republika' => 'cz',
                 ],
-                'data' => $this->regionalSetting->getLocale(),
-        ])
-                ->add('region', SelectionType::class, [
-                        'label' => $this->translator->trans('region-country'),
-                        'required' => true,
-                        'choices' => [
-                                'Česká republika' => 'cz',
-                        ],
-                        'empty_data' => $this->regionalSetting->getRegion(),
-                ])
-                ->add('currency', SelectionType::class, [
-                        'label' => $this->translator->trans('currency'),
-                        'required' => true,
-                        'choices' => [
-                                'EUR' => 'EUR',
-                                'CZK' => 'CZK',
-                        ],
-                        'empty_data' => $this->regionalSetting->getLocale(),
-                ]);
+                'empty_data' => $this->regionalSetting->getRegion(),
+            ])
+            ->add('currency', SelectionType::class, [
+                'label' => $this->translator->trans('currency'),
+                'required' => true,
+                'choices' => [
+                    'EUR' => 'EUR',
+                    'CZK' => 'CZK',
+                ],
+                'empty_data' => $this->regionalSetting->getLocale(),
+            ]);
     }
 
     #[\Override]
@@ -62,7 +57,7 @@ class RegionFilterType extends AbstractType
     {
         $resolver->setRequired(['request']);
         $resolver->setDefaults([
-                'data_class' => RegionalConfiguration::class,
+            'data_class' => RegionalConfiguration::class,
         ]);
     }
 }

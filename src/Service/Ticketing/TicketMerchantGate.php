@@ -28,11 +28,11 @@ final class TicketMerchantGate
             return $missing;
         }
 
-        if (!$profile->isTermsAccepted() || !$profile->isLawfulEventsCert()) {
+        if (! $profile->isTermsAccepted() || ! $profile->isLawfulEventsCert()) {
             $missing[] = 'profile';
         }
 
-        if (!$profile->isStripeOnboardingComplete()) {
+        if (! $profile->isStripeOnboardingComplete()) {
             $missing[] = 'stripe';
         }
 

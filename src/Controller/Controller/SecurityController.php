@@ -68,7 +68,9 @@ class SecurityController extends AbstractController
             /** @var PasswordResetDto $dto */
             $dto = $form->getData();
 
-            $emailEntity = $this->emailRepository->findOneBy(['address' => $dto->getEmail()]);
+            $emailEntity = $this->emailRepository->findOneBy([
+                'address' => $dto->getEmail(),
+            ]);
             $user = $emailEntity?->getOwner();
 
             $this->mixpanel->trackPasswordResetRequested();
@@ -100,12 +102,14 @@ class SecurityController extends AbstractController
     public function setPassword(
         Request $request,
         UserPasswordHasherInterface $hasher,
-        #[MapEntity(mapping: ['token' => 'value'])]
+        #[MapEntity(mapping: [
+            'token' => 'value',
+        ])]
         ?UserToken $userToken = null,
     ): Response {
         if (
-            !$userToken instanceof UserToken
-            || !$userToken->isActive()
+            ! $userToken instanceof UserToken
+            || ! $userToken->isActive()
             || $userToken->getPurpose() !== UserTokenPurposeEnum::PASSWORD_RESET
         ) {
             $this->addFlash('error', $this->translator->trans('password.reset-link-invalid'));

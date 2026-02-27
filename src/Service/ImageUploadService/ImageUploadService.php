@@ -6,10 +6,11 @@ namespace App\Service\ImageUploadService;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-final class ImageUploadService
+final readonly class ImageUploadService
 {
-    public function __construct(private readonly ImageOptimizer $optimizer)
-    {
+    public function __construct(
+        private ImageOptimizer $optimizer
+    ) {
     }
 
     public function processAvatar(UploadedFile $file): UploadedFile

@@ -21,7 +21,9 @@ class CityBoundaryController extends AbstractController
         );
 
         if ($boundary === null) {
-            return $this->json(['error' => 'Boundary not found'], 404);
+            return $this->json([
+                'error' => 'Boundary not found',
+            ], 404);
         }
 
         return $this->json($boundary);

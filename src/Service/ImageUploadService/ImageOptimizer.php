@@ -8,7 +8,7 @@ use Intervention\Image\Drivers\Imagick\Driver;
 use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-final class ImageOptimizer
+final readonly class ImageOptimizer
 {
     private ImageManager $images;
 
@@ -30,8 +30,8 @@ final class ImageOptimizer
         $supportsWebp = $driver->supports('webp');
 
         $quality = $supportsAvif ? 45 : ($supportsWebp ? 70 : 80);
-        $minQ    = $supportsAvif ? 28 : ($supportsWebp ? 50 : 60);
-        $ext     = $supportsAvif ? 'avif' : ($supportsWebp ? 'webp' : 'jpg');
+        $minQ = $supportsAvif ? 28 : ($supportsWebp ? 50 : 60);
+        $ext = $supportsAvif ? 'avif' : ($supportsWebp ? 'webp' : 'jpg');
 
         $tmpBase = tempnam(sys_get_temp_dir(), 'ava_');
         @unlink($tmpBase);
@@ -40,15 +40,15 @@ final class ImageOptimizer
         while (true) {
             $img = $this->images->read($sourcePath);
 
-            $w    = $img->width();
-            $h    = $img->height();
+            $w = $img->width();
+            $h = $img->height();
             $side = min($w, $h);
             $img->crop($side, $side, (int) floor(($w - $side) / 2), (int) floor(($h - $side) / 2));
             $img->scaleDown(width: $maxDim, height: $maxDim);
 
             $encoded = match ($ext) {
-                'avif'  => $img->toAvif(quality: $quality, strip: true),
-                'webp'  => $img->toWebp(quality: $quality, strip: true),
+                'avif' => $img->toAvif(quality: $quality, strip: true),
+                'webp' => $img->toWebp(quality: $quality, strip: true),
                 default => $img->toJpeg(quality: $quality, progressive: true, strip: true),
             };
 
@@ -85,8 +85,8 @@ final class ImageOptimizer
         $supportsWebp = $driver->supports('webp');
 
         $quality = $supportsWebp ? 70 : 75;
-        $minQ    = $supportsWebp ? 50 : 55;
-        $ext     = $supportsWebp ? 'webp' : 'jpg';
+        $minQ = $supportsWebp ? 50 : 55;
+        $ext = $supportsWebp ? 'webp' : 'jpg';
 
         $tmpBase = tempnam(sys_get_temp_dir(), 'img_');
         @unlink($tmpBase);

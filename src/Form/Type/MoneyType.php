@@ -21,7 +21,10 @@ class MoneyType extends AbstractType
             ->add('amount', NumberType::class, [
                 'scale' => 2,
                 'required' => false,
-                'attr' => ['step' => '0.01', 'min' => '0'],
+                'attr' => [
+                    'step' => '0.01',
+                    'min' => '0',
+                ],
                 'label' => $options['amount_label'],
             ])
             ->add('currency', CurrencyType::class, [

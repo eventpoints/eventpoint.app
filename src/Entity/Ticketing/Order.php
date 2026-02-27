@@ -28,14 +28,6 @@ class Order
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private Event $event;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private User $buyer;
-
     #[ORM\Column(length: 20, enumType: OrderStatusEnum::class)]
     private OrderStatusEnum $status = OrderStatusEnum::PENDING;
 
@@ -63,10 +55,15 @@ class Order
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?CarbonImmutable $updatedAt = null;
 
-    public function __construct(Event $event, User $buyer, string $currency)
-    {
-        $this->event = $event;
-        $this->buyer = $buyer;
+    public function __construct(
+        #[ORM\ManyToOne]
+        #[ORM\JoinColumn(nullable: false)]
+        private Event $event,
+        #[ORM\ManyToOne]
+        #[ORM\JoinColumn(nullable: false)]
+        private User $buyer,
+        string $currency
+    ) {
         $this->total = new Money(0, $currency);
         $this->platformFee = new Money(0, $currency);
         $this->createdAt = CarbonImmutable::now();
@@ -158,7 +155,7 @@ class Order
 
     public function addOrderLine(OrderLine $orderLine): static
     {
-        if (!$this->orderLines->contains($orderLine)) {
+        if (! $this->orderLines->contains($orderLine)) {
             $this->orderLines->add($orderLine);
             $orderLine->setOrder($this);
         }

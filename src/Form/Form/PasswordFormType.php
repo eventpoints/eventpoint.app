@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Form\Form;
 
-use Symfony\Component\Form\AbstractType;
 use App\Form\Type\PasswordToggleType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\Length;

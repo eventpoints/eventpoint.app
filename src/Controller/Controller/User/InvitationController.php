@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller\Controller\User;
 
 use App\Entity\User\User;
-use App\Enum\EventInvitationTypeEnum;
 use App\Repository\Event\EventInvitationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

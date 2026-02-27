@@ -20,22 +20,18 @@ class StripeWebhookEvent
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\Column(length: 255, unique: true)]
-    private string $stripeEventId;
-
-    #[ORM\Column(length: 100)]
-    private string $type;
-
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?CarbonImmutable $processedAt = null;
 
     #[ORM\Column(length: 20)]
     private string $status = 'received';
 
-    public function __construct(string $stripeEventId, string $type)
-    {
-        $this->stripeEventId = $stripeEventId;
-        $this->type = $type;
+    public function __construct(
+        #[ORM\Column(length: 255, unique: true)]
+        private string $stripeEventId,
+        #[ORM\Column(length: 100)]
+        private string $type
+    ) {
     }
 
     public function getId(): Uuid

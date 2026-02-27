@@ -9,13 +9,14 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\UX\LiveComponent\Form\Type\LiveCollectionType;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\UX\LiveComponent\Form\Type\LiveCollectionType;
 
 class PollFormType extends AbstractType
 {
-    public function __construct(private readonly TranslatorInterface $translator)
-    {
+    public function __construct(
+        private readonly TranslatorInterface $translator
+    ) {
     }
 
     #[\Override]

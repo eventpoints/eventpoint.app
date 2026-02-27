@@ -3,7 +3,6 @@
 namespace App\DataTransferObject;
 
 use App\DataTransferObject\Event\EventDto;
-use App\Entity\Event\Event;
 
 final class MapLocationDto
 {
@@ -12,8 +11,7 @@ final class MapLocationDto
         private null|float $longitude,
         private null|string $address,
         private null|int $radiusKm
-    )
-    {
+    ) {
     }
 
     public function getLatitude(): ?float
@@ -56,9 +54,9 @@ final class MapLocationDto
         $this->radiusKm = $radiusKm;
     }
 
-    public static function getFromEventDto(null|EventDto $event): null|MapLocationDto
+    public static function getFromEventDto(null|EventDto $event): null|self
     {
-        if(!$event instanceof EventDto){
+        if (! $event instanceof EventDto) {
             return null;
         }
 
@@ -66,13 +64,12 @@ final class MapLocationDto
             empty($event->getLongitude())
         ) {
             return null;
-        } else {
-            return new MapLocationDto(
-                $event->getLatitude(),
-                $event->getLongitude(),
-                $event->getAddress() ?? '',
-                null
-            );
         }
+        return new self(
+            (float) $event->getLatitude(),
+            (float) $event->getLongitude(),
+            $event->getAddress() ?? '',
+            null
+        );
     }
 }

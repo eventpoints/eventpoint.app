@@ -14,8 +14,9 @@ use Carbon\CarbonImmutable;
 
 final readonly class EventFactory
 {
-    public function __construct() {}
-
+    public function __construct()
+    {
+    }
 
     public function create(
         null|string $title = null,

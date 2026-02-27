@@ -9,11 +9,11 @@ use App\Repository\Ticketing\OrderRepository;
 use Stripe\Checkout\Session;
 use Stripe\Stripe;
 
-final class StripeCheckoutService
+final readonly class StripeCheckoutService
 {
     public function __construct(
-        private readonly string $stripeSecretKey,
-        private readonly OrderRepository $orderRepository,
+        private string $stripeSecretKey,
+        private OrderRepository $orderRepository,
     ) {
     }
 

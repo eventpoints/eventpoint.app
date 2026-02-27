@@ -36,7 +36,7 @@ class RegionalConfigurationController extends AbstractController
                 $user->setLocale($regionForm->get('locale')->getData());
                 $user->setCurrency($regionForm->get('currency')->getData());
                 $user->setCountry($regionForm->get('region')->getData());
-$this->userRepository->save(entity: $user, flush: true);
+                $this->userRepository->save(entity: $user, flush: true);
             }
 
             $this->regionalSetting->setLocale($regionForm->get('locale')->getData());
@@ -46,7 +46,9 @@ $this->userRepository->save(entity: $user, flush: true);
             $session->set('_currency', $regionForm->get('currency')->getData());
             $session->set('_region', $regionForm->get('region')->getData());
 
-            return $this->redirectToRoute('events', ['_locale' => $regionForm->get('locale')->getData()]);
+            return $this->redirectToRoute('events', [
+                '_locale' => $regionForm->get('locale')->getData(),
+            ]);
         }
 
         return $this->render('regional-settings/form.html.twig', [

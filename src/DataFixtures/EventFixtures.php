@@ -17,20 +17,44 @@ use Doctrine\Persistence\ObjectManager;
 
 class EventFixtures extends Fixture implements DependentFixtureInterface
 {
+    private const array LOCATIONS = [
+        [
+            'address' => 'Prague, Czech Republic',
+            'lat' => '50.0755',
+            'lng' => '14.4378',
+        ],
+        [
+            'address' => 'Brno, Czech Republic',
+            'lat' => '49.1951',
+            'lng' => '16.6068',
+        ],
+        [
+            'address' => 'Ostrava, Czech Republic',
+            'lat' => '49.8209',
+            'lng' => '18.2625',
+        ],
+        [
+            'address' => 'Plzeň, Czech Republic',
+            'lat' => '49.7384',
+            'lng' => '13.3736',
+        ],
+        [
+            'address' => 'Liberec, Czech Republic',
+            'lat' => '50.7663',
+            'lng' => '15.0543',
+        ],
+        [
+            'address' => 'Olomouc, Czech Republic',
+            'lat' => '49.5938',
+            'lng' => '17.2509',
+        ],
+    ];
+
     public function __construct(
         private readonly EventFactory $eventFactory,
         private readonly EventParticpantFactory $eventParticipantFactory,
     ) {
     }
-
-    private const array LOCATIONS = [
-        ['address' => 'Prague, Czech Republic', 'lat' => '50.0755', 'lng' => '14.4378'],
-        ['address' => 'Brno, Czech Republic', 'lat' => '49.1951', 'lng' => '16.6068'],
-        ['address' => 'Ostrava, Czech Republic', 'lat' => '49.8209', 'lng' => '18.2625'],
-        ['address' => 'Plzeň, Czech Republic', 'lat' => '49.7384', 'lng' => '13.3736'],
-        ['address' => 'Liberec, Czech Republic', 'lat' => '50.7663', 'lng' => '15.0543'],
-        ['address' => 'Olomouc, Czech Republic', 'lat' => '49.5938', 'lng' => '17.2509'],
-    ];
 
     #[\Override]
     public function load(ObjectManager $manager): void
@@ -42,7 +66,9 @@ class EventFixtures extends Fixture implements DependentFixtureInterface
             $event = $this->createEvent($status, $user, $location);
 
             $participant = $this->eventParticipantFactory->create(
-                owner: $user, event: $event, role: EventParticipantRoleEnum::ROLE_ORGANISER
+                owner: $user,
+                event: $event,
+                role: EventParticipantRoleEnum::ROLE_ORGANISER
             );
             $event->addEventParticipant($participant);
 

@@ -41,15 +41,17 @@ class TicketMerchantProfileController extends AbstractController
             $user->setTicketMerchantProfile($profile);
             $this->profileRepository->save($profile, true);
 
-            $returnParams = ['id' => (string) $profile->getId()];
+            $returnParams = [
+                'id' => (string) $profile->getId(),
+            ];
             if ($eventId !== null) {
                 $returnParams['event_id'] = $eventId;
             }
 
             $accountId = $this->stripeConnectService->createOrRetrieveAccount($profile);
-            $returnUrl  = $this->generateUrl('stripe_connect_return', $returnParams, UrlGeneratorInterface::ABSOLUTE_URL);
+            $returnUrl = $this->generateUrl('stripe_connect_return', $returnParams, UrlGeneratorInterface::ABSOLUTE_URL);
             $refreshUrl = $this->generateUrl('stripe_connect_refresh', $returnParams, UrlGeneratorInterface::ABSOLUTE_URL);
-            $stripeUrl  = $this->stripeConnectService->createAccountLink($accountId, $returnUrl, $refreshUrl);
+            $stripeUrl = $this->stripeConnectService->createAccountLink($accountId, $returnUrl, $refreshUrl);
 
             return $this->redirect($stripeUrl);
         }

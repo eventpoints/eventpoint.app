@@ -30,12 +30,16 @@ class ConnectStripeController extends AbstractController
 
         $profile = $user->getTicketMerchantProfile();
         if ($profile === null) {
-            return $this->redirectToRoute('merchant_profile', array_filter(['event_id' => $eventId]));
+            return $this->redirectToRoute('merchant_profile', array_filter([
+                'event_id' => $eventId,
+            ]));
         }
 
         $accountId = $this->stripeConnectService->createOrRetrieveAccount($profile);
 
-        $returnParams = ['id' => (string) $profile->getId()];
+        $returnParams = [
+            'id' => (string) $profile->getId(),
+        ];
         if ($eventId !== null) {
             $returnParams['event_id'] = $eventId;
         }
@@ -62,7 +66,9 @@ class ConnectStripeController extends AbstractController
         }
 
         if ($eventId !== null) {
-            return $this->redirectToRoute('event_tickets', ['id' => $eventId]);
+            return $this->redirectToRoute('event_tickets', [
+                'id' => $eventId,
+            ]);
         }
 
         return $this->redirectToRoute('merchant_profile');
@@ -78,12 +84,16 @@ class ConnectStripeController extends AbstractController
 
         $profile = $user->getTicketMerchantProfile();
         if ($profile === null) {
-            return $this->redirectToRoute('merchant_profile', array_filter(['event_id' => $eventId]));
+            return $this->redirectToRoute('merchant_profile', array_filter([
+                'event_id' => $eventId,
+            ]));
         }
 
         $accountId = $this->stripeConnectService->createOrRetrieveAccount($profile);
 
-        $returnParams = ['id' => (string) $profile->getId()];
+        $returnParams = [
+            'id' => (string) $profile->getId(),
+        ];
         if ($eventId !== null) {
             $returnParams['event_id'] = $eventId;
         }

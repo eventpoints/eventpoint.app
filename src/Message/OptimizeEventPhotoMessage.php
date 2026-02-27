@@ -6,5 +6,8 @@ namespace App\Message;
 
 final readonly class OptimizeEventPhotoMessage
 {
-    public function __construct(public string $imageId) {}
+    public function __construct(
+        public string $imageId
+    ) {
+    }
 }

@@ -9,10 +9,10 @@ return static function (ContainerConfigurator $containerConfigurator): void {
 
     $services->set(Mixpanel::class, Mixpanel::class)
         ->factory([
-        Mixpanel::class,
-        'getInstance',
-    ])
+            Mixpanel::class,
+            'getInstance',
+        ])
         ->args([
-        '%env(MIXPANEL_PROJECT_TOKEN)%',
-    ]);
+            '%env(MIXPANEL_PROJECT_TOKEN)%',
+        ]);
 };

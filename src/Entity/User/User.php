@@ -14,7 +14,6 @@ use App\Entity\Event\EventOrganiserInvitation;
 use App\Entity\Event\EventParticipant;
 use App\Entity\Event\EventReview;
 use App\Entity\EventGroup\EventGroup;
-use App\Entity\Ticketing\TicketMerchantProfile;
 use App\Entity\EventGroup\EventGroupDiscussionComment;
 use App\Entity\EventGroup\EventGroupDiscussionCommentVote;
 use App\Entity\EventGroup\EventGroupInvitation;
@@ -24,6 +23,7 @@ use App\Entity\EventGroup\EventGroupRole;
 use App\Entity\Image\ImageCollection;
 use App\Entity\Poll\Poll;
 use App\Entity\Poll\PollAnswer;
+use App\Entity\Ticketing\TicketMerchantProfile;
 use App\Enum\EventGroupRoleEnum;
 use App\Enum\RegionalEnum;
 use App\Repository\User\UserRepository;
@@ -32,7 +32,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use LogicException;
 use Stringable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\HttpFoundation\File\File;
@@ -224,6 +223,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         return $this->getEmail()->getAddress();
     }
 
+    public function __serialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'password' => $this->password,
+            'roles' => $this->roles,
+            'isVerified' => $this->isVerified,
+            'isEnabled' => $this->isEnabled,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function __unserialize(array $data): void
+    {
+        $this->id = $data['id'];
+        $this->email = $data['email'];
+        $this->password = $data['password'];
+        $this->roles = $data['roles'];
+        $this->isVerified = $data['isVerified'];
+        $this->isEnabled = $data['isEnabled'];
+    }
+
     public function getId(): null|Uuid
     {
         return $this->id;
@@ -242,7 +266,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     #[\Override]
     public function getUserIdentifier(): string
     {
-        return $this->email?->getAddress() ?? $this->phoneNumber->getPhoneNumberWithCode();
+        return isset($this->email) ? $this->email->getAddress() : $this->phoneNumber->getPhoneNumberWithCode();
     }
 
     /**
@@ -289,28 +313,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
-    }
-
-    public function __serialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'email' => $this->email,
-            'password' => $this->password,
-            'roles' => $this->roles,
-            'isVerified' => $this->isVerified,
-            'isEnabled' => $this->isEnabled,
-        ];
-    }
-
-    public function __unserialize(array $data): void
-    {
-        $this->id = $data['id'];
-        $this->email = $data['email'];
-        $this->password = $data['password'];
-        $this->roles = $data['roles'];
-        $this->isVerified = $data['isVerified'];
-        $this->isEnabled = $data['isEnabled'];
     }
 
     public function isVerified(): bool
@@ -647,14 +649,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
     public function getUnansweredEventInvitationsCount(): int
     {
         return $this->receivedEventInvitations->filter(
-            fn(EventInvitation $invitation) => $invitation->isInvitation() && $invitation->isPending()
+            fn (EventInvitation $invitation) => $invitation->isInvitation() && $invitation->isPending()
         )->count();
     }
 
     public function getEventRequestsCount(): int
     {
         return $this->createdEventInvitations->filter(
-            fn(EventInvitation $invitation) => $invitation->isRequest() && $invitation->isPending()
+            fn (EventInvitation $invitation) => $invitation->isRequest() && $invitation->isPending()
         )->count();
     }
 
@@ -1201,12 +1203,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
         }
 
         // if user has no default yet (new user), set it
-        if ($this->email === null) {
+        if (! isset($this->email)) {
             $this->email = $email;
         }
 
         return $this;
     }
+
     /**
      * Removes an email from this user. Guarantees user still has at least one email.
      * If removing the default and there is another email, it auto-switches default.
@@ -1248,6 +1251,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Stringa
 
         return $this;
     }
+
     public function getEmail(): null|Email
     {
         return $this->email;

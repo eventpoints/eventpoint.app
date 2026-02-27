@@ -17,15 +17,15 @@ class PhoneNumberFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-                ->add('code', InternationalDialCodeType::class)
-                ->add('number', TextType::class);
+            ->add('code', InternationalDialCodeType::class)
+            ->add('number', TextType::class);
     }
 
     #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-                'data_class' => PhoneNumber::class,
+            'data_class' => PhoneNumber::class,
         ]);
     }
 }

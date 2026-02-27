@@ -28,6 +28,8 @@ class StripeWebhookEventRepository extends ServiceEntityRepository
 
     public function findByStripeEventId(string $stripeEventId): ?StripeWebhookEvent
     {
-        return $this->findOneBy(['stripeEventId' => $stripeEventId]);
+        return $this->findOneBy([
+            'stripeEventId' => $stripeEventId,
+        ]);
     }
 }

@@ -8,7 +8,6 @@ use App\Entity\Event\EventInvitation;
 use App\Enum\EventRequestDeclineReasonEnum;
 use App\Factory\Event\EventInvitationFactory;
 use App\Repository\Event\EventInvitationRepository;
-use App\Repository\Event\EventRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
@@ -28,13 +27,14 @@ class EventRequestResponseFormComponent extends AbstractController
     public bool $showReasonPicker = false;
 
     public function __construct(
-        private readonly EventRepository $eventRepository,
         private readonly EventInvitationRepository $eventInvitationRepository,
         private readonly EventInvitationFactory $eventInvitationFactory,
     ) {
     }
 
-    /** @return EventRequestDeclineReasonEnum[] */
+    /**
+     * @return EventRequestDeclineReasonEnum[]
+     */
     public function getDeclineReasons(): array
     {
         return EventRequestDeclineReasonEnum::cases();
@@ -43,7 +43,7 @@ class EventRequestResponseFormComponent extends AbstractController
     #[LiveAction]
     public function toggleReasonPicker(): void
     {
-        $this->showReasonPicker = !$this->showReasonPicker;
+        $this->showReasonPicker = ! $this->showReasonPicker;
     }
 
     #[LiveAction]

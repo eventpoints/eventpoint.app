@@ -85,7 +85,7 @@ class UserToken
 
     public function isActive(): bool
     {
-        return !$this->isExpired() && !$this->isConsumed();
+        return ! $this->isExpired() && ! $this->isConsumed();
     }
 
     public function consume(): void

@@ -14,6 +14,7 @@ use App\Repository\User\UserRepository;
 use App\Service\ImageUploadService\ImageUploadService;
 use App\Service\MixpanelService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -40,9 +41,8 @@ class AccountController extends AbstractController
         $userAccountForm->handleRequest($request);
         if ($userAccountForm->isSubmitted() && $userAccountForm->isValid()) {
             $avatarFile = $currentUser->getAvatarFile();
-            if ($avatarFile !== null) {
-                $optimized = $this->imageUploadService->processAvatar($avatarFile);
-                $currentUser->setAvatarFile($optimized);
+            if ($avatarFile instanceof UploadedFile) {
+                $currentUser->setAvatarFile($this->imageUploadService->processAvatar($avatarFile));
             }
 
             $this->userRepository->save($currentUser, true);

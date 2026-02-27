@@ -102,7 +102,9 @@ class RegistrationController extends AbstractController
             // Link any pending email invitations to the newly registered user
             $this->emailEventService->process($user);
 
-            $this->emailService->sendRegistrationWelcomeEmail($user->getEmail(), ['user' => $user]);
+            $this->emailService->sendRegistrationWelcomeEmail($user->getEmail(), [
+                'user' => $user,
+            ]);
             $this->mixpanel->trackSignUp($user, 'user', 'email');
 
             // If a return URL was passed (e.g. from an event invitation page), honour it
@@ -122,5 +124,4 @@ class RegistrationController extends AbstractController
             'registrationForm' => $form->createView(),
         ]);
     }
-
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Repository\Event;
 
 use App\DataTransferObject\EventFilterDto;
-use App\Entity\Event\Category;
 use App\Entity\Event\Event;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\User\User;
@@ -20,7 +19,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * @extends ServiceEntityRepository<Event>
@@ -33,10 +31,9 @@ use Symfony\Component\Uid\Uuid;
 class EventRepository extends ServiceEntityRepository
 {
     public function __construct(
-            private readonly ManagerRegistry        $registry,
-            private readonly ApplicationTimeService $applicationTimeService,
-    )
-    {
+        private readonly ManagerRegistry $registry,
+        private readonly ApplicationTimeService $applicationTimeService,
+    ) {
         parent::__construct($this->registry, Event::class);
     }
 
@@ -65,11 +62,11 @@ class EventRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('event');
         $qb->andWhere(
-                $qb->expr()->gte('event.startAt', ':dateStart')
+            $qb->expr()->gte('event.startAt', ':dateStart')
         )->setParameter('dateStart', $this->applicationTimeService->getNow()->setTime(0, 0, 0, 0)->toImmutable(), Types::DATETIME_IMMUTABLE);
 
         $qb->andWhere(
-                $qb->expr()->lte('event.startAt', ':dateEnd')
+            $qb->expr()->lte('event.startAt', ':dateEnd')
         )->setParameter('dateEnd', $this->applicationTimeService->getNow()->setTime(24, 60, 60, 60)->toImmutable(), Types::DATETIME_IMMUTABLE);
 
         return $qb->getQuery()->getResult();
@@ -80,7 +77,7 @@ class EventRepository extends ServiceEntityRepository
      */
     public function findByPeriod(EventFilterDateRangeEnum $dateRangeEnum, null|QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
-        if (!$qb instanceof QueryBuilder) {
+        if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event');
         }
         $result = $qb;
@@ -89,13 +86,13 @@ class EventRepository extends ServiceEntityRepository
 
         if ($dateRangeEnum === EventFilterDateRangeEnum::IN_PROGRESS) {
             $qb->andWhere(
-                    $qb->expr()->between(':now', 'event.startAt', 'event.endAt')
+                $qb->expr()->between(':now', 'event.startAt', 'event.endAt')
             )->setParameter('now', $now, Types::DATETIME_IMMUTABLE);
         } elseif ($dateRangeEnum === EventFilterDateRangeEnum::RECENTLY) {
             $qb->andWhere(
-                    $qb->expr()->not(
-                            $qb->expr()->between(':now', 'event.startAt', 'event.endAt')
-                    )
+                $qb->expr()->not(
+                    $qb->expr()->between(':now', 'event.startAt', 'event.endAt')
+                )
             )->setParameter('now', $now, Types::DATETIME_IMMUTABLE);
         } else {
             // Calculate start and end times based on the period
@@ -119,11 +116,11 @@ class EventRepository extends ServiceEntityRepository
 
             // Add conditions to filter events based on start and end times
             $qb->andWhere(
-                    $qb->expr()->gte('event.startAt', ':start')
+                $qb->expr()->gte('event.startAt', ':start')
             )->setParameter('start', $start, Types::DATETIME_IMMUTABLE);
 
             $qb->andWhere(
-                    $qb->expr()->lte('event.endAt', ':end')
+                $qb->expr()->lte('event.endAt', ':end')
             )->setParameter('end', $end, Types::DATETIME_IMMUTABLE);
         }
 
@@ -144,16 +141,15 @@ class EventRepository extends ServiceEntityRepository
             $this->findByPeriod(dateRangeEnum: $eventFilterDto->getPeriod(), qb: $qb);
         }
 
-        if ($eventFilterDto->getCategories() instanceof Category) {
-            $ids = $eventFilterDto->getCategories()->filter(fn(Category $category) => $category->getId());
-            $this->findByCategories(ids: $ids, qb: $qb);
+        if ($eventFilterDto->getCategories() instanceof \Doctrine\Common\Collections\ArrayCollection && ! $eventFilterDto->getCategories()->isEmpty()) {
+            $this->findByCategories(ids: $eventFilterDto->getCategories(), qb: $qb);
         }
 
-        if (!empty($eventFilterDto->getKeyword())) {
+        if (! empty($eventFilterDto->getKeyword())) {
             $this->findByTitle(keyword: $eventFilterDto->getKeyword(), qb: $qb);
         }
 
-        if (!empty($eventFilterDto->getCity())) {
+        if (! empty($eventFilterDto->getCity())) {
             $this->findByCoordinates(latitude: $eventFilterDto->getCity()->getLatitude(), longitude: $eventFilterDto->getCity()->getLongitude(), qb: $qb);
         }
 
@@ -167,24 +163,22 @@ class EventRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param ArrayCollection<int, Uuid> $ids
+     * @param ArrayCollection<int, mixed> $ids
      *@return Query|array<int, Event>
      */
     public function findByCategories(
-            ArrayCollection $ids,
-            ?QueryBuilder   $qb = null,
-            bool            $isQuery = false
-    ): Query|array
-    {
-
-        if (!$qb instanceof QueryBuilder) {
+        ArrayCollection $ids,
+        ?QueryBuilder $qb = null,
+        bool $isQuery = false
+    ): Query|array {
+        if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event');
         }
         $result = $qb;
 
         $qb->leftJoin('event.categories', 'category');
         $qb->andWhere(
-                $qb->expr()->in('category.id', ':categories')
+            $qb->expr()->in('category.id', ':categories')
         )->setParameter('categories', $ids);
 
         if ($isQuery) {
@@ -199,18 +193,18 @@ class EventRepository extends ServiceEntityRepository
      */
     public function findByTitle(string $keyword, ?QueryBuilder $qb = null, bool $isQuery = false): Query|array
     {
-        if (!$qb instanceof QueryBuilder) {
+        if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event');
         }
         $result = $qb;
 
         $qb->andWhere(
-                $qb->expr()->like($qb->expr()->lower('event.title'), ':title')
+            $qb->expr()->like($qb->expr()->lower('event.title'), ':title')
         )->setParameter('title', '%' . strtolower($keyword) . '%');
 
         $qb->leftJoin('event.eventGroup', 'event_group');
         $qb->orWhere(
-                $qb->expr()->like($qb->expr()->lower('event_group.name'), ':name')
+            $qb->expr()->like($qb->expr()->lower('event_group.name'), ':name')
         )->setParameter('name', '%' . strtolower($keyword) . '%');
 
         if ($isQuery) {
@@ -229,16 +223,16 @@ class EventRepository extends ServiceEntityRepository
         $now = CarbonImmutable::now();
 
         $qb->andWhere(
-                $qb->expr()->gte('event.startAt', ':now')
+            $qb->expr()->gte('event.startAt', ':now')
         )->setParameter('now', $now->toDateTimeImmutable(), Types::DATETIME_IMMUTABLE);
 
         $qb->andWhere(
-                $qb->expr()->lt('event.startAt', ':twoWeekLater')
+            $qb->expr()->lt('event.startAt', ':twoWeekLater')
         )->setParameter('twoWeekLater', $now->addWeeks(2)->toDateTimeImmutable(), Types::DATETIME_IMMUTABLE);
 
         $qb->leftJoin('event.eventParticipants', 'eventParticipant');
         $qb->andWhere(
-                $qb->expr()->eq('eventParticipant.owner', ':user')
+            $qb->expr()->eq('eventParticipant.owner', ':user')
         )->setParameter('user', $user);
 
         return $qb->getQuery()->getResult();
@@ -252,7 +246,7 @@ class EventRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('event');
 
         $qb->andWhere(
-                $qb->expr()->eq('event.owner', ':user')
+            $qb->expr()->eq('event.owner', ':user')
         )->setParameter('user', $user);
 
         return $qb->getQuery()->getResult();
@@ -266,12 +260,12 @@ class EventRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('event');
 
         $qb->orWhere(
-                $qb->expr()->eq('event.owner', ':user')
+            $qb->expr()->eq('event.owner', ':user')
         )->setParameter('user', $user);
 
         $qb->leftJoin('event.eventParticipants', 'participant');
         $qb->orWhere(
-                $qb->expr()->eq('participant.owner', ':user')
+            $qb->expr()->eq('participant.owner', ':user')
         )->setParameter('user', $user);
 
         return $qb->getQuery()->getResult();
@@ -285,7 +279,7 @@ class EventRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('event');
 
         $qb->andWhere(
-                $qb->expr()->eq('event.eventGroup', ':id')
+            $qb->expr()->eq('event.eventGroup', ':id')
         )->setParameter('id', $eventGroup->getId());
 
         return $qb->getQuery()->getResult();
@@ -298,7 +292,7 @@ class EventRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('event');
         $qb->andWhere(
-                $qb->expr()->eq('event.eventGroup', ':group')
+            $qb->expr()->eq('event.eventGroup', ':group')
         )->setParameter('group', $eventGroup->getId(), 'uuid');
 
         $qb->orderBy('event.createdAt', Order::Descending->value);
@@ -363,7 +357,7 @@ class EventRepository extends ServiceEntityRepository
      */
     public function findByCoordinates(float $latitude, float $longitude, QueryBuilder|null $qb = null, int $radius = 50, bool $isQuery = false): array|Query
     {
-        if (!$qb instanceof QueryBuilder) {
+        if (! $qb instanceof QueryBuilder) {
             $qb = $this->createQueryBuilder('event');
         }
 
@@ -379,28 +373,28 @@ class EventRepository extends ServiceEntityRepository
 
         // Bounding box pre-filter (uses indexes)
         $qb->andWhere(
-                $qb->expr()->between('event.latitude', ':minLat', ':maxLat')
+            $qb->expr()->between('event.latitude', ':minLat', ':maxLat')
         )->setParameter('minLat', $minLat)
-                ->setParameter('maxLat', $maxLat);
+            ->setParameter('maxLat', $maxLat);
 
         $qb->andWhere(
-                $qb->expr()->between('event.longitude', ':minLng', ':maxLng')
+            $qb->expr()->between('event.longitude', ':minLng', ':maxLng')
         )->setParameter('minLng', $minLng)
-                ->setParameter('maxLng', $maxLng);
+            ->setParameter('maxLng', $maxLng);
 
         // Circular distance filter to exclude bounding box corner false positives
         $latFactor2 = $kmPerLatDeg * $kmPerLatDeg;
         $lngFactor2 = $kmPerLngDeg * $kmPerLngDeg;
 
         $qb->andWhere(
-                '(event.latitude - :centerLat) * (event.latitude - :centerLat) * :latFactor2'
+            '(event.latitude - :centerLat) * (event.latitude - :centerLat) * :latFactor2'
                 . ' + (event.longitude - :centerLng) * (event.longitude - :centerLng) * :lngFactor2 <= :radius2'
         )
-                ->setParameter('centerLat', $latitude)
-                ->setParameter('centerLng', $longitude)
-                ->setParameter('latFactor2', $latFactor2)
-                ->setParameter('lngFactor2', $lngFactor2)
-                ->setParameter('radius2', $radius * $radius);
+            ->setParameter('centerLat', $latitude)
+            ->setParameter('centerLng', $longitude)
+            ->setParameter('latFactor2', $latFactor2)
+            ->setParameter('lngFactor2', $lngFactor2)
+            ->setParameter('radius2', $radius * $radius);
 
         if ($isQuery) {
             return $result->getQuery();

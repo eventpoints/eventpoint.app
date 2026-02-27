@@ -7,7 +7,9 @@ namespace App\Service\Ticketing;
 final class FeeCalculator
 {
     private const int MIN_FEE_CENTS = 20;
+
     private const int MAX_FEE_CENTS = 200;
+
     private const float FEE_RATE = 0.01;
 
     public function calculate(int $orderTotalCents): int

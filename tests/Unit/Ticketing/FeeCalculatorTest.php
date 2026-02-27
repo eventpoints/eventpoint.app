@@ -11,6 +11,7 @@ final class FeeCalculatorTest extends TestCase
 {
     private FeeCalculator $calculator;
 
+    #[\Override]
     protected function setUp(): void
     {
         $this->calculator = new FeeCalculator();

@@ -7,19 +7,17 @@ namespace App\Service\Ticketing;
 use App\Entity\Ticketing\Order;
 use App\Enum\OrderStatusEnum;
 use App\Enum\TicketStatusEnum;
-use App\Repository\Ticketing\OrderRepository;
 use App\Repository\Ticketing\TicketRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Stripe\Refund;
 use Stripe\Stripe;
 
-final class RefundService
+final readonly class RefundService
 {
     public function __construct(
-        private readonly string $stripeSecretKey,
-        private readonly OrderRepository $orderRepository,
-        private readonly TicketRepository $ticketRepository,
-        private readonly EntityManagerInterface $entityManager,
+        private string $stripeSecretKey,
+        private TicketRepository $ticketRepository,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -35,7 +33,9 @@ final class RefundService
 
         Stripe::setApiKey($this->stripeSecretKey);
 
-        $params = ['refund_application_fee' => true];
+        $params = [
+            'refund_application_fee' => true,
+        ];
         if ($order->getStripeChargeId() !== null) {
             $params['charge'] = $order->getStripeChargeId();
         } else {
@@ -47,7 +47,9 @@ final class RefundService
         $order->setStatus(OrderStatusEnum::REFUNDED);
 
         foreach ($order->getOrderLines() as $line) {
-            $tickets = $this->ticketRepository->findBy(['orderLine' => $line]);
+            $tickets = $this->ticketRepository->findBy([
+                'orderLine' => $line,
+            ]);
             foreach ($tickets as $ticket) {
                 $ticket->setStatus(TicketStatusEnum::REFUNDED);
             }

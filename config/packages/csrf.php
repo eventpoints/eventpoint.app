@@ -6,17 +6,17 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 
 return static function (ContainerConfigurator $containerConfigurator): void {
     $containerConfigurator->extension('framework', [
-            'form' => [
-                    'csrf_protection' => [
-                            'token_id' => 'submit',
-                    ],
-            ],
+        'form' => [
             'csrf_protection' => [
-                    'stateless_token_ids' => [
-                            'submit',
-                            'authenticate',
-                            'logout',
-                    ],
+                'token_id' => 'submit',
             ],
+        ],
+        'csrf_protection' => [
+            'stateless_token_ids' => [
+                'submit',
+                'authenticate',
+                'logout',
+            ],
+        ],
     ]);
 };

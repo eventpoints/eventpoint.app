@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\DataTransferObject\Event;
 
 use App\Entity\Event\Category;
-use App\Entity\Event\EventCancellation;
 use App\Entity\EventGroup\EventGroup;
-use App\Entity\Image\ImageCollection;
 use App\Entity\User\User;
 use Carbon\CarbonImmutable;
 use DateTimeImmutable;
@@ -18,26 +16,26 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 final class EventDto
 {
-
     #[Assert\Count(min: 1, max: 4, minMessage: 'event.categories.min', maxMessage: 'event.categories.max')]
-    private Collection $categories;
+    private readonly Collection $categories;
+
     private null|CarbonImmutable $createdAt;
+
     public function __construct(
-            private null|string          $email = null,
-            private null|string          $firstName = null,
-            private null|string          $lastName = null,
-            private null|string          $title = null,
-            private null|CarbonImmutable $startAt = null,
-            private null|CarbonImmutable $endAt = null,
-            private null|string          $description = null,
-            private null|string          $latitude = null,
-            private null|string          $longitude = null,
-            private null|bool            $isPrivate = false,
-            private null|string          $address = null,
-            private null|User            $owner = null,
-            private null|EventGroup      $eventGroup = null,
-    )
-    {
+        private null|string $email = null,
+        private null|string $firstName = null,
+        private null|string $lastName = null,
+        private null|string $title = null,
+        private null|CarbonImmutable $startAt = null,
+        private null|CarbonImmutable $endAt = null,
+        private null|string $description = null,
+        private null|string $latitude = null,
+        private null|string $longitude = null,
+        private null|bool $isPrivate = false,
+        private null|string $address = null,
+        private null|User $owner = null,
+        private null|EventGroup $eventGroup = null,
+    ) {
         $this->categories = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
     }
@@ -121,7 +119,7 @@ final class EventDto
 
     public function addCategory(Category $category): static
     {
-        if (!$this->categories->contains($category)) {
+        if (! $this->categories->contains($category)) {
             $this->categories->add($category);
         }
 

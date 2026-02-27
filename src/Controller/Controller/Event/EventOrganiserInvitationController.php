@@ -6,10 +6,10 @@ namespace App\Controller\Controller\Event;
 
 use App\Entity\Event\Event;
 use App\Entity\Event\EventOrganiserInvitation;
+use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\Event\EventOrganiserInvitationFactory;
 use App\Form\Form\Event\EventOrganiserInviationFormType;
-use App\Entity\User\User;
 use App\Repository\Event\EventOrganiserInvitationRepository;
 use App\Security\Voter\EventVoter;
 use App\Service\EmailService\EmailService;

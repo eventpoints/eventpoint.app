@@ -47,7 +47,7 @@ class DefaultPhoneNumberFormType extends AbstractType
                 'row_attr' => [
                     'class' => 'form-floating mb-3',
                 ],
-                'placeholder' => ''
+                'placeholder' => '',
             ]);
     }
 

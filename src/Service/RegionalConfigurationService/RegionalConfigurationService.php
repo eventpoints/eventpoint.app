@@ -9,10 +9,10 @@ use App\Enum\RegionalEnum;
 use App\Model\RegionalConfiguration;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-final class RegionalConfigurationService
+final readonly class RegionalConfigurationService
 {
     public function __construct(
-        private readonly RequestStack $requestStack
+        private RequestStack $requestStack
     ) {
     }
 
@@ -77,7 +77,7 @@ final class RegionalConfigurationService
             ?? RegionalEnum::REGIONAL_TIMEZONE->value;
     }
 
-    private function resolveUnauthenticatedUserRegion(RegionalConfiguration $regionalConfiguration): null|string
+    private function resolveUnauthenticatedUserRegion(RegionalConfiguration $regionalConfiguration): string
     {
         return $this->requestStack->getSession()->get('_region')
             ?? $regionalConfiguration->getBrowserRegionalData()?->getCountryCode()

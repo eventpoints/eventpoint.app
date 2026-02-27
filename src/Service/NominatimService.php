@@ -8,14 +8,17 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class NominatimService
+final readonly class NominatimService
 {
     public function __construct(
-        private readonly HttpClientInterface $httpClient,
-        private readonly CacheInterface $cache,
+        private HttpClientInterface $httpClient,
+        private CacheInterface $cache,
     ) {
     }
 
+    /**
+     * @return array<mixed>|null
+     */
     public function getCityBoundary(string $cityName, string $countryName): ?array
     {
         $cacheKey = 'nominatim_boundary_' . md5($cityName . '_' . $countryName);
@@ -43,7 +46,7 @@ final class NominatimService
 
             $result = $data[0];
 
-            if (!isset($result['geojson'])) {
+            if (! isset($result['geojson'])) {
                 return null;
             }
 

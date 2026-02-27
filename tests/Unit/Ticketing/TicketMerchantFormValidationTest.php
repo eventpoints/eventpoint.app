@@ -17,21 +17,10 @@ final class TicketMerchantFormValidationTest extends TestCase
 {
     private TicketMerchantForm $form;
 
+    #[\Override]
     protected function setUp(): void
     {
         $this->form = new TicketMerchantForm();
-    }
-
-    private function createProfile(RefundPolicyTypeEnum $refundPolicyType): TicketMerchantProfile
-    {
-        $user = $this->createMock(User::class);
-        $profile = new TicketMerchantProfile($user);
-        $profile->setSellerType(SellerTypeEnum::TRADER);
-        $profile->setSupportEmail('support@example.com');
-        $profile->setRefundPolicyType($refundPolicyType);
-        $profile->setTermsAccepted(true);
-        $profile->setLawfulEventsCert(true);
-        return $profile;
     }
 
     public function testNoRefundsPolicyPassesWithNoExtraFields(): void
@@ -118,5 +107,17 @@ final class TicketMerchantFormValidationTest extends TestCase
         $context->expects(self::never())->method('buildViolation');
 
         $this->form->validateConditionalFields($profile, $context);
+    }
+
+    private function createProfile(RefundPolicyTypeEnum $refundPolicyType): TicketMerchantProfile
+    {
+        $user = $this->createMock(User::class);
+        $profile = new TicketMerchantProfile($user);
+        $profile->setSellerType(SellerTypeEnum::TRADER);
+        $profile->setSupportEmail('support@example.com');
+        $profile->setRefundPolicyType($refundPolicyType);
+        $profile->setTermsAccepted(true);
+        $profile->setLawfulEventsCert(true);
+        return $profile;
     }
 }

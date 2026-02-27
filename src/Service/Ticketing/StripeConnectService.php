@@ -11,11 +11,11 @@ use Stripe\Account;
 use Stripe\AccountLink;
 use Stripe\Stripe;
 
-final class StripeConnectService
+final readonly class StripeConnectService
 {
     public function __construct(
-        private readonly string $stripeSecretKey,
-        private readonly TicketMerchantProfileRepository $profileRepository,
+        private string $stripeSecretKey,
+        private TicketMerchantProfileRepository $profileRepository,
     ) {
     }
 
@@ -34,8 +34,12 @@ final class StripeConnectService
         $params = [
             'type' => 'express',
             'capabilities' => [
-                'card_payments' => ['requested' => true],
-                'transfers' => ['requested' => true],
+                'card_payments' => [
+                    'requested' => true,
+                ],
+                'transfers' => [
+                    'requested' => true,
+                ],
             ],
             'email' => $profile->getSupportEmail() ?? $user->getUserIdentifier(),
             'business_type' => $businessType,
@@ -47,8 +51,8 @@ final class StripeConnectService
         if ($businessType === 'individual') {
             $params['individual'] = array_filter([
                 'first_name' => $user->getFirstName(),
-                'last_name'  => $user->getLastName(),
-                'email'      => $user->getUserIdentifier(),
+                'last_name' => $user->getLastName(),
+                'email' => $user->getUserIdentifier(),
             ]);
         }
 

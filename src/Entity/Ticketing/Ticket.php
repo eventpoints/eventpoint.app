@@ -21,10 +21,6 @@ class Ticket
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private OrderLine $orderLine;
-
     #[ORM\Column(length: 64, unique: true)]
     private string $referenceCode;
 
@@ -34,9 +30,11 @@ class Ticket
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private CarbonImmutable $issuedAt;
 
-    public function __construct(OrderLine $orderLine)
-    {
-        $this->orderLine = $orderLine;
+    public function __construct(
+        #[ORM\ManyToOne]
+        #[ORM\JoinColumn(nullable: false)]
+        private OrderLine $orderLine
+    ) {
         $this->referenceCode = strtoupper(substr(str_replace('-', '', Uuid::v4()->toRfc4122()), 0, 10));
         $this->issuedAt = CarbonImmutable::now();
     }

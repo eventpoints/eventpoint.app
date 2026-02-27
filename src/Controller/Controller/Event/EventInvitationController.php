@@ -70,7 +70,7 @@ class EventInvitationController extends AbstractController
     {
         $invitation = $this->eventInvitationRepository->findByToken(Uuid::fromString($invitationToken));
 
-        if (!$invitation instanceof EventInvitation) {
+        if (! $invitation instanceof EventInvitation) {
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('invitation-not-found'));
             return $this->redirectToRoute('app_landing');
         }
@@ -84,7 +84,7 @@ class EventInvitationController extends AbstractController
     #[Route('/accept/{id}', name: 'accept_invitation', methods: [Request::METHOD_POST])]
     public function acceptInvitation(EventInvitation $eventInvitation, Request $request, #[CurrentUser] User $currentUser): Response
     {
-        if (!$this->isCsrfTokenValid('respond-invitation-' . $eventInvitation->getId(), $request->request->get('_token'))) {
+        if (! $this->isCsrfTokenValid('respond-invitation-' . $eventInvitation->getId(), $request->request->get('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
@@ -102,7 +102,7 @@ class EventInvitationController extends AbstractController
     #[Route('/decline/{id}', name: 'decline_invitation', methods: [Request::METHOD_POST])]
     public function declineInvitation(EventInvitation $eventInvitation, Request $request, #[CurrentUser] User $currentUser): Response
     {
-        if (!$this->isCsrfTokenValid('respond-invitation-' . $eventInvitation->getId(), $request->request->get('_token'))) {
+        if (! $this->isCsrfTokenValid('respond-invitation-' . $eventInvitation->getId(), $request->request->get('_token'))) {
             throw $this->createAccessDeniedException();
         }
 

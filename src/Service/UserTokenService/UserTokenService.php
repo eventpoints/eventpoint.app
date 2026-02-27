@@ -44,7 +44,7 @@ final readonly class UserTokenService
             'purpose' => $purpose,
         ]);
 
-        if (!$token instanceof UserToken || !$token->isActive()) {
+        if (! $token instanceof UserToken || ! $token->isActive()) {
             return null;
         }
 

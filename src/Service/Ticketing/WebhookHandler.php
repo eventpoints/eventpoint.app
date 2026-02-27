@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service\Ticketing;
 
-use App\Entity\Ticketing\Order;
 use App\Entity\Ticketing\StripeWebhookEvent;
 use App\Entity\Ticketing\Ticket;
 use App\Enum\OrderStatusEnum;
@@ -16,20 +15,19 @@ use App\Service\MixpanelService;
 use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use Stripe\Event;
-use Stripe\Exception\SignatureVerificationException;
 use Stripe\Stripe;
 use Stripe\Webhook;
 
-final class WebhookHandler
+final readonly class WebhookHandler
 {
     public function __construct(
-        private readonly string $stripeSecretKey,
-        private readonly string $stripeWebhookSecret,
-        private readonly OrderRepository $orderRepository,
-        private readonly TicketRepository $ticketRepository,
-        private readonly StripeWebhookEventRepository $webhookEventRepository,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly MixpanelService $mixpanel,
+        private string $stripeSecretKey,
+        private string $stripeWebhookSecret,
+        private OrderRepository $orderRepository,
+        private TicketRepository $ticketRepository,
+        private StripeWebhookEventRepository $webhookEventRepository,
+        private EntityManagerInterface $entityManager,
+        private MixpanelService $mixpanel,
     ) {
     }
 
@@ -81,7 +79,7 @@ final class WebhookHandler
         }
 
         $order->setStatus(OrderStatusEnum::PAID);
-        $order->setStripePaymentIntentId($session->payment_intent);
+        $order->setStripePaymentIntentId($session->payment_intent); // @phpstan-ignore-line
 
         $this->mixpanel->trackOrderCompleted($order->getBuyer(), $order);
 
@@ -118,7 +116,7 @@ final class WebhookHandler
 
         if ($order === null) {
             $order = $this->orderRepository->findOneBy([
-                'stripePaymentIntentId' => $charge->payment_intent,
+                'stripePaymentIntentId' => $charge->payment_intent, // @phpstan-ignore-line
             ]);
         }
 
@@ -132,7 +130,9 @@ final class WebhookHandler
         $this->mixpanel->trackOrderRefunded($order->getBuyer(), $order);
 
         foreach ($order->getOrderLines() as $line) {
-            $tickets = $this->ticketRepository->findBy(['orderLine' => $line]);
+            $tickets = $this->ticketRepository->findBy([
+                'orderLine' => $line,
+            ]);
             foreach ($tickets as $ticket) {
                 $ticket->setStatus(TicketStatusEnum::REFUNDED);
             }

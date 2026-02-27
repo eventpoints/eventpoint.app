@@ -4,14 +4,8 @@ declare(strict_types=1);
 
 use App\Security\User\UserProvider;
 use App\Service\EventStatusService;
-use App\Service\Ticketing\StripeCheckoutService;
-use App\Service\Ticketing\StripeConnectService;
-use App\Service\Ticketing\RefundService;
-use App\Service\Ticketing\WebhookHandler;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\Workflow\WorkflowInterface;
 
-use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 return static function (ContainerConfigurator $containerConfigurator): void {

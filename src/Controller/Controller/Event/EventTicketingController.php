@@ -48,8 +48,10 @@ class EventTicketingController extends AbstractController
         /** @var \App\Entity\User\User $user */
         $user = $this->getUser();
 
-        if (!$this->merchantGate->isReadyToSell($user)) {
-            return $this->redirectToRoute('event_tickets', ['id' => $event->getId()]);
+        if (! $this->merchantGate->isReadyToSell($user)) {
+            return $this->redirectToRoute('event_tickets', [
+                'id' => $event->getId(),
+            ]);
         }
 
         $eventTicketOption = new EventTicketOption();
@@ -82,7 +84,7 @@ class EventTicketingController extends AbstractController
         /** @var \App\Entity\User\User $user */
         $user = $this->getUser();
 
-        if (!$event->getIsOrganiser($user)) {
+        if (! $event->getIsOrganiser($user)) {
             throw $this->createAccessDeniedException();
         }
 
@@ -90,7 +92,9 @@ class EventTicketingController extends AbstractController
         $this->ticketOptionRepository->remove($ticketOption, true);
 
         $this->addFlash('success', $this->translator->trans('ticketing.ticket_option.deleted'));
-        return $this->redirectToRoute('event_tickets', ['id' => $event->getId()]);
+        return $this->redirectToRoute('event_tickets', [
+            'id' => $event->getId(),
+        ]);
     }
 
     #[Route(path: '/events/ticket-option/toggle/{id}', name: 'toggle_event_ticket', methods: ['POST'])]
@@ -101,13 +105,15 @@ class EventTicketingController extends AbstractController
         /** @var \App\Entity\User\User $user */
         $user = $this->getUser();
 
-        if (!$event->getIsOrganiser($user)) {
+        if (! $event->getIsOrganiser($user)) {
             throw $this->createAccessDeniedException();
         }
 
-        $ticketOption->setIsEnabled(!$ticketOption->isEnabled());
+        $ticketOption->setIsEnabled(! $ticketOption->isEnabled());
         $this->ticketOptionRepository->save($ticketOption, true);
 
-        return $this->redirectToRoute('event_tickets', ['id' => $event->getId()]);
+        return $this->redirectToRoute('event_tickets', [
+            'id' => $event->getId(),
+        ]);
     }
 }

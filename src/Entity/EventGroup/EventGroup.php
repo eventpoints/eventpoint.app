@@ -6,7 +6,6 @@ namespace App\Entity\EventGroup;
 
 use App\Entity\Event\Category;
 use App\Entity\Event\Event;
-use App\Entity\Poll\Poll;
 use App\Entity\User\User;
 use App\Enum\EventGroupRoleEnum;
 use App\Repository\Event\EventGroupRepository;
@@ -36,7 +35,7 @@ class EventGroup
 
     #[ORM\OneToMany(targetEntity: Event::class, mappedBy: 'eventGroup', cascade: ['persist'])]
     #[ORM\OrderBy([
-            'startAt' => Criteria::DESC,
+        'startAt' => Criteria::DESC,
     ])]
     private Collection $events;
 
@@ -78,19 +77,18 @@ class EventGroup
     private ?string $imageName = null;
 
     public function __construct(
-            #[ORM\Column(length: 255)]
-            #[Assert\NotBlank]
-            private null|string $name = null,
-            #[ORM\Column(type: Types::STRING, length: 140)]
-            #[Assert\NotBlank]
-            #[Assert\Length(min: 20, max: 140)]
-            private null|string $description = null,
-            #[ORM\ManyToOne(inversedBy: 'eventGroups')]
-            private null|User   $owner = null,
-            #[ORM\Column(length: 255, nullable: true)]
-            private null|string $language = null,
-    )
-    {
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank]
+        private null|string $name = null,
+        #[ORM\Column(type: Types::STRING, length: 140)]
+        #[Assert\NotBlank]
+        #[Assert\Length(min: 20, max: 140)]
+        private null|string $description = null,
+        #[ORM\ManyToOne(inversedBy: 'eventGroups')]
+        private null|User $owner = null,
+        #[ORM\Column(length: 255, nullable: true)]
+        private null|string $language = null,
+    ) {
         $this->events = new ArrayCollection();
         $this->eventGroupMembers = new ArrayCollection();
         $this->createdAt = new CarbonImmutable();
@@ -126,7 +124,7 @@ class EventGroup
 
     public function addEvent(Event $event): static
     {
-        if (!$this->events->contains($event)) {
+        if (! $this->events->contains($event)) {
             $this->events->add($event);
             $event->setEventGroup($this);
         }
@@ -180,7 +178,7 @@ class EventGroup
 
     public function addEventGroupMember(EventGroupMember $eventGroupMember): static
     {
-        if (!$this->eventGroupMembers->contains($eventGroupMember)) {
+        if (! $this->eventGroupMembers->contains($eventGroupMember)) {
             $this->eventGroupMembers->add($eventGroupMember);
             $eventGroupMember->setEventGroup($this);
         }
@@ -205,7 +203,7 @@ class EventGroup
      */
     public function getEventGroupMaintainers(): ArrayCollection
     {
-        return $this->eventGroupMembers->filter(fn(EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn(int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER));
+        return $this->eventGroupMembers->filter(fn (EventGroupMember $eventGroupMember) => $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER));
     }
 
     public function getDescription(): null|string
@@ -220,17 +218,17 @@ class EventGroup
 
     public function getIsMember(User $user): bool
     {
-        return $this->getEventGroupMembers()->exists(fn(int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->getRoles()->exists(fn(int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MEMBER));
+        return $this->getEventGroupMembers()->exists(fn (int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MEMBER));
     }
 
     public function getIsMaintainer(User $user): bool
     {
-        return $this->getEventGroupMembers()->exists(fn(int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->getRoles()->exists(fn(int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER));
+        return $this->getEventGroupMembers()->exists(fn (int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MAINTAINER));
     }
 
     public function getMember(User $user): null|EventGroupMember
     {
-        return $this->getEventGroupMembers()->findFirst(fn(int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user);
+        return $this->getEventGroupMembers()->findFirst(fn (int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user);
     }
 
     public function getImageFile(): ?File
@@ -267,7 +265,7 @@ class EventGroup
 
     public function addCategory(Category $category): static
     {
-        if (!$this->categories->contains($category)) {
+        if (! $this->categories->contains($category)) {
             $this->categories->add($category);
         }
 
@@ -358,7 +356,7 @@ class EventGroup
 
     public function addEventGroupInvitation(EventGroupInvitation $eventGroupInvitation): static
     {
-        if (!$this->eventGroupInvitations->contains($eventGroupInvitation)) {
+        if (! $this->eventGroupInvitations->contains($eventGroupInvitation)) {
             $this->eventGroupInvitations->add($eventGroupInvitation);
             $eventGroupInvitation->setEventGroup($this);
         }
@@ -388,7 +386,7 @@ class EventGroup
 
     public function addEventGroupJoinRequest(EventGroupJoinRequest $eventGroupJoinRequest): static
     {
-        if (!$this->eventGroupJoinRequests->contains($eventGroupJoinRequest)) {
+        if (! $this->eventGroupJoinRequests->contains($eventGroupJoinRequest)) {
             $this->eventGroupJoinRequests->add($eventGroupJoinRequest);
             $eventGroupJoinRequest->setEventGroup($this);
         }
@@ -410,16 +408,16 @@ class EventGroup
 
     public function hasUserSentJoinRequest(User $user): bool
     {
-        return $this->eventGroupJoinRequests->exists(fn(int $key, EventGroupJoinRequest $eventGroupJoinRequest) => $eventGroupJoinRequest->getOwner() === $user);
+        return $this->eventGroupJoinRequests->exists(fn (int $key, EventGroupJoinRequest $eventGroupJoinRequest) => $eventGroupJoinRequest->getOwner() === $user);
     }
 
     public function getUserJoinRequest(User $user): null|EventGroupJoinRequest
     {
-        return $this->eventGroupJoinRequests->findFirst(fn(int $key, EventGroupJoinRequest $eventGroupJoinRequest) => $eventGroupJoinRequest->getOwner() === $user);
+        return $this->eventGroupJoinRequests->findFirst(fn (int $key, EventGroupJoinRequest $eventGroupJoinRequest) => $eventGroupJoinRequest->getOwner() === $user);
     }
 
     public function isUserAdmin(User $user): bool
     {
-        return $this->getEventGroupMembers()->exists(fn(int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->getRoles()->exists(fn(int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MANAGER || $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_CREATOR));
+        return $this->getEventGroupMembers()->exists(fn (int $key, EventGroupMember $eventGroupMember) => $eventGroupMember->getOwner() === $user && $eventGroupMember->getRoles()->exists(fn (int $key, EventGroupRole $eventGroupRole) => $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_MANAGER || $eventGroupRole->getTitle() === EventGroupRoleEnum::ROLE_GROUP_CREATOR));
     }
 }

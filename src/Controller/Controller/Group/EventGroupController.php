@@ -17,7 +17,6 @@ use App\Factory\EventGroup\EventGroupMemberFactory;
 use App\Form\Filter\EventGroupFilterType;
 use App\Form\Form\EventGroup\EventGroupSettingsFormType;
 use App\Model\RegionalConfiguration;
-use App\Repository\CountryRepository;
 use App\Repository\Event\EventGroupRepository;
 use App\Repository\Event\EventRepository;
 use App\Repository\EventGroup\EventGroupDiscussionCommentRepository;
@@ -36,6 +35,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -46,26 +46,24 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class EventGroupController extends AbstractController
 {
     public function __construct(
-            private readonly EventGroupRepository                  $eventGroupRepository,
-            private readonly EventGroupJoinRequestRepository       $eventGroupJoinRequestRepository,
-            private readonly EventGroupInvitationRepository        $eventGroupInvitationRepository,
-            private readonly EventGroupMemberRepository            $eventGroupMemberRepository,
-            private readonly EventGroupJoinRequestFactory          $eventGroupJoinRequestFactory,
-            private readonly EventRepository                       $eventRepository,
-            private readonly EventGroupMemberFactory               $eventGroupMemberFactory,
-            private readonly EventGroupRoleRepository              $eventGroupRoleRepository,
-            private readonly PollRepository                        $pollRepository,
-            private readonly EventGroupDiscussionRepository        $eventDiscussionRepository,
-            private readonly EventGroupDiscussionCommentRepository $eventDiscussionCommentRepository,
-            private readonly PaginatorInterface                    $paginator,
-            private readonly TranslatorInterface                   $translator,
-            private readonly EventActivityAnalyzer                 $eventGroupAnalyzer,
-            private readonly ImageUploadService                    $imageUploadService,
-            private readonly CountryRepository                     $countryRepository,
-            private readonly RegionalConfiguration                 $regionalConfiguration,
-            private readonly MixpanelService                       $mixpanel,
-    )
-    {
+        private readonly EventGroupRepository $eventGroupRepository,
+        private readonly EventGroupJoinRequestRepository $eventGroupJoinRequestRepository,
+        private readonly EventGroupInvitationRepository $eventGroupInvitationRepository,
+        private readonly EventGroupMemberRepository $eventGroupMemberRepository,
+        private readonly EventGroupJoinRequestFactory $eventGroupJoinRequestFactory,
+        private readonly EventRepository $eventRepository,
+        private readonly EventGroupMemberFactory $eventGroupMemberFactory,
+        private readonly EventGroupRoleRepository $eventGroupRoleRepository,
+        private readonly PollRepository $pollRepository,
+        private readonly EventGroupDiscussionRepository $eventDiscussionRepository,
+        private readonly EventGroupDiscussionCommentRepository $eventDiscussionCommentRepository,
+        private readonly PaginatorInterface $paginator,
+        private readonly TranslatorInterface $translator,
+        private readonly EventActivityAnalyzer $eventGroupAnalyzer,
+        private readonly ImageUploadService $imageUploadService,
+        private readonly RegionalConfiguration $regionalConfiguration,
+        private readonly MixpanelService $mixpanel,
+    ) {
     }
 
     #[Route('/show/{id}', name: 'event_group_show', methods: ['GET', 'POST'])]
@@ -78,12 +76,12 @@ class EventGroupController extends AbstractController
 
         $unorderedPosts = new ArrayCollection([...$events, ...$discussions, ...$discussionComments, ...$polls]);
         $posts = $unorderedPosts->matching(Criteria::create()->orderBy([
-                'createdAt' => Criteria::DESC,
+            'createdAt' => Criteria::DESC,
         ]));
 
         return $this->render('groups/show.html.twig', [
-                'eventGroup' => $eventGroup,
-                'posts' => $posts,
+            'eventGroup' => $eventGroup,
+            'posts' => $posts,
         ]);
     }
 
@@ -97,25 +95,25 @@ class EventGroupController extends AbstractController
         $eventGroupFilter = $this->createForm(EventGroupFilterType::class, $eventFilterDto);
         $eventGroups = $this->eventGroupRepository->findByGroupFilter($eventFilterDto, true);
         $eventGroupPagination = $this->paginator->paginate(target: $eventGroups, page: $request->query->getInt('groups-page', 1), limit: 3, options: [
-                'pageParameterName' => 'groups-page',
+            'pageParameterName' => 'groups-page',
         ]);
 
         $eventGroupFilter->handleRequest($request);
         if ($eventGroupFilter->isSubmitted() && $eventGroupFilter->isValid()) {
             $eventGroups = $this->eventGroupRepository->findByGroupFilter($eventFilterDto, true);
             $eventGroupPagination = $this->paginator->paginate(target: $eventGroups, page: $request->query->getInt('groups-page', 1), limit: 3, options: [
-                    'pageParameterName' => 'groups-page',
+                'pageParameterName' => 'groups-page',
             ]);
 
             return $this->render('groups/index.html.twig', [
-                    'eventGroupPagination' => $eventGroupPagination,
-                    'eventGroupFilter' => $eventGroupFilter,
+                'eventGroupPagination' => $eventGroupPagination,
+                'eventGroupFilter' => $eventGroupFilter,
             ]);
         }
 
         return $this->render('groups/index.html.twig', [
-                'eventGroupPagination' => $eventGroupPagination,
-                'eventGroupFilter' => $eventGroupFilter,
+            'eventGroupPagination' => $eventGroupPagination,
+            'eventGroupFilter' => $eventGroupFilter,
         ]);
     }
 
@@ -127,21 +125,21 @@ class EventGroupController extends AbstractController
         $eventGroupForm->handleRequest($request);
 
         $browserCountryCode = $this->regionalConfiguration->getBrowserRegionalData()?->getCountryCode();
-        $countryCodeEnum = !empty($browserCountryCode) ? CountryCodeEnum::tryFrom($browserCountryCode) : null;
+        $countryCodeEnum = ! empty($browserCountryCode) ? CountryCodeEnum::tryFrom($browserCountryCode) : null;
         $eventGroup->setCountry($countryCodeEnum?->value ?? CountryCodeEnum::CzechRepublic->value);
 
         if ($eventGroupForm->isSubmitted() && $eventGroupForm->isValid()) {
             $imageFile = $eventGroup->getImageFile();
-            if ($imageFile !== null) {
+            if ($imageFile instanceof UploadedFile) {
                 $eventGroup->setImageFile($this->imageUploadService->processAvatar($imageFile));
             }
 
             $eventGroupMember = new EventGroupMember(owner: $currentUser, eventGroup: $eventGroup, approvedAt: new CarbonImmutable());
             $eventGroupMaintainerRole = $this->eventGroupRoleRepository->findOneBy([
-                    'title' => EventGroupRoleEnum::ROLE_GROUP_MAINTAINER,
+                'title' => EventGroupRoleEnum::ROLE_GROUP_MAINTAINER,
             ]);
             $eventGroupCreatorRole = $this->eventGroupRoleRepository->findOneBy([
-                    'title' => EventGroupRoleEnum::ROLE_GROUP_CREATOR,
+                'title' => EventGroupRoleEnum::ROLE_GROUP_CREATOR,
             ]);
 
             $eventGroupMember->addRole($eventGroupCreatorRole);
@@ -151,11 +149,13 @@ class EventGroupController extends AbstractController
 
             $this->mixpanel->trackGroupCreated($currentUser, $eventGroup);
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('changes-saved'));
-            return $this->redirectToRoute('event_group_show', ['id' => $eventGroup->getId()]);
+            return $this->redirectToRoute('event_group_show', [
+                'id' => $eventGroup->getId(),
+            ]);
         }
 
         return $this->render('/groups/create.html.twig', [
-                'eventGroupForm' => $eventGroupForm,
+            'eventGroupForm' => $eventGroupForm,
         ]);
     }
 
@@ -163,7 +163,7 @@ class EventGroupController extends AbstractController
     public function events(EventGroup $eventGroup, Request $request): Response
     {
         return $this->render('groups/events.html.twig', [
-                'eventGroup' => $eventGroup,
+            'eventGroup' => $eventGroup,
         ]);
     }
 
@@ -172,39 +172,39 @@ class EventGroupController extends AbstractController
     {
         $groupMembersQuery = $this->eventGroupMemberRepository->findByGroup(eventGroup: $eventGroup, isQuery: true);
         $eventGroupMembersPagination = $this->paginator->paginate(
-                target: $groupMembersQuery,
-                page: $request->query->getInt('members-page', 1),
-                limit: 2,
-                options: [
-                        'pageParameterName' => 'members-page',
-                ]
+            target: $groupMembersQuery,
+            page: $request->query->getInt('members-page', 1),
+            limit: 2,
+            options: [
+                'pageParameterName' => 'members-page',
+            ]
         );
 
         $groupJoinRequestQuery = $this->eventGroupJoinRequestRepository->findByGroup(eventGroup: $eventGroup, isQuery: true);
         $eventGroupJoinRequestPagination = $this->paginator->paginate(
-                target: $groupJoinRequestQuery,
-                page: $request->query->getInt('join-request-page', 1),
-                limit: 2,
-                options: [
-                        'pageParameterName' => 'join-request-page',
-                ]
+            target: $groupJoinRequestQuery,
+            page: $request->query->getInt('join-request-page', 1),
+            limit: 2,
+            options: [
+                'pageParameterName' => 'join-request-page',
+            ]
         );
 
         $groupInvitationsQuery = $this->eventGroupInvitationRepository->findByGroup(eventGroup: $eventGroup, isQuery: true);
         $eventGroupInvitationsPagination = $this->paginator->paginate(
-                target: $groupInvitationsQuery,
-                page: $request->query->getInt('invitations-page', 1),
-                limit: 2,
-                options: [
-                        'pageParameterName' => 'invitations-page',
-                ]
+            target: $groupInvitationsQuery,
+            page: $request->query->getInt('invitations-page', 1),
+            limit: 2,
+            options: [
+                'pageParameterName' => 'invitations-page',
+            ]
         );
 
         return $this->render('groups/members.html.twig', [
-                'eventGroupMembersPagination' => $eventGroupMembersPagination,
-                'eventGroupJoinRequestPagination' => $eventGroupJoinRequestPagination,
-                'eventGroupInvitationsPagination' => $eventGroupInvitationsPagination,
-                'eventGroup' => $eventGroup,
+            'eventGroupMembersPagination' => $eventGroupMembersPagination,
+            'eventGroupJoinRequestPagination' => $eventGroupJoinRequestPagination,
+            'eventGroupInvitationsPagination' => $eventGroupInvitationsPagination,
+            'eventGroup' => $eventGroup,
         ]);
     }
 
@@ -213,14 +213,14 @@ class EventGroupController extends AbstractController
     {
         $discussionsQuery = $this->eventDiscussionRepository->findByGroup($eventGroup, true);
         $discussionPagination = $this->paginator->paginate(
-                target: $discussionsQuery,
-                page: $request->query->getInt('page', 1),
-                limit: 2
+            target: $discussionsQuery,
+            page: $request->query->getInt('page', 1),
+            limit: 2
         );
 
         return $this->render('groups/discussion.html.twig', [
-                'eventGroup' => $eventGroup,
-                'discussionPagination' => $discussionPagination,
+            'eventGroup' => $eventGroup,
+            'discussionPagination' => $discussionPagination,
         ]);
     }
 
@@ -232,7 +232,7 @@ class EventGroupController extends AbstractController
         $this->mixpanel->trackGroupJoinRequestCancelled($currentUser, $eventGroup);
         $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('request-canceled'));
         return $this->redirectToRoute('event_group_show', [
-                'id' => $eventGroup->getId(),
+            'id' => $eventGroup->getId(),
         ]);
     }
 
@@ -242,19 +242,19 @@ class EventGroupController extends AbstractController
         if ($eventGroup->getIsMember($currentUser)) {
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('already-member'));
             return $this->redirectToRoute('event_group_show', [
-                    'id' => $eventGroup->getId(),
+                'id' => $eventGroup->getId(),
             ]);
         }
 
         $eventGroupRequest = $this->eventGroupJoinRequestRepository->findOneBy([
-                'eventGroup' => $eventGroup,
-                'owner' => $currentUser,
+            'eventGroup' => $eventGroup,
+            'owner' => $currentUser,
         ]);
 
         if ($eventGroupRequest instanceof EventGroupJoinRequest) {
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('request-already-sent'));
             return $this->redirectToRoute('event_group_show', [
-                    'id' => $eventGroup->getId(),
+                'id' => $eventGroup->getId(),
             ]);
         }
 
@@ -263,7 +263,7 @@ class EventGroupController extends AbstractController
         $this->mixpanel->trackGroupJoinRequested($currentUser, $eventGroup);
         $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('request-sent'));
         return $this->redirectToRoute('event_group_show', [
-                'id' => $eventGroup->getId(),
+            'id' => $eventGroup->getId(),
         ]);
     }
 
@@ -273,13 +273,13 @@ class EventGroupController extends AbstractController
         if ($eventGroup->getIsMember($currentUser)) {
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('already-member'));
             return $this->redirectToRoute('event_group_show', [
-                    'id' => $eventGroup->getId(),
+                'id' => $eventGroup->getId(),
             ]);
         }
 
         $eventGroupMember = $this->eventGroupMemberFactory->create(owner: $currentUser, eventGroup: $eventGroup, approvedAt: new CarbonImmutable());
         $memberRole = $this->eventGroupRoleRepository->findOneBy([
-                'title' => EventGroupRoleEnum::ROLE_GROUP_MEMBER,
+            'title' => EventGroupRoleEnum::ROLE_GROUP_MEMBER,
         ]);
         $eventGroupMember->addRole($memberRole);
         $eventGroup->addEventGroupMember($eventGroupMember);
@@ -288,7 +288,7 @@ class EventGroupController extends AbstractController
         $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('group-joined'));
 
         return $this->redirectToRoute('event_group_show', [
-                'id' => $eventGroup->getId(),
+            'id' => $eventGroup->getId(),
         ]);
     }
 
@@ -296,10 +296,10 @@ class EventGroupController extends AbstractController
     public function leaveEventGroup(Request $request, EventGroup $eventGroup, #[CurrentUser] User $currentUser): Response
     {
         $eventGroupMember = $this->eventGroupMemberRepository->findByOwner(user: $currentUser, group: $eventGroup);
-        if (!$eventGroupMember instanceof EventGroupMember) {
+        if (! $eventGroupMember instanceof EventGroupMember) {
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('not-group-memeber'));
             return $this->redirectToRoute('event_group_show', [
-                    'id' => $eventGroup->getId(),
+                'id' => $eventGroup->getId(),
             ]);
         }
 
@@ -307,7 +307,7 @@ class EventGroupController extends AbstractController
         $this->mixpanel->trackGroupLeft($currentUser, $eventGroup);
         $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('group-left'));
         return $this->redirectToRoute('event_group_show', [
-                'id' => $eventGroup->getId(),
+            'id' => $eventGroup->getId(),
         ]);
     }
 
@@ -318,7 +318,7 @@ class EventGroupController extends AbstractController
         $eventGroupAnalysis = $this->eventGroupAnalyzer->analyze($publishedEvents);
 
         return $this->render('groups/activity-graph.html.twig', [
-                'eventGroupAnalysis' => $eventGroupAnalysis,
+            'eventGroupAnalysis' => $eventGroupAnalysis,
         ]);
     }
 
@@ -331,20 +331,20 @@ class EventGroupController extends AbstractController
         $eventGroupSettingForm->handleRequest($request);
         if ($eventGroupSettingForm->isSubmitted() && $eventGroupSettingForm->isValid()) {
             $imageFile = $eventGroup->getImageFile();
-            if ($imageFile !== null) {
+            if ($imageFile instanceof UploadedFile) {
                 $eventGroup->setImageFile($this->imageUploadService->processAvatar($imageFile));
             }
             $this->eventGroupRepository->save(entity: $eventGroup, flush: true);
 
             $this->addFlash('message', $this->translator->trans('changes-saved'));
             return $this->redirectToRoute('event_group_settings', [
-                    'id' => $eventGroup->getId(),
+                'id' => $eventGroup->getId(),
             ]);
         }
 
         return $this->render('groups/settings.twig', [
-                'eventGroupSettingForm' => $eventGroupSettingForm,
-                'eventGroup' => $eventGroup,
+            'eventGroupSettingForm' => $eventGroupSettingForm,
+            'eventGroup' => $eventGroup,
         ]);
     }
 }

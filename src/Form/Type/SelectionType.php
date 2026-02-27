@@ -16,9 +16,9 @@ class SelectionType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'expanded'    => true,
-            'multiple'    => false,
-            'cols'        => 2,
+            'expanded' => true,
+            'multiple' => false,
+            'cols' => 2,
             'placeholder' => false,
         ]);
 

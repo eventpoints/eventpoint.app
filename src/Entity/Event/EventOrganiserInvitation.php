@@ -34,7 +34,9 @@ class EventOrganiserInvitation
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private null|DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(length: 255, enumType: EventParticipantRoleEnum::class, options: ['default' => EventParticipantRoleEnum::ROLE_ORGANISER->value])]
+    #[ORM\Column(length: 255, enumType: EventParticipantRoleEnum::class, options: [
+        'default' => EventParticipantRoleEnum::ROLE_ORGANISER->value,
+    ])]
     private EventParticipantRoleEnum $role = EventParticipantRoleEnum::ROLE_ORGANISER;
 
     public function __construct()

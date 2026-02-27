@@ -16,7 +16,7 @@ class EventFilterDto
 
     private null|EventFilterDateRangeEnum $period = EventFilterDateRangeEnum::TODAY;
 
-    private ArrayCollection $categories;
+    private readonly ArrayCollection $categories;
 
     private null|City $city = null;
 
@@ -59,7 +59,7 @@ class EventFilterDto
 
     public function addCategory(Category $category): void
     {
-        if (!$this->categories->contains($category)) {
+        if (! $this->categories->contains($category)) {
             $this->categories->add($category);
         }
     }

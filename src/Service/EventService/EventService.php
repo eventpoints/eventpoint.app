@@ -11,7 +11,6 @@ use App\Entity\User\User;
 use App\Enum\FlashEnum;
 use App\Factory\Event\EventInvitationFactory;
 use App\Repository\Event\EventInvitationRepository;
-use App\Repository\Event\EventParticipantRepository;
 use App\Repository\User\UserRepository;
 use App\Service\EmailService\EmailService;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -29,7 +28,6 @@ final readonly class EventService
         private EmailService $emailService,
         private UrlGeneratorInterface $urlGenerator,
         private EventInvitationRepository $eventInvitationRepository,
-        private EventParticipantRepository $eventParticipantRepository,
         private TranslatorInterface $translator,
     ) {
     }

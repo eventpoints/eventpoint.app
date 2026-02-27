@@ -22,8 +22,8 @@ final class EventGroupFactory
         $eventGroup->setName($title);
         $eventGroup->setOwner($owner);
         $eventGroup->setLanguage($language);
-        $eventGroup->setCountry($country);
-        $eventGroup->setCity($city);
+        $eventGroup->setCountry($country?->getAlpha2());
+        $eventGroup->setCity($city?->getName());
         return $eventGroup;
     }
 }

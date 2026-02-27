@@ -26,9 +26,7 @@ use App\Factory\ImageFactory;
 use App\Factory\UserFactory;
 use App\Form\Filter\EventFilterType;
 use App\Form\Form\Event\EventCancellationFormType;
-use App\Form\Form\Event\EventDetailsFormType;
 use App\Form\Form\Event\EventFormType;
-use App\Form\Form\Event\EventLocationFormType;
 use App\Form\Form\Image\ImageFormType;
 use App\Form\Form\User\RegistrationFormType;
 use App\Model\RegionalConfiguration;
@@ -48,16 +46,13 @@ use App\Service\ImageUploadService\ImageUploadService;
 use App\Service\MixpanelService;
 use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
@@ -75,33 +70,32 @@ class EventController extends AbstractController
     use TargetPathTrait;
 
     public function __construct(
-            private readonly EventRepository           $eventRepository,
-            private readonly ImageUploadService        $imageUploadService,
-            private readonly ImageFactory              $imageFactory,
-            private readonly ImageCollectionFactory    $imageCollectionFactory,
-            private readonly ImageCollectionRepository $imageCollectionRepository,
-            private readonly EventParticpantFactory    $eventParticipantFactory,
-            private readonly EventFactory              $eventFactory,
-            private readonly EventCancellationFactory  $eventCancellationFactory,
-            private readonly TranslatorInterface       $translator,
-            private readonly EventInvitationRepository $eventInvitationRepository,
-            private readonly EventStatusService        $eventStatusService,
-            private readonly UserFactory               $userFactory,
-            private readonly UserRepository            $userRepository,
-            private readonly Security                  $security,
-            private readonly EventGroupRepository      $eventGroupRepository,
-            private readonly CountryRepository         $countryRepository,
-            private readonly RegionalConfiguration     $regionalConfiguration,
-            private readonly AvatarService             $avatarService,
-            private readonly EmailFactory              $emailFactory,
-            private readonly EmailRepository           $emailRepository,
-            private readonly EventInvitationFactory    $eventInvitationFactory,
-            private readonly EmailEventService         $emailEventService,
-            private readonly EmailService              $emailService,
-            private readonly MixpanelService           $mixpanel,
-            private readonly MessageBusInterface        $messageBus,
-    )
-    {
+        private readonly EventRepository $eventRepository,
+        private readonly ImageUploadService $imageUploadService,
+        private readonly ImageFactory $imageFactory,
+        private readonly ImageCollectionFactory $imageCollectionFactory,
+        private readonly ImageCollectionRepository $imageCollectionRepository,
+        private readonly EventParticpantFactory $eventParticipantFactory,
+        private readonly EventFactory $eventFactory,
+        private readonly EventCancellationFactory $eventCancellationFactory,
+        private readonly TranslatorInterface $translator,
+        private readonly EventInvitationRepository $eventInvitationRepository,
+        private readonly EventStatusService $eventStatusService,
+        private readonly UserFactory $userFactory,
+        private readonly UserRepository $userRepository,
+        private readonly Security $security,
+        private readonly EventGroupRepository $eventGroupRepository,
+        private readonly CountryRepository $countryRepository,
+        private readonly RegionalConfiguration $regionalConfiguration,
+        private readonly AvatarService $avatarService,
+        private readonly EmailFactory $emailFactory,
+        private readonly EmailRepository $emailRepository,
+        private readonly EventInvitationFactory $eventInvitationFactory,
+        private readonly EmailEventService $emailEventService,
+        private readonly EmailService $emailService,
+        private readonly MixpanelService $mixpanel,
+        private readonly MessageBusInterface $messageBus,
+    ) {
     }
 
     #[Route(path: '/', name: 'events')]
@@ -109,18 +103,18 @@ class EventController extends AbstractController
     {
         $eventFilterDto = new EventFilterDto();
         $browserCountryCode = $this->regionalConfiguration->getBrowserRegionalData()?->getCountryCode();
-        $countryCodeEnum = !empty($browserCountryCode) ? CountryCodeEnum::tryFrom($browserCountryCode) : null;
+        $countryCodeEnum = ! empty($browserCountryCode) ? CountryCodeEnum::tryFrom($browserCountryCode) : null;
 
         $country = null;
         if ($countryCodeEnum !== null) {
             $country = $this->countryRepository->findOneBy([
-                    'alpha2' => $countryCodeEnum->value,
+                'alpha2' => $countryCodeEnum->value,
             ]);
         }
 
         if ($country === null) {
             $country = $this->countryRepository->findOneBy([
-                    'alpha2' => CountryCodeEnum::CzechRepublic->value,
+                'alpha2' => CountryCodeEnum::CzechRepublic->value,
             ]);
         }
 
@@ -143,41 +137,45 @@ class EventController extends AbstractController
         foreach ($events as $event) {
             if ($event->getLatitude() && $event->getLongitude()) {
                 $eventPoints[] = [
-                        'id' => (string)$event->getId(),
-                        'lat' => $event->getLatitude(),
-                        'lng' => $event->getLongitude(),
-                        'title' => $event->getTitle(),
+                    'id' => (string) $event->getId(),
+                    'lat' => $event->getLatitude(),
+                    'lng' => $event->getLongitude(),
+                    'title' => $event->getTitle(),
                 ];
             }
         }
 
-        $map = new Map(extra: ['events' => $eventPoints]);
+        $map = new Map(extra: [
+            'events' => $eventPoints,
+        ]);
         $map->center(new Point($selectedCity?->getLatitude() ?? 50.0755, $selectedCity?->getLongitude() ?? 14.4378));
         $map->zoom(10);
         $map->fitBoundsToMarkers();
         $map->options(
-                (new LeafletOptions())
-                        ->tileLayer(new TileLayer(
-                                url: 'https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=1IDdEWmfCtjKNlJ6Ij3W',
-                                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                                options: [
-                                        'maxZoom' => 25,
-                                        'tileSize' => 512,
-                                        'zoomOffset' => -1,
-                                ]
-                        ))
+            (new LeafletOptions())
+                ->tileLayer(new TileLayer(
+                    url: 'https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=1IDdEWmfCtjKNlJ6Ij3W',
+                    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    options: [
+                        'maxZoom' => 25,
+                        'tileSize' => 512,
+                        'zoomOffset' => -1,
+                    ]
+                ))
         );
 
         $boundaryUrl = $selectedCity
-                ? $this->generateUrl('api_city_boundary', ['id' => $selectedCity->getId()])
+                ? $this->generateUrl('api_city_boundary', [
+                    'id' => $selectedCity->getId(),
+                ])
                 : null;
 
         return $this->render('events/index.html.twig', [
-                'form' => $form,
-                'events' => $events,
-                'groups' => $groups,
-                'map' => $map,
-                'boundaryUrl' => $boundaryUrl,
+            'form' => $form,
+            'events' => $events,
+            'groups' => $groups,
+            'map' => $map,
+            'boundaryUrl' => $boundaryUrl,
         ]);
     }
 
@@ -187,30 +185,29 @@ class EventController extends AbstractController
         $eventDto = new EventDto();
 
         $map = (new Map('default'))
-                ->center(new Point(50.07897895366278, 14.430823454571573))
-                ->zoom(12)
-                ->fitBoundsToMarkers()
-                ->options(
-                        (new LeafletOptions())
-                                ->tileLayer(new TileLayer(
-                                        url: 'https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=1IDdEWmfCtjKNlJ6Ij3W',
-                                        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                                        options: [
-                                                'maxZoom' => 25,
-                                                'tileSize' => 512,
-                                                'zoomOffset' => -1,
-                                        ]
-                                ))
-                );
+            ->center(new Point(50.07897895366278, 14.430823454571573))
+            ->zoom(12)
+            ->fitBoundsToMarkers()
+            ->options(
+                (new LeafletOptions())
+                    ->tileLayer(new TileLayer(
+                        url: 'https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=1IDdEWmfCtjKNlJ6Ij3W',
+                        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                        options: [
+                            'maxZoom' => 25,
+                            'tileSize' => 512,
+                            'zoomOffset' => -1,
+                        ]
+                    ))
+            );
 
         $eventForm = $this->createForm(EventFormType::class, $eventDto, [
-                'map' => $map,
-                'event' => $eventDto
+            'map' => $map,
+            'event' => $eventDto,
         ]);
 
         $eventForm->handleRequest($request);
         if ($eventForm->isSubmitted() && $eventForm->isValid()) {
-
             /** @var EventDto $eventDto */
             $eventDto = $eventForm->getData();
 
@@ -222,11 +219,11 @@ class EventController extends AbstractController
             }
 
             $event = $this->eventFactory->createFromDTOs(
-                    eventDto: $eventDto,
+                eventDto: $eventDto,
             );
 
-            if (!$currentUser instanceof User) {
-                $email = new Email()->setAddress($eventDto->getEmail());
+            if (! $currentUser instanceof User) {
+                $email = (new Email())->setAddress($eventDto->getEmail());
                 $currentUser = $this->userFactory->create(firstName: $eventDto->getFirstName(), lastName: $eventDto->getLastName(), email: $email);
                 $email->setOwner($currentUser);
                 $this->userRepository->save($currentUser, true);
@@ -236,7 +233,9 @@ class EventController extends AbstractController
 
             $event->setOwner($currentUser);
             $participant = $this->eventParticipantFactory->create(
-                    owner: $currentUser, event: $event, role: EventParticipantRoleEnum::ROLE_ORGANISER
+                owner: $currentUser,
+                event: $event,
+                role: EventParticipantRoleEnum::ROLE_ORGANISER
             );
             $event->addEventParticipant($participant);
             $this->eventRepository->save($event, true);
@@ -244,14 +243,14 @@ class EventController extends AbstractController
             $this->mixpanel->trackEventCreated($currentUser, $event);
 
             return $this->redirectToRoute('show_event', [
-                    'id' => $event->getId(),
+                'id' => $event->getId(),
             ]);
         }
 
         return $this->render('events/create.html.twig', [
-                'form' => $eventForm,
-                'eventDto' => $eventDto,
-                'map' => $map
+            'form' => $eventForm,
+            'eventDto' => $eventDto,
+            'map' => $map,
         ]);
     }
 
@@ -259,12 +258,12 @@ class EventController extends AbstractController
     public function edit(Event $event, Request $request): Response
     {
         $eventForm = $this->createForm(EventFormType::class, $event, [
-                'event' => $event,
+            'event' => $event,
         ]);
         $eventForm->handleRequest($request);
         if ($eventForm->isSubmitted() && $eventForm->isValid()) {
             $imageFile = $event->getImageFile();
-            if ($imageFile !== null) {
+            if ($imageFile instanceof UploadedFile) {
                 $event->setImageFile($this->imageUploadService->processPhoto($imageFile));
             }
 
@@ -275,13 +274,13 @@ class EventController extends AbstractController
             $this->mixpanel->trackEventUpdated($currentUser, $event);
 
             return $this->redirectToRoute('edit_event', [
-                    'id' => $event->getId(),
+                'id' => $event->getId(),
             ]);
         }
 
         return $this->render('events/edit.html.twig', [
-                'eventForm' => $eventForm,
-                'event' => $event,
+            'eventForm' => $eventForm,
+            'event' => $event,
         ]);
     }
 
@@ -290,13 +289,13 @@ class EventController extends AbstractController
     {
         $invitation = $this->eventInvitationRepository->findByToken(Uuid::fromString($token));
 
-        if (!$invitation instanceof EventInvitation) {
+        if (! $invitation instanceof EventInvitation) {
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('invitation-not-found'));
             return $this->redirectToRoute('app_landing');
         }
 
         return $this->render('events/email-invitation.html.twig', [
-                'emailInvitation' => $invitation,
+            'emailInvitation' => $invitation,
         ]);
     }
 
@@ -304,17 +303,17 @@ class EventController extends AbstractController
     public function settings(Event $event, Request $request, #[CurrentUser] User $currentUser): Response
     {
         return $this->render('events/settings.html.twig', [
-                'event' => $event,
+            'event' => $event,
         ]);
     }
 
     #[Route(path: '/events/cancel/{id}', name: 'cancel_event')]
     public function cancelEvent(Event $event, Request $request, #[CurrentUser] User $currentUser): Response
     {
-        if (!$this->eventStatusService->can($event, 'cancel')) {
+        if (! $this->eventStatusService->can($event, 'cancel')) {
             $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('event-cannot-be-cancelled'));
             return $this->redirectToRoute('show_event', [
-                    'id' => $event->getId(),
+                'id' => $event->getId(),
             ]);
         }
 
@@ -325,15 +324,15 @@ class EventController extends AbstractController
             if (CarbonImmutable::now()->diffInMinutes($event->getStartAt()) < 30) {
                 $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('too-close-to-event-to-cancel'));
                 return $this->redirectToRoute('show_event', [
-                        'id' => $event->getId(),
+                    'id' => $event->getId(),
                 ]);
             }
 
             $eventChangeLog = new EventMoment(
-                    event: $event,
-                    type: EventMomentTypeEnum::EVENT_CANCELED,
-                    oldValue: null,
-                    newValue: null
+                event: $event,
+                type: EventMomentTypeEnum::EVENT_CANCELED,
+                oldValue: null,
+                newValue: null
             );
 
             $this->eventStatusService->apply($event, 'cancel');
@@ -345,8 +344,8 @@ class EventController extends AbstractController
         }
 
         return $this->render('events/cancel.html.twig', [
-                'eventCancellationForm' => $eventCancellationForm,
-                'event' => $event,
+            'eventCancellationForm' => $eventCancellationForm,
+            'event' => $event,
         ]);
     }
 
@@ -374,14 +373,18 @@ class EventController extends AbstractController
                     $invitationEmailHasAccount = true;
                 } else {
                     $registrationForm = $this->createForm(RegistrationFormType::class, new User(), [
-                        'action' => $this->generateUrl('app_register', ['_target_path' => $request->getUri()]),
+                        'action' => $this->generateUrl('app_register', [
+                            '_target_path' => $request->getUri(),
+                        ]),
                     ]);
                     $registrationForm->get('email')->setData($targetEmail?->getAddress());
                 }
-            } elseif (!$canViewDetails) {
+            } elseif (! $canViewDetails) {
                 // No invitation token and no access: show sign-up as request-access form
                 $requestAccessForm = $this->createForm(RegistrationFormType::class, new User(), [
-                    'action' => $this->generateUrl('event_register_and_request', ['id' => $event->getId()]),
+                    'action' => $this->generateUrl('event_register_and_request', [
+                        'id' => $event->getId(),
+                    ]),
                 ]);
             }
         }
@@ -409,21 +412,25 @@ class EventController extends AbstractController
                         ->tileLayer(new TileLayer(
                             url: 'https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=1IDdEWmfCtjKNlJ6Ij3W',
                             attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                            options: ['maxZoom' => 25, 'tileSize' => 512, 'zoomOffset' => -1]
+                            options: [
+                                'maxZoom' => 25,
+                                'tileSize' => 512,
+                                'zoomOffset' => -1,
+                            ]
                         ))
                 );
         }
 
         return $this->render('events/show.html.twig', [
-                'imageForm' => $imageForm,
-                'event' => $event,
-                'invitation' => $invitation,
-                'invitations' => $canViewDetails ? $event->getPendingInvitations() : [],
-                'map' => $map,
-                'canViewDetails' => $canViewDetails,
-                'registrationForm' => $registrationForm,
-                'requestAccessForm' => $requestAccessForm,
-                'invitationEmailHasAccount' => $invitationEmailHasAccount,
+            'imageForm' => $imageForm,
+            'event' => $event,
+            'invitation' => $invitation,
+            'invitations' => $canViewDetails ? $event->getPendingInvitations() : [],
+            'map' => $map,
+            'canViewDetails' => $canViewDetails,
+            'registrationForm' => $registrationForm,
+            'requestAccessForm' => $requestAccessForm,
+            'invitationEmailHasAccount' => $invitationEmailHasAccount,
         ]);
     }
 
@@ -437,24 +444,32 @@ class EventController extends AbstractController
         EntityManagerInterface $entityManager,
     ): Response {
         if ($this->getUser() !== null) {
-            return $this->redirectToRoute('show_event', ['id' => $event->getId()]);
+            return $this->redirectToRoute('show_event', [
+                'id' => $event->getId(),
+            ]);
         }
 
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user, [
-            'action' => $this->generateUrl('event_register_and_request', ['id' => $event->getId()]),
+            'action' => $this->generateUrl('event_register_and_request', [
+                'id' => $event->getId(),
+            ]),
         ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $emailAddress = $form->get('email')->getData();
-            $existingEmail = $this->emailRepository->findOneBy(['address' => $emailAddress]);
+            $existingEmail = $this->emailRepository->findOneBy([
+                'address' => $emailAddress,
+            ]);
 
             if ($existingEmail instanceof Email && $existingEmail->getOwner() instanceof User) {
                 // Email already registered — redirect to sign-in
                 $this->addFlash(FlashEnum::MESSAGE->value, $this->translator->trans('email-already-registered'));
                 return $this->redirectToRoute('app_login', [
-                    '_target_path' => $this->generateUrl('show_event', ['id' => $event->getId()]),
+                    '_target_path' => $this->generateUrl('show_event', [
+                        'id' => $event->getId(),
+                    ]),
                 ]);
             }
 
@@ -475,14 +490,18 @@ class EventController extends AbstractController
             $entityManager->flush();
 
             $this->emailEventService->process($user);
-            $this->emailService->sendRegistrationWelcomeEmail($user->getEmail(), ['user' => $user]);
+            $this->emailService->sendRegistrationWelcomeEmail($user->getEmail(), [
+                'user' => $user,
+            ]);
 
             // Create a request to attend
             $eventRequest = $this->eventInvitationFactory->createRequest(owner: $user, event: $event);
             $event->addEventInvitation($eventRequest);
             $entityManager->flush();
 
-            $this->saveTargetPath($request->getSession(), 'main', $this->generateUrl('show_event', ['id' => $event->getId()]));
+            $this->saveTargetPath($request->getSession(), 'main', $this->generateUrl('show_event', [
+                'id' => $event->getId(),
+            ]));
 
             return $userAuthenticator->authenticateUser($user, $authenticator, $request);
         }
@@ -518,9 +537,7 @@ class EventController extends AbstractController
 
         $this->addFlash('message', $this->translator->trans('changes-saved'));
         return $this->redirectToRoute('show_event', [
-                'id' => $event->getId(),
+            'id' => $event->getId(),
         ]);
     }
-
-
 }

@@ -29,7 +29,7 @@ class RefundController extends AbstractController
         /** @var \App\Entity\User\User $user */
         $user = $this->getUser();
 
-        if (!$event->getIsOrganiser($user)) {
+        if (! $event->getIsOrganiser($user)) {
             throw $this->createAccessDeniedException('Only organisers can issue refunds.');
         }
 
@@ -40,7 +40,9 @@ class RefundController extends AbstractController
             $this->addFlash('error', $e->getMessage());
         }
 
-        return $this->redirectToRoute('order_detail', ['id' => $order->getId()]);
+        return $this->redirectToRoute('order_detail', [
+            'id' => $order->getId(),
+        ]);
     }
 
     #[Route(path: '/orders/{id}', name: 'order_detail', methods: ['GET'])]
@@ -49,7 +51,7 @@ class RefundController extends AbstractController
         /** @var \App\Entity\User\User $user */
         $user = $this->getUser();
 
-        if ($order->getBuyer() !== $user && !$order->getEvent()->getIsOrganiser($user)) {
+        if ($order->getBuyer() !== $user && ! $order->getEvent()->getIsOrganiser($user)) {
             throw $this->createAccessDeniedException();
         }
 

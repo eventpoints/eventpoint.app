@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 final class CarbonLocaleSubscriber implements EventSubscriberInterface
 {
+    #[\Override]
     public static function getSubscribedEvents(): array
     {
         return [

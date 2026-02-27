@@ -120,7 +120,9 @@ final class MixpanelService
     {
         $this->track('Invitation Accepted', $user, array_merge(
             $this->eventProperties($invitation->getEvent()),
-            ['invitation_id' => $invitation->getId()?->toString()]
+            [
+                'invitation_id' => $invitation->getId()?->toString(),
+            ]
         ));
     }
 
@@ -128,7 +130,9 @@ final class MixpanelService
     {
         $this->track('Invitation Declined', $user, array_merge(
             $this->eventProperties($invitation->getEvent()),
-            ['invitation_id' => $invitation->getId()?->toString()]
+            [
+                'invitation_id' => $invitation->getId()?->toString(),
+            ]
         ));
     }
 
@@ -183,8 +187,8 @@ final class MixpanelService
     public function trackDiscussionCreated(User $user, EventGroupDiscussion $discussion): void
     {
         $this->track('Discussion Created', $user, [
-            'discussion_id' => $discussion->getId()?->toString(),
-            'group_id' => $discussion->getEventGroup()?->getId()?->toString(),
+            'discussion_id' => $discussion->getId()->toString(),
+            'group_id' => $discussion->getEventGroup()?->getId()->toString(),
             'group_name' => $discussion->getEventGroup()?->getName(),
         ]);
     }
@@ -192,10 +196,32 @@ final class MixpanelService
     public function trackDiscussionCommentCreated(User $user, EventGroupDiscussion $discussion): void
     {
         $this->track('Discussion Comment Created', $user, [
-            'discussion_id' => $discussion->getId()?->toString(),
-            'group_id' => $discussion->getEventGroup()?->getId()?->toString(),
+            'discussion_id' => $discussion->getId()->toString(),
+            'group_id' => $discussion->getEventGroup()?->getId()->toString(),
             'group_name' => $discussion->getEventGroup()?->getName(),
         ]);
+    }
+
+    /**
+     * Identify a user (alias anonymous ID to user ID).
+     */
+    public function identify(User $user, ?string $anonymousId = null): void
+    {
+        if (! $this->mixpanel instanceof \Mixpanel) {
+            return;
+        }
+
+        $userId = $user->getId()->toString();
+
+        if ($anonymousId !== null) {
+            try {
+                $this->mixpanel->createAlias($userId, $anonymousId);
+            } catch (\Throwable $e) {
+                $this->logger->error('Mixpanel: Failed to create alias.', [
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -232,7 +258,9 @@ final class MixpanelService
 
         try {
             $this->mixpanel->track($eventName, array_merge(
-                ['distinct_id' => $distinctId],
+                [
+                    'distinct_id' => $distinctId,
+                ],
                 $mergedProperties
             ));
 
@@ -275,28 +303,6 @@ final class MixpanelService
             $this->logger->error('Mixpanel: Failed to set user profile.', [
                 'error' => $e->getMessage(),
             ]);
-        }
-    }
-
-    /**
-     * Identify a user (alias anonymous ID to user ID).
-     */
-    public function identify(User $user, ?string $anonymousId = null): void
-    {
-        if (! $this->mixpanel instanceof \Mixpanel) {
-            return;
-        }
-
-        $userId = $user->getId()->toString();
-
-        if ($anonymousId !== null) {
-            try {
-                $this->mixpanel->createAlias($userId, $anonymousId);
-            } catch (\Throwable $e) {
-                $this->logger->error('Mixpanel: Failed to create alias.', [
-                    'error' => $e->getMessage(),
-                ]);
-            }
         }
     }
 

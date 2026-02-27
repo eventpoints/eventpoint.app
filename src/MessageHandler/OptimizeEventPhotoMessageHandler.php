@@ -12,13 +12,13 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Vich\UploaderBundle\Storage\StorageInterface;
 
 #[AsMessageHandler]
-final class OptimizeEventPhotoMessageHandler
+final readonly class OptimizeEventPhotoMessageHandler
 {
     public function __construct(
-        private readonly ImageRepository $imageRepository,
-        private readonly ImageOptimizer $optimizer,
-        private readonly StorageInterface $storage,
-        private readonly EntityManagerInterface $entityManager,
+        private ImageRepository $imageRepository,
+        private ImageOptimizer $optimizer,
+        private StorageInterface $storage,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -32,7 +32,7 @@ final class OptimizeEventPhotoMessageHandler
 
         $absolutePath = $this->storage->resolvePath($image, 'imageFile');
 
-        if ($absolutePath === null || !file_exists($absolutePath)) {
+        if ($absolutePath === null || ! file_exists($absolutePath)) {
             return;
         }
 

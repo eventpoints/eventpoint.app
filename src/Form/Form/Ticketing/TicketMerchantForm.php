@@ -72,7 +72,7 @@ class TicketMerchantForm extends AbstractType
         $resolver->setDefaults([
             'data_class' => TicketMerchantProfile::class,
             'constraints' => [
-                new Callback([$this, 'validateConditionalFields']),
+                new Callback($this->validateConditionalFields(...)),
             ],
         ]);
     }

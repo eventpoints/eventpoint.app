@@ -9,7 +9,6 @@ use App\Model\RegionalConfiguration;
 use App\Service\RegionalConfigurationService\RegionalConfigurationService;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 readonly class RegionalConfigurationSubscriber implements EventSubscriberInterface
@@ -17,7 +16,6 @@ readonly class RegionalConfigurationSubscriber implements EventSubscriberInterfa
     public function __construct(
         private Security $security,
         private RegionalConfiguration $regionalConfiguration,
-        private RequestStack $requestStack,
         private RegionalConfigurationService $regionalConfigurationService
     ) {
     }
@@ -35,14 +33,14 @@ readonly class RegionalConfigurationSubscriber implements EventSubscriberInterfa
     public function resolveRegionalConfiguration(RequestEvent $event): void
     {
         // Only run on main request, not sub-requests
-        if (!$event->isMainRequest()) {
+        if (! $event->isMainRequest()) {
             return;
         }
 
         $request = $event->getRequest();
 
         // Don't try to access session if it's not available
-        if (!$request->hasSession()) {
+        if (! $request->hasSession()) {
             return;
         }
 
@@ -67,7 +65,7 @@ readonly class RegionalConfigurationSubscriber implements EventSubscriberInterfa
         $urlLocale = $request->attributes->get('_locale');
         if ($urlLocale !== null) {
             $this->regionalConfiguration->setLocale($urlLocale);
-            if (!($user instanceof User)) {
+            if (! ($user instanceof User)) {
                 $session->set('_locale', $urlLocale);
             }
         }

@@ -22,15 +22,16 @@ final class MapLocationType extends AbstractType
 {
     public function __construct(
         private readonly TranslatorInterface $translator
-    )
-    {
+    ) {
     }
 
+    #[\Override]
     public function getParent(): string
     {
         return FormType::class;
     }
 
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -70,6 +71,7 @@ final class MapLocationType extends AbstractType
         }
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
@@ -146,6 +148,7 @@ final class MapLocationType extends AbstractType
         });
     }
 
+    #[\Override]
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['map'] = $options['map'];
@@ -153,6 +156,7 @@ final class MapLocationType extends AbstractType
         $view->vars['with_radius'] = $options['with_radius'];
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'map_location';

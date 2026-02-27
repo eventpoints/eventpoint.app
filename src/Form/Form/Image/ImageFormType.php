@@ -12,24 +12,21 @@ use Symfony\UX\Dropzone\Form\DropzoneType;
 
 class ImageFormType extends AbstractType
 {
-
-
     public function __construct(
-            private readonly TranslatorInterface $translator
-    )
-    {
+        private readonly TranslatorInterface $translator
+    ) {
     }
 
     #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add('images', DropzoneType::class, [
-                'label' => $this->translator->trans('drag-and-drop-image-upload-placeholder'),
-                'attr' => [
-                        'placeholder' => $this->translator->trans('drag-and-drop-image-upload-placeholder')
-                ],
-                'multiple' => true,
-                'mapped' => false,
+            'label' => $this->translator->trans('drag-and-drop-image-upload-placeholder'),
+            'attr' => [
+                'placeholder' => $this->translator->trans('drag-and-drop-image-upload-placeholder'),
+            ],
+            'multiple' => true,
+            'mapped' => false,
         ]);
     }
 
@@ -37,7 +34,7 @@ class ImageFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-                'data_class' => null,
+            'data_class' => null,
         ]);
     }
 }

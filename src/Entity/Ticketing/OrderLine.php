@@ -21,30 +21,18 @@ class OrderLine
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\ManyToOne(inversedBy: 'orderLines')]
-    #[ORM\JoinColumn(nullable: false)]
-    private Order $order;
-
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private EventTicketOption $ticketOption;
-
-    #[ORM\Column(type: Types::INTEGER)]
-    private int $quantity;
-
-    #[ORM\Embedded(class: Money::class, columnPrefix: 'unit_price_')]
-    private Money $unitPrice;
-
     public function __construct(
-        Order $order,
-        EventTicketOption $ticketOption,
-        int $quantity,
-        Money $unitPrice,
+        #[ORM\ManyToOne(inversedBy: 'orderLines')]
+        #[ORM\JoinColumn(nullable: false)]
+        private Order $order,
+        #[ORM\ManyToOne]
+        #[ORM\JoinColumn(nullable: false)]
+        private EventTicketOption $ticketOption,
+        #[ORM\Column(type: Types::INTEGER)]
+        private int $quantity,
+        #[ORM\Embedded(class: Money::class, columnPrefix: 'unit_price_')]
+        private Money $unitPrice
     ) {
-        $this->order = $order;
-        $this->ticketOption = $ticketOption;
-        $this->quantity = $quantity;
-        $this->unitPrice = $unitPrice;
     }
 
     public function getId(): Uuid

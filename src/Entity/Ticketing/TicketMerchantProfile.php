@@ -25,10 +25,6 @@ class TicketMerchantProfile
     #[ORM\CustomIdGenerator(UuidGenerator::class)]
     private Uuid $id;
 
-    #[ORM\OneToOne(inversedBy: 'ticketMerchantProfile')]
-    #[ORM\JoinColumn(nullable: false)]
-    private User $owner;
-
     // Collected by our form — Stripe does not ask for these
     #[ORM\Column(length: 30, enumType: SellerTypeEnum::class, nullable: true)]
     private ?SellerTypeEnum $sellerType = null;
@@ -109,9 +105,11 @@ class TicketMerchantProfile
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?CarbonImmutable $updatedAt = null;
 
-    public function __construct(User $owner)
-    {
-        $this->owner = $owner;
+    public function __construct(
+        #[ORM\OneToOne(inversedBy: 'ticketMerchantProfile')]
+        #[ORM\JoinColumn(nullable: false)]
+        private User $owner
+    ) {
         $this->createdAt = CarbonImmutable::now();
     }
 

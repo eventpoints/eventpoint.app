@@ -23,13 +23,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class EmailController extends AbstractController
 {
     public function __construct(
-            private readonly UserRepository         $userRepository,
-            private readonly TranslatorInterface    $translator,
-            private readonly EmailFactory           $emailFactory,
-            private readonly EmailRepository        $emailRepository,
-            private readonly EntityManagerInterface $entityManager
-    )
-    {
+        private readonly UserRepository $userRepository,
+        private readonly TranslatorInterface $translator,
+        private readonly EmailFactory $emailFactory,
+        private readonly EmailRepository $emailRepository,
+        private readonly EntityManagerInterface $entityManager
+    ) {
     }
 
     #[Route(path: '/user/emails', name: 'user_email_addresses', methods: [Request::METHOD_GET, Request::METHOD_POST])]
@@ -47,7 +46,7 @@ class EmailController extends AbstractController
         }
 
         return $this->render('user/emails.html.twig', [
-                'defaultEmailForm' => $defaultEmailForm,
+            'defaultEmailForm' => $defaultEmailForm,
         ]);
     }
 
@@ -59,7 +58,7 @@ class EmailController extends AbstractController
         if ($emailForm->isSubmitted() && $emailForm->isValid()) {
             $emailAddress = $emailForm->get('address')->getData();
             $email = $this->emailRepository->findOneBy([
-                    'address' => $emailAddress,
+                'address' => $emailAddress,
             ]);
 
             if ($email instanceof Email) {
@@ -79,7 +78,7 @@ class EmailController extends AbstractController
         }
 
         return $this->render('user/email/create.html.twig', [
-                'emailForm' => $emailForm,
+            'emailForm' => $emailForm,
         ]);
     }
 }

@@ -24,7 +24,9 @@ class EventCategorySelectComponent extends AbstractController
     #[LiveProp(writable: true)]
     public string $search = '';
 
-    /** @var Category[] */
+    /**
+     * @var Category[]
+     */
     public array $searchResults = [];
 
     public function __construct(
@@ -62,6 +64,9 @@ class EventCategorySelectComponent extends AbstractController
         $this->eventDto->removeCategory($category);
     }
 
+    /**
+     * @return array<Category>
+     */
     public function getSelectedCategories(): array
     {
         return $this->eventDto->getCategories()->toArray();

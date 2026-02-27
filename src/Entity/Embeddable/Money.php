@@ -25,6 +25,18 @@ class Money implements \Stringable
         $this->amount = $amount !== null ? (string) $amount : null;
     }
 
+    #[\Override]
+    public function __toString(): string
+    {
+        if ($this->amount === null) {
+            return '';
+        }
+
+        $baseUnit = $this->getBaseUnit();
+
+        return number_format($baseUnit, 2, ',', ' ') . ' ' . $this->currency;
+    }
+
     public function getAmount(): ?int
     {
         return $this->amount !== null ? (int) $this->amount : null;
@@ -50,7 +62,7 @@ class Money implements \Stringable
         return $this->amount === null || (int) $this->amount === 0;
     }
 
-    public function equals(Money $other): bool
+    public function equals(self $other): bool
     {
         return $this->amount === $other->amount && $this->currency === $other->currency;
     }
@@ -68,16 +80,5 @@ class Money implements \Stringable
         $divisor = 10 ** $fractionDigits;
 
         return (int) $this->amount / $divisor;
-    }
-
-    public function __toString(): string
-    {
-        if ($this->amount === null) {
-            return '';
-        }
-
-        $baseUnit = $this->getBaseUnit();
-
-        return number_format($baseUnit, 2, ',', ' ') . ' ' . $this->currency;
     }
 }

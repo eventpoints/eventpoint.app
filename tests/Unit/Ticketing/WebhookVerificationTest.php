@@ -12,18 +12,14 @@ final class WebhookVerificationTest extends TestCase
 {
     private const string WEBHOOK_SECRET = 'whsec_test_secret_for_unit_tests_only';
 
-    private function computeStripeSignature(string $payload, int $timestamp, string $secret): string
-    {
-        // Stripe uses the full secret string (including whsec_ prefix) as the hmac key
-        return hash_hmac('sha256', $timestamp . '.' . $payload, $secret);
-    }
-
     public function testValidSignaturePasses(): void
     {
         $payload = json_encode([
             'id' => 'evt_test_123',
             'type' => 'checkout.session.completed',
-            'data' => ['object' => []],
+            'data' => [
+                'object' => [],
+            ],
         ]);
 
         $timestamp = time();
@@ -61,7 +57,10 @@ final class WebhookVerificationTest extends TestCase
 
     public function testWrongSecretThrows(): void
     {
-        $payload = json_encode(['id' => 'evt_test_789', 'type' => 'checkout.session.completed']);
+        $payload = json_encode([
+            'id' => 'evt_test_789',
+            'type' => 'checkout.session.completed',
+        ]);
 
         $timestamp = time();
         $signature = $this->computeStripeSignature($payload, $timestamp, 'whsec_wrong_secret');
@@ -73,7 +72,10 @@ final class WebhookVerificationTest extends TestCase
 
     public function testExpiredTimestampThrows(): void
     {
-        $payload = json_encode(['id' => 'evt_test_expired', 'type' => 'checkout.session.completed']);
+        $payload = json_encode([
+            'id' => 'evt_test_expired',
+            'type' => 'checkout.session.completed',
+        ]);
 
         $oldTimestamp = time() - 400; // 400 seconds ago, past 300s tolerance
         $signature = $this->computeStripeSignature($payload, $oldTimestamp, self::WEBHOOK_SECRET);
@@ -81,5 +83,11 @@ final class WebhookVerificationTest extends TestCase
 
         $this->expectException(SignatureVerificationException::class);
         WebhookSignature::verifyHeader($payload, $sigHeader, self::WEBHOOK_SECRET, 300);
+    }
+
+    private function computeStripeSignature(string $payload, int $timestamp, string $secret): string
+    {
+        // Stripe uses the full secret string (including whsec_ prefix) as the hmac key
+        return hash_hmac('sha256', $timestamp . '.' . $payload, $secret);
     }
 }

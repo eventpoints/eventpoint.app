@@ -9,25 +9,20 @@ use DateTimeInterface;
 use DateTimeZone;
 use Symfony\Component\Form\DataTransformerInterface;
 
-final class FlowbiteDateTimeTransformer implements DataTransformerInterface
+final readonly class FlowbiteDateTimeTransformer implements DataTransformerInterface
 {
-    private string $dateFormat;
-
-    private string $timeFormat;
-
-    private ?string $modelTimezone;
-
-    public function __construct(string $dateFormat = 'Y-m-d', string $timeFormat = 'H:i', ?string $modelTimezone = null)
-    {
-        $this->dateFormat = $dateFormat;
-        $this->timeFormat = $timeFormat;
-        $this->modelTimezone = $modelTimezone;
+    public function __construct(
+        private string $dateFormat = 'Y-m-d',
+        private string $timeFormat = 'H:i',
+        private ?string $modelTimezone = null
+    ) {
     }
 
     /**
      * @param DateTimeInterface|null $value
      * @return array{date:string,time:string}
      */
+    #[\Override]
     public function transform($value): array
     {
         if (! $value instanceof DateTimeInterface) {
@@ -45,13 +40,14 @@ final class FlowbiteDateTimeTransformer implements DataTransformerInterface
 
         return [
             'date' => $dt->format($this->dateFormat),
-            'time' => $dt->format('H:i:s'),
+            'time' => $dt->format($this->timeFormat),
         ];
     }
 
     /**
      * @param array<string,string>|null $value
      */
+    #[\Override]
     public function reverseTransform($value): ?DateTimeImmutable
     {
         if (! is_array($value)) {

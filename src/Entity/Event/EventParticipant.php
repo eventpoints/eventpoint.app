@@ -31,7 +31,9 @@ class EventParticipant
     #[ORM\ManyToOne(cascade: ['persist'], inversedBy: 'eventParticipants')]
     private Event $event;
 
-    #[ORM\Column(length: 255, enumType: EventParticipantRoleEnum::class, options: ['default' => EventParticipantRoleEnum::ROLE_PARTICIPANT->value])]
+    #[ORM\Column(length: 255, enumType: EventParticipantRoleEnum::class, options: [
+        'default' => EventParticipantRoleEnum::ROLE_PARTICIPANT->value,
+    ])]
     private EventParticipantRoleEnum $role = EventParticipantRoleEnum::ROLE_PARTICIPANT;
 
     public function __construct()
