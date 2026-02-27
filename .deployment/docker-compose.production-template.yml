@@ -95,7 +95,8 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
-      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./public/uploads:/app/public/uploads:ro
     expose:
       - "80"
     labels:
