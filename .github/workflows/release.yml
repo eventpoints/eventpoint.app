@@ -44,6 +44,16 @@ jobs:
             type=ref,event=branch
             type=sha
 
+      - name: Docker meta Worker
+        id: meta-worker
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/eventpoints/eventpoint.app-worker
+          tags: |
+            type=ref,event=branch
+            type=sha
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -74,6 +84,17 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta-caddy.outputs.tags }}
           labels: ${{ steps.meta-caddy.outputs.labels }}
+          cache-from: type=gha, scope=${{ github.workflow }}
+          cache-to: type=gha, scope=${{ github.workflow }}
+
+      - name: Build and push Worker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          target: worker
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta-worker.outputs.tags }}
+          labels: ${{ steps.meta-worker.outputs.labels }}
           cache-from: type=gha, scope=${{ github.workflow }}
           cache-to: type=gha, scope=${{ github.workflow }}
 
