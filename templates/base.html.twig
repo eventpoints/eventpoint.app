@@ -13,6 +13,14 @@
     <meta name="revisit-after" content="1 days">
     <link rel="icon" type="image/x-icon" href="{{ asset('images/logo-white.ico') }}" />
 
+    {# PWA #}
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#660033">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="EventPoint">
+    <link rel="apple-touch-icon" href="/images/logo.png">
+
     {% block stylesheets %}
         {{ encore_entry_link_tags('app') }}
     {% endblock %}
@@ -28,6 +36,14 @@
             gtag('js', new Date());
 
             gtag('config', 'G-1DPTYD0SLT');
+        </script>
+
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js');
+                });
+            }
         </script>
     {% endblock %}
 </head>
