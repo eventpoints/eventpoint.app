@@ -199,12 +199,12 @@ class EventRepository extends ServiceEntityRepository
         $result = $qb;
 
         $qb->andWhere(
-            $qb->expr()->like($qb->expr()->lower('event.title'), ':title')
+            $qb->expr()->like((string) $qb->expr()->lower('event.title'), ':title')
         )->setParameter('title', '%' . strtolower($keyword) . '%');
 
         $qb->leftJoin('event.eventGroup', 'event_group');
         $qb->orWhere(
-            $qb->expr()->like($qb->expr()->lower('event_group.name'), ':name')
+            $qb->expr()->like((string) $qb->expr()->lower('event_group.name'), ':name')
         )->setParameter('name', '%' . strtolower($keyword) . '%');
 
         if ($isQuery) {
