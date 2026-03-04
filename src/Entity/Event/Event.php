@@ -151,6 +151,7 @@ class Event implements Stringable, EventableInterface
         return $this->id;
     }
 
+    #[\Override]
     public function getTitle(): null|string
     {
         return $this->title;
@@ -163,6 +164,7 @@ class Event implements Stringable, EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getStartAt(): null|CarbonImmutable
     {
         return $this->startAt;
@@ -174,6 +176,7 @@ class Event implements Stringable, EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getEndAt(): null|CarbonImmutable
     {
         return $this->endAt;
@@ -185,6 +188,7 @@ class Event implements Stringable, EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getDescription(): ?string
     {
         return $this->description;
@@ -499,6 +503,7 @@ class Event implements Stringable, EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getLatitude(): null|string
     {
         return $this->latitude;
@@ -509,6 +514,7 @@ class Event implements Stringable, EventableInterface
         $this->latitude = $latitude;
     }
 
+    #[\Override]
     public function getLongitude(): null|string
     {
         return $this->longitude;
@@ -546,6 +552,7 @@ class Event implements Stringable, EventableInterface
         );
     }
 
+    #[\Override]
     public function getAddress(): null|string
     {
         return $this->address;
@@ -859,6 +866,7 @@ class Event implements Stringable, EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getVenueName(): ?string
     {
         return $this->venueName;

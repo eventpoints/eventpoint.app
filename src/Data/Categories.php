@@ -32,7 +32,9 @@ class Categories
         );
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function social(): array
     {
         return [
@@ -48,7 +50,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function artsAndCulture(): array
     {
         return [
@@ -65,7 +69,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function festivals(): array
     {
         return [
@@ -79,7 +85,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function celebrations(): array
     {
         return [
@@ -92,7 +100,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function foodAndDrink(): array
     {
         return [
@@ -105,7 +115,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function learningAndGrowth(): array
     {
         return [
@@ -120,7 +132,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function outdoorsAndNature(): array
     {
         return [
@@ -134,7 +148,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function sportsAndFitness(): array
     {
         return [
@@ -148,7 +164,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function gamesAndHobbies(): array
     {
         return [
@@ -162,7 +180,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function wellbeing(): array
     {
         return [
@@ -173,7 +193,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function charityAndCommunity(): array
     {
         return [
@@ -183,7 +205,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function collectiveAction(): array
     {
         return [
@@ -194,7 +218,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function travelAndAdventure(): array
     {
         return [
@@ -204,7 +230,9 @@ class Categories
         ];
     }
 
-    /** @return array<string> */
+    /**
+     * @return array<string>
+     */
     private function technology(): array
     {
         return [

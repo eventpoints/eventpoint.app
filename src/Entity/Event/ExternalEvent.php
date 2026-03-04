@@ -81,6 +81,7 @@ class ExternalEvent implements EventableInterface
         return $this->id;
     }
 
+    #[\Override]
     public function getTitle(): string
     {
         return $this->title;
@@ -93,6 +94,7 @@ class ExternalEvent implements EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getDescription(): ?string
     {
         return $this->description;
@@ -105,6 +107,7 @@ class ExternalEvent implements EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getStartAt(): CarbonImmutable
     {
         return $this->startAt;
@@ -117,6 +120,7 @@ class ExternalEvent implements EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getEndAt(): ?CarbonImmutable
     {
         return $this->endAt;
@@ -129,6 +133,7 @@ class ExternalEvent implements EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getVenueName(): ?string
     {
         return $this->venueName;
@@ -141,6 +146,7 @@ class ExternalEvent implements EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getAddress(): ?string
     {
         return $this->address;
@@ -153,6 +159,7 @@ class ExternalEvent implements EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getLatitude(): ?string
     {
         return $this->latitude;
@@ -165,6 +172,7 @@ class ExternalEvent implements EventableInterface
         return $this;
     }
 
+    #[\Override]
     public function getLongitude(): ?string
     {
         return $this->longitude;

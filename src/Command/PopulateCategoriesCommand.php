@@ -28,12 +28,12 @@ class PopulateCategoriesCommand extends Command
      *
      * @var array<string, string>
      */
-    private const MIGRATIONS = [
-        'category.comedy-show'            => 'category.arts_and_culture.comedy',
+    private const array MIGRATIONS = [
+        'category.comedy-show' => 'category.arts_and_culture.comedy',
         'category.gaming.board_game_night' => 'category.hobby.board_games',
-        'category.business_networking'     => 'category.social.networking',
+        'category.business_networking' => 'category.social.networking',
         'category.social.after-work-drink' => 'category.social.after_work_drinks',
-        'category.cycling_tournament'      => 'category.outdoor.cycling',
+        'category.cycling_tournament' => 'category.outdoor.cycling',
     ];
 
     public function __construct(
@@ -85,7 +85,7 @@ class PopulateCategoriesCommand extends Command
 
                 if ($eventCount === 0) {
                     $io->writeln(sprintf('  <fg=red>prune</>  %s', $title));
-                    if (!$dryRun) {
+                    if (! $dryRun) {
                         $this->entityManager->remove($category);
                     }
                     ++$pruned;
@@ -105,7 +105,9 @@ class PopulateCategoriesCommand extends Command
                     continue;
                 }
 
-                $replacement = $this->categoryRepository->findOneBy(['title' => $newKey])
+                $replacement = $this->categoryRepository->findOneBy([
+                    'title' => $newKey,
+                ])
                     ?? $this->categoryFactory->create(title: $newKey);
 
                 $io->writeln(sprintf(
@@ -116,7 +118,7 @@ class PopulateCategoriesCommand extends Command
                     $eventCount === 1 ? '' : 's',
                 ));
 
-                if (!$dryRun) {
+                if (! $dryRun) {
                     foreach ($category->getEvents() as $event) {
                         $event->addCategory($replacement);
                         $event->removeCategory($category);
@@ -129,7 +131,7 @@ class PopulateCategoriesCommand extends Command
                 ++$pruned;
             }
 
-            if (!$dryRun && $pruned > 0) {
+            if (! $dryRun && $pruned > 0) {
                 $this->entityManager->flush();
             }
 
@@ -155,14 +157,14 @@ class PopulateCategoriesCommand extends Command
 
             $io->writeln(sprintf('  <info>add</>    %s', $title));
 
-            if (!$dryRun) {
+            if (! $dryRun) {
                 $this->entityManager->persist($this->categoryFactory->create(title: $title));
             }
 
             ++$created;
         }
 
-        if (!$dryRun && $created > 0) {
+        if (! $dryRun && $created > 0) {
             $this->entityManager->flush();
         }
 

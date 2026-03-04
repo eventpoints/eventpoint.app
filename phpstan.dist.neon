@@ -10,5 +10,4 @@ parameters:
         - config/reference.php
     ignoreErrors:
         - '#\$id is never written, only read#'
-        - '#Parameter \#1 \$x of method Doctrine\\ORM\\Query\\Expr::like\(\) expects string, Doctrine\\ORM\\Query\\Expr\\Func given.#'
     checkGenericClassInNonGenericObjectType: false
