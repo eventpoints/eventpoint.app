@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Event;
 
+use App\Contract\EventableInterface;
 use App\Entity\EventGroup\EventGroup;
 use App\Entity\Image\Image;
 use App\Entity\Image\ImageCollection;
@@ -27,7 +28,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 #[Vich\Uploadable]
-class Event implements Stringable
+class Event implements Stringable, EventableInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
