@@ -220,6 +220,10 @@ return [
     'hours' => 'hodin',
 
     // Email — password reset
+    'email.registration-welcome-email.subject' => 'Vítejte v Event Point!',
+    'email.registration-welcome-email.header' => 'Vítejte v Event Point, {firstName}!',
+    'email.registration-welcome-email.body' => 'Váš účet je připraven. Začněte objevovat události ve vašem okolí nebo vytvořte vlastní.',
+    'email.registration-welcome-email.cta' => 'Procházet události',
     'email.password-reset.subject' => 'Obnovení hesla Event Point',
     'email.password-reset.header' => 'Obnovení hesla',
     'email.password-reset.body' => 'Obdrželi jsme žádost o obnovení hesla k vašemu účtu. Klikněte na tlačítko níže a zvolte si nové heslo.',

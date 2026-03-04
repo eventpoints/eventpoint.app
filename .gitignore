@@ -34,3 +34,12 @@ yarn-error.log
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+/public/uploads/avatars/*
+!/public/uploads/avatars/.gitkeep
+/public/uploads/events/*
+!/public/uploads/events/.gitkeep
+/public/uploads/groups/*
+!/public/uploads/groups/.gitkeep
+/public/uploads/photos/*
+!/public/uploads/photos/.gitkeep
